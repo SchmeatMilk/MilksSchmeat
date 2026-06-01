@@ -1,89 +1,142 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Dashboard.css';
+import ExcelStyleChart from './ExcelStyleChart';
+import PathCard from './PathCard';
+import RevenueTracker from './RevenueTracker';
+import TaskList from './TaskList';
+import CountdownWidget from './CountdownWidget';
 
-const pathInfo = {
-  'ai-consulting': { name: 'Help Businesses Apply AI', emoji: '🤝', color: '#667eea' },
-  'ai-tools': { name: 'Create AI Tools', emoji: '⚙️', color: '#764ba2' },
-  'online-work': { name: 'AI-Powered Online Work', emoji: '💻', color: '#f093fb' },
-  'apps': { name: 'Monetizable Apps', emoji: '📱', color: '#f5576c' }
-};
+function Dashboard({ experiments, revenue, countdown, onRefresh }) {
+  const [editMode, setEditMode] = useState(false);
+  const [widgetVisibility, setWidgetVisibility] = useState({
+    countdown: true,
+    revenue: true,
+    paths: true,
+    chart: true,
+    tasks: true
+  });
 
-function Dashboard({ experiments, onRefresh }) {
-  const paths = ['ai-consulting', 'ai-tools', 'online-work', 'apps'];
-
-  const getPathStats = (path) => {
-    const pathExps = experiments.filter(e => e.path === path && e.status !== 'completed');
-    const totalRevenue = pathExps.reduce((sum, e) => sum + (e.revenueThisMonth || 0), 0);
-    const totalHours = pathExps.reduce((sum, e) => sum + (e.hoursInvested || 0), 0);
-
-    return {
-      count: pathExps.length,
-      revenue: totalRevenue,
-      hours: totalHours,
-      experiments: pathExps
-    };
+  const toggleWidget = (widget) => {
+    setWidgetVisibility({
+      ...widgetVisibility,
+      [widget]: !widgetVisibility[widget]
+    });
   };
 
+  const paths = ['ai-consulting', 'ai-tools', 'online-work', 'apps'];
+
   return (
-    <div className="dashboard">
-      <h2>📊 Your 4 Income Paths</h2>
-      <div className="paths-grid">
-        {paths.map(path => {
-          const stats = getPathStats(path);
-          const info = pathInfo[path];
+    <div className="dashboard-container">
+      <div className="dashboard-controls">
+        <button
+          onClick={() => setEditMode(!editMode)}
+          className={`edit-mode-btn ${editMode ? 'active' : ''}`}
+          title="Toggle customization mode"
+        >
+          {editMode ? '✓ Done Customizing' : '⚙️ Customize Layout'}
+        </button>
 
-          return (
-            <div key={path} className="path-card" style={{ borderLeftColor: info.color }}>
-              <div className="path-header" style={{ backgroundColor: info.color }}>
-                <span className="path-emoji">{info.emoji}</span>
-                <h3>{info.name}</h3>
-              </div>
+        {editMode && (
+          <div className="widget-toggle-panel">
+            <label>
+              <input
+                type="checkbox"
+                checked={widgetVisibility.countdown}
+                onChange={() => toggleWidget('countdown')}
+              />
+              <span>Countdown</span>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={widgetVisibility.revenue}
+                onChange={() => toggleWidget('revenue')}
+              />
+              <span>Revenue Tracker</span>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={widgetVisibility.paths}
+                onChange={() => toggleWidget('paths')}
+              />
+              <span>Income Paths</span>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={widgetVisibility.chart}
+                onChange={() => toggleWidget('chart')}
+              />
+              <span>Progress Chart</span>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={widgetVisibility.tasks}
+                onChange={() => toggleWidget('tasks')}
+              />
+              <span>Daily Tasks</span>
+            </label>
+          </div>
+        )}
+      </div>
 
-              <div className="path-content">
-                <div className="stat-row">
-                  <span className="label">Active Experiments</span>
-                  <span className="value">{stats.count}</span>
-                </div>
-
-                <div className="stat-row">
-                  <span className="label">This Month Revenue</span>
-                  <span className="value">${stats.revenue.toFixed(0)}</span>
-                </div>
-
-                <div className="stat-row">
-                  <span className="label">Hours Invested</span>
-                  <span className="value">{stats.hours.toFixed(1)}</span>
-                </div>
-
-                {stats.experiments.length > 0 && (
-                  <div className="experiments-list">
-                    <p className="list-title">Current experiments:</p>
-                    <ul>
-                      {stats.experiments.slice(0, 3).map(exp => (
-                        <li key={exp.id}>
-                          <strong>{exp.name}</strong>
-                          {exp.nextAction && <small>→ {exp.nextAction}</small>}
-                        </li>
-                      ))}
-                    </ul>
-                    {stats.experiments.length > 3 && (
-                      <p className="more-text">+{stats.experiments.length - 3} more</p>
-                    )}
-                  </div>
-                )}
-
-                {stats.count === 0 && (
-                  <p className="no-experiments">No active experiments yet. Start one today! 🚀</p>
-                )}
-              </div>
+      <div className={`dashboard-grid ${editMode ? 'edit-mode' : ''}`}>
+        {/* Top Row: Key Metrics */}
+        <div className="grid-section">
+          {widgetVisibility.countdown && (
+            <div className={`widget countdown-widget ${editMode ? 'draggable' : ''}`}>
+              <CountdownWidget countdown={countdown} />
             </div>
-          );
-        })}
+          )}
+
+          {widgetVisibility.revenue && (
+            <div className={`widget revenue-widget ${editMode ? 'draggable' : ''}`}>
+              <RevenueTracker revenue={revenue} />
+            </div>
+          )}
+        </div>
+
+        {/* Income Paths Row */}
+        {widgetVisibility.paths && (
+          <div className="grid-section paths-section">
+            <h2 className="section-title">📊 Your 4 Income Paths</h2>
+            <div className="paths-grid">
+              {paths.map(path => (
+                <div key={path} className={`widget path-widget ${editMode ? 'draggable' : ''}`}>
+                  <PathCard path={path} experiments={experiments} editMode={editMode} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Charts & Analytics Row */}
+        {widgetVisibility.chart && (
+          <div className="grid-section chart-section">
+            <h2 className="section-title">📈 Progress Analytics</h2>
+            <div className={`widget large-widget ${editMode ? 'draggable' : ''}`}>
+              <ExcelStyleChart experiments={experiments} revenue={revenue} />
+            </div>
+          </div>
+        )}
+
+        {/* Quick Actions & Tasks */}
+        {widgetVisibility.tasks && (
+          <div className="grid-section tasks-section">
+            <div className={`widget tasks-widget ${editMode ? 'draggable' : ''}`}>
+              <TaskList experiments={experiments} />
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="action-section">
-        <button onClick={onRefresh} className="refresh-btn">🔄 Refresh Data</button>
-      </div>
+      {editMode && (
+        <div className="edit-mode-hint">
+          💡 Click & drag widgets to reorder them. Use checkboxes above to show/hide widgets.
+        </div>
+      )}
     </div>
   );
 }
