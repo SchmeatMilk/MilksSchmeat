@@ -1,0 +1,71 @@
+.animated-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(140deg, #eef2f6 0%, #e7edf3 55%, #eaf0f4 100%);
+}
+
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(143, 168, 196, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(143, 168, 196, 0.07) 1px, transparent 1px);
+  background-size: 38px 38px;
+  animation: bgGridDrift 30s linear infinite;
+}
+
+@keyframes bgGridDrift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 38px 38px, 38px 38px; }
+}
+
+.bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.5;
+}
+
+.blob-1 {
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(136, 176, 158, 0.35), transparent 70%);
+  top: -120px;
+  left: -100px;
+  animation: floatA 22s ease-in-out infinite;
+}
+
+.blob-2 {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(143, 168, 196, 0.32), transparent 70%);
+  bottom: -140px;
+  right: -80px;
+  animation: floatB 26s ease-in-out infinite;
+}
+
+.blob-3 {
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, rgba(216, 180, 138, 0.22), transparent 70%);
+  top: 40%;
+  left: 55%;
+  animation: floatC 30s ease-in-out infinite;
+}
+
+@keyframes floatA {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(60px, 40px) scale(1.08); }
+}
+
+@keyframes floatB {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-50px, -30px) scale(1.1); }
+}
+
+@keyframes floatC {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-40px, 50px) scale(0.92); }
+}

@@ -1,133 +1,146 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { AnimatePresence, motion } from 'framer-motion';
 import './App.css';
+import LoadingScreen from './components/LoadingScreen';
+import AnimatedBackground from './components/AnimatedBackground';
 import Dashboard from './components/Dashboard';
 
+const QUOTES = [
+  'Discipline is choosing between what you want now and what you want most.',
+  'The future depends on what you do today.',
+  'Small daily improvements are the key to staggering long-term results.',
+  'Done is better than perfect. Ship it.',
+  'You don’t have to be great to start, but you have to start to be great.',
+  'Focus on being productive instead of busy.',
+  'The best way to predict the future is to create it.',
+  'Action is the foundational key to all success.',
+];
+
 function App() {
+  const [booting, setBooting] = useState(true);
   const [experiments, setExperiments] = useState([]);
-  const [revenue, setRevenue] = useState({ thisMonth: 0, cumulative: 0, target: 5000, progress: 0 });
-  const [countdown, setCountdown] = useState({ daysLeft: 0, deadline: '', targetRevenue: 5000 });
-  const [quote, setQuote] = useState('');
+  const [revenue, setRevenue] = useState({ thisMonth: 0, cumulative: 0, target: 5000 });
+  const [countdown, setCountdown] = useState({ daysLeft: 184 });
+  const [quote, setQuote] = useState(QUOTES[0]);
   const [news, setNews] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [clock, setClock] = useState(new Date());
 
-  useEffect(() => {
-    fetchData();
-    fetchQuote();
-    fetchNews();
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const [exp, rev, count] = await Promise.all([
+      const [exp, rev, cnt] = await Promise.all([
         axios.get('/api/experiments'),
         axios.get('/api/revenue-summary'),
-        axios.get('/api/countdown')
+        axios.get('/api/countdown'),
       ]);
       setExperiments(exp.data);
       setRevenue(rev.data);
-      setCountdown(count.data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
+      setCountdown(cnt.data);
+    } catch (e) {
+      console.error('Data fetch failed:', e);
     }
-  };
+  }, []);
 
-  const fetchQuote = () => {
-    const quotes = [
-      "The only way to do great work is to love what you do. - Steve Jobs",
-      "Success is not final, failure is not fatal. - Winston Churchill",
-      "Believe you can and you're halfway there. - Theodore Roosevelt",
-      "Don't watch the clock; do what it does. Keep going. - Sam Levenson",
-      "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
-      "It is during our darkest moments that we must focus to see the light. - Aristotle",
-      "The only impossible journey is the one you never begin. - Tony Robbins",
-      "Your limitation—it's only your imagination. Push beyond it.",
-      "Great things never come from comfort zones.",
-      "Dream bigger. Do bigger."
-    ];
-    setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
-  };
+  useEffect(() => {
+    fetchData();
+    setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+    axios.get('/api/news').then((r) => setNews(r.data)).catch(() => {});
+    const dataTimer = setInterval(fetchData, 30000);
+    const clockTimer = setInterval(() => setClock(new Date()), 1000);
+    return () => { clearInterval(dataTimer); clearInterval(clockTimer); };
+  }, [fetchData]);
 
-  const fetchNews = async () => {
-    try {
-      const response = await axios.get('/api/news');
-      setNews(response.data);
-    } catch (error) {
-      console.warn('News fetch failed (optional):', error.message);
-    }
-  };
-
-  const handleSystemUpdate = async () => {
+  const handleUpdate = async () => {
     setUpdating(true);
     try {
-      const response = await axios.post('/api/system-update');
-      console.log('System update result:', response.data);
+      await axios.post('/api/system-update');
       await fetchData();
-      alert('✅ Dashboard updated from source data!');
-    } catch (error) {
-      console.error('Update error:', error);
-      alert('⚠️ Update encountered an issue. Check console.');
+    } catch (e) {
+      console.error('Update failed:', e);
     } finally {
-      setUpdating(false);
+      setTimeout(() => setUpdating(false), 600);
     }
   };
 
-  if (loading) {
-    return <div className="loading">📊 Loading your dashboard...</div>;
-  }
-
   return (
-    <div className="app">
-      <header className="header">
-        <div className="header-top">
-          <button
-            onClick={handleSystemUpdate}
-            disabled={updating}
-            className="update-btn"
-            title="Pull latest data from source files"
-          >
-            {updating ? '🔄 Updating...' : '🔄 Auto Update'}
-          </button>
-          <h1>Income Hunt Dashboard</h1>
-          <div className="header-spacer"></div>
-        </div>
-        <div className="quote-section">
-          <p className="daily-quote">💡 {quote}</p>
-        </div>
-      </header>
+    <>
+      <AnimatePresence>
+        {booting && <LoadingScreen onComplete={() => setBooting(false)} />}
+      </AnimatePresence>
 
-      <div className="main-container">
-        <Dashboard
-          experiments={experiments}
-          revenue={revenue}
-          countdown={countdown}
-          onRefresh={fetchData}
-        />
+      <AnimatedBackground />
 
-        <aside className="news-sidebar">
-          <h3>📰 Today's Headlines</h3>
-          <div className="news-list">
-            {news.length > 0 ? (
-              news.map((item, idx) => (
-                <div key={idx} className="news-item">
-                  <a href={item.url} target="_blank" rel="noopener noreferrer">
-                    <strong>{item.title}</strong>
-                  </a>
-                  <p>{item.source}</p>
+      {!booting && (
+        <div className="app-shell">
+          <header className="topbar">
+            <div className="topbar-particles">
+              {Array.from({ length: 14 }).map((_, i) => (
+                <span key={i} className="particle" style={{
+                  left: `${(i * 7.3) % 100}%`,
+                  animationDelay: `${(i % 7) * 0.8}s`,
+                  animationDuration: `${6 + (i % 5)}s`,
+                }} />
+              ))}
+            </div>
+
+            <div className="topbar-left">
+              <div className="brand">
+                <span className="brand-mark" />
+                <div>
+                  <div className="brand-name">INCOME HUNT</div>
+                  <div className="brand-sub">Command Dashboard</div>
                 </div>
-              ))
-            ) : (
-              <p className="news-placeholder">News headlines loading...</p>
-            )}
+              </div>
+            </div>
+
+            <div className="topbar-center">
+              <motion.p
+                key={quote}
+                className="quote"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                “{quote}”
+              </motion.p>
+            </div>
+
+            <div className="topbar-right">
+              <div className="clock">
+                <div className="clock-time mono">{clock.toLocaleTimeString('en-US', { hour12: false })}</div>
+                <div className="clock-date">{clock.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+              </div>
+              <button className={`sync-btn ${updating ? 'spinning' : ''}`} onClick={handleUpdate} title="Pull latest from source files">
+                <span className="sync-icon">⟳</span>
+                {updating ? 'Syncing' : 'Sync'}
+              </button>
+            </div>
+          </header>
+
+          <div className="main-area">
+            <main className="dashboard-area">
+              <Dashboard experiments={experiments} revenue={revenue} countdown={countdown} />
+            </main>
+
+            <aside className="news-rail">
+              <div className="news-head">
+                <span className="news-dot" /> LIVE HEADLINES
+              </div>
+              <div className="news-items">
+                {news.length === 0 && <div className="news-empty">Fetching headlines…</div>}
+                {news.map((n, i) => (
+                  <a key={i} className="news-card" href={n.url} target="_blank" rel="noopener noreferrer">
+                    <div className="news-title">{n.title}</div>
+                    <div className="news-source">{n.source}</div>
+                  </a>
+                ))}
+              </div>
+            </aside>
           </div>
-        </aside>
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 }
 

@@ -1,143 +1,148 @@
-import React, { useState } from 'react';
-import './Dashboard.css';
-import ExcelStyleChart from './ExcelStyleChart';
-import PathCard from './PathCard';
-import RevenueTracker from './RevenueTracker';
+import React, { useMemo } from 'react';
+import { Responsive, WidthProvider } from 'react-grid-layout';
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
+import Widget from './Widget';
+import ChartCard from './ChartCard';
+import AnimatedNumber from './AnimatedNumber';
 import TaskList from './TaskList';
-import CountdownWidget from './CountdownWidget';
+import { theme, pathInfo } from '../theme';
+import './Dashboard.css';
 
-function Dashboard({ experiments, revenue, countdown, onRefresh }) {
-  const [editMode, setEditMode] = useState(false);
-  const [widgetVisibility, setWidgetVisibility] = useState({
-    countdown: true,
-    revenue: true,
-    paths: true,
-    chart: true,
-    tasks: true
-  });
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
-  const toggleWidget = (widget) => {
-    setWidgetVisibility({
-      ...widgetVisibility,
-      [widget]: !widgetVisibility[widget]
-    });
-  };
+const PATHS = ['ai-consulting', 'ai-tools', 'online-work', 'apps'];
 
-  const paths = ['ai-consulting', 'ai-tools', 'online-work', 'apps'];
+// Default widget positions (12-col grid). Users drag/resize freely.
+const layouts = {
+  lg: [
+    { i: 'revenue', x: 0, y: 0, w: 5, h: 9, minW: 3, minH: 7 },
+    { i: 'countdown', x: 5, y: 0, w: 3, h: 9, minW: 2, minH: 7 },
+    { i: 'tasks', x: 8, y: 0, w: 4, h: 13, minW: 3, minH: 8 },
+    { i: 'hours', x: 0, y: 9, w: 4, h: 10, minW: 3, minH: 7 },
+    { i: 'experiments', x: 4, y: 9, w: 4, h: 10, minW: 3, minH: 7 },
+  ],
+  md: [
+    { i: 'revenue', x: 0, y: 0, w: 6, h: 9 },
+    { i: 'countdown', x: 6, y: 0, w: 4, h: 9 },
+    { i: 'tasks', x: 0, y: 9, w: 5, h: 11 },
+    { i: 'hours', x: 5, y: 9, w: 5, h: 11 },
+    { i: 'experiments', x: 0, y: 20, w: 10, h: 9 },
+  ],
+  sm: [
+    { i: 'revenue', x: 0, y: 0, w: 6, h: 9 },
+    { i: 'countdown', x: 0, y: 9, w: 6, h: 8 },
+    { i: 'hours', x: 0, y: 17, w: 6, h: 9 },
+    { i: 'experiments', x: 0, y: 26, w: 6, h: 9 },
+    { i: 'tasks', x: 0, y: 35, w: 6, h: 11 },
+  ],
+};
+
+function Dashboard({ experiments, revenue, countdown }) {
+  const pathData = useMemo(() => PATHS.map((p) => {
+    const exps = experiments.filter((e) => e.path === p);
+    return {
+      key: p,
+      name: pathInfo[p].short,
+      revenue: exps.reduce((s, e) => s + (e.revenueThisMonth || 0), 0),
+      hours: exps.reduce((s, e) => s + (e.hoursInvested || 0), 0),
+      count: exps.filter((e) => e.status !== 'completed').length,
+    };
+  }), [experiments]);
+
+  const revenueChart = pathData.map((d) => ({ name: d.name, value: d.revenue }));
+  const hoursChart = pathData.map((d) => ({ name: d.name, value: d.hours }));
+  const countChart = pathData.map((d) => ({ name: d.name, value: d.count }));
+
+  const totalRevenue = revenue.thisMonth || 0;
+  const pct = Math.min(100, (totalRevenue / (revenue.target || 5000)) * 100);
+  const timelinePct = Math.min(100, ((184 - countdown.daysLeft) / 184) * 100);
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-controls">
-        <button
-          onClick={() => setEditMode(!editMode)}
-          className={`edit-mode-btn ${editMode ? 'active' : ''}`}
-          title="Toggle customization mode"
+    <ResponsiveGridLayout
+      className="dashboard-rgl"
+      layouts={layouts}
+      breakpoints={{ lg: 1100, md: 760, sm: 0 }}
+      cols={{ lg: 12, md: 10, sm: 6 }}
+      rowHeight={30}
+      margin={[18, 18]}
+      draggableHandle=".widget-drag-handle"
+      useCSSTransforms
+    >
+      {/* REVENUE */}
+      <div key="revenue">
+        <Widget
+          title="Monthly Revenue"
+          icon="💰"
+          accent={theme.colors.sage}
+          headerRight={<span className="widget-pill">{Math.round(pct)}% of ${revenue.target}</span>}
         >
-          {editMode ? '✓ Done Customizing' : '⚙️ Customize Layout'}
-        </button>
-
-        {editMode && (
-          <div className="widget-toggle-panel">
-            <label>
-              <input
-                type="checkbox"
-                checked={widgetVisibility.countdown}
-                onChange={() => toggleWidget('countdown')}
-              />
-              <span>Countdown</span>
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={widgetVisibility.revenue}
-                onChange={() => toggleWidget('revenue')}
-              />
-              <span>Revenue Tracker</span>
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={widgetVisibility.paths}
-                onChange={() => toggleWidget('paths')}
-              />
-              <span>Income Paths</span>
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={widgetVisibility.chart}
-                onChange={() => toggleWidget('chart')}
-              />
-              <span>Progress Chart</span>
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={widgetVisibility.tasks}
-                onChange={() => toggleWidget('tasks')}
-              />
-              <span>Daily Tasks</span>
-            </label>
+          <div className="stat-figure">
+            <AnimatedNumber value={totalRevenue} prefix="$" />
           </div>
-        )}
+          <div className="stat-caption">of ${(revenue.target || 5000).toLocaleString()} CAD target this month</div>
+          <div className="mini-progress">
+            <div className="mini-progress-fill" style={{ width: `${pct}%`, background: theme.colors.sage }} />
+          </div>
+          <div style={{ marginTop: 14 }}>
+            <ChartCard data={revenueChart} chartTypes={['bar', 'line', 'area', 'pie']} defaultType="bar" height={170} />
+          </div>
+        </Widget>
       </div>
 
-      <div className={`dashboard-grid ${editMode ? 'edit-mode' : ''}`}>
-        {/* Top Row: Key Metrics */}
-        <div className="grid-section">
-          {widgetVisibility.countdown && (
-            <div className={`widget countdown-widget ${editMode ? 'draggable' : ''}`}>
-              <CountdownWidget countdown={countdown} />
-            </div>
-          )}
-
-          {widgetVisibility.revenue && (
-            <div className={`widget revenue-widget ${editMode ? 'draggable' : ''}`}>
-              <RevenueTracker revenue={revenue} />
-            </div>
-          )}
-        </div>
-
-        {/* Income Paths Row */}
-        {widgetVisibility.paths && (
-          <div className="grid-section paths-section">
-            <h2 className="section-title">📊 Your 4 Income Paths</h2>
-            <div className="paths-grid">
-              {paths.map(path => (
-                <div key={path} className={`widget path-widget ${editMode ? 'draggable' : ''}`}>
-                  <PathCard path={path} experiments={experiments} editMode={editMode} />
+      {/* COUNTDOWN */}
+      <div key="countdown">
+        <Widget title="Timeline" icon="⏳" accent={theme.colors.slate}>
+          <div className="countdown-wrap">
+            <div className="radial-gauge" style={{ '--p': `${timelinePct}%` }}>
+              <div className="radial-inner">
+                <div className="stat-figure" style={{ fontSize: 34 }}>
+                  <AnimatedNumber value={countdown.daysLeft} />
                 </div>
-              ))}
+                <div className="stat-caption">days left</div>
+              </div>
+            </div>
+            <div className="countdown-meta">
+              <div className="countdown-target">🎯 December 1, 2026</div>
+              <div className="stat-caption">{Math.round(timelinePct)}% of journey elapsed</div>
             </div>
           </div>
-        )}
-
-        {/* Charts & Analytics Row */}
-        {widgetVisibility.chart && (
-          <div className="grid-section chart-section">
-            <h2 className="section-title">📈 Progress Analytics</h2>
-            <div className={`widget large-widget ${editMode ? 'draggable' : ''}`}>
-              <ExcelStyleChart experiments={experiments} revenue={revenue} />
-            </div>
-          </div>
-        )}
-
-        {/* Quick Actions & Tasks */}
-        {widgetVisibility.tasks && (
-          <div className="grid-section tasks-section">
-            <div className={`widget tasks-widget ${editMode ? 'draggable' : ''}`}>
-              <TaskList experiments={experiments} />
-            </div>
-          </div>
-        )}
+        </Widget>
       </div>
 
-      {editMode && (
-        <div className="edit-mode-hint">
-          💡 Click & drag widgets to reorder them. Use checkboxes above to show/hide widgets.
-        </div>
-      )}
-    </div>
+      {/* TASKS */}
+      <div key="tasks">
+        <Widget title="Today's Tasks" icon="✅" accent={theme.colors.sand}>
+          <TaskList experiments={experiments} />
+        </Widget>
+      </div>
+
+      {/* HOURS */}
+      <div key="hours">
+        <Widget title="Hours Invested" icon="⏱️" accent={theme.colors.slate}>
+          <div className="stat-figure" style={{ fontSize: 30 }}>
+            <AnimatedNumber value={pathData.reduce((s, d) => s + d.hours, 0)} decimals={1} suffix="h" />
+          </div>
+          <div className="stat-caption">total across all paths</div>
+          <div style={{ marginTop: 12 }}>
+            <ChartCard data={hoursChart} chartTypes={['bar', 'area', 'radial', 'pie']} defaultType="area" height={150} />
+          </div>
+        </Widget>
+      </div>
+
+      {/* EXPERIMENTS */}
+      <div key="experiments">
+        <Widget title="Active Experiments" icon="🔬" accent={theme.colors.blush}>
+          <div className="stat-figure" style={{ fontSize: 30 }}>
+            <AnimatedNumber value={pathData.reduce((s, d) => s + d.count, 0)} />
+          </div>
+          <div className="stat-caption">experiments in flight</div>
+          <div style={{ marginTop: 12 }}>
+            <ChartCard data={countChart} chartTypes={['bar', 'pie', 'radial']} defaultType="pie" height={150} />
+          </div>
+        </Widget>
+      </div>
+    </ResponsiveGridLayout>
   );
 }
 

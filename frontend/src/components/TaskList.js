@@ -1,234 +1,119 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './TaskList.css';
 
-function TaskList({ experiments }) {
+const PRIORITY = {
+  'must-do': { label: 'Must', color: '#d9a8a8' },
+  'should-do': { label: 'Should', color: '#d8b48a' },
+  'nice-to-have': { label: 'Nice', color: '#88b09e' },
+};
+
+function TaskList() {
   const [tasks, setTasks] = useState([]);
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState({ taskName: '', priority: 'must-do' });
   const today = new Date().toISOString().split('T')[0];
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+  useEffect(() => { fetchTasks(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`/api/tasks/${today}`);
-      setTasks(response.data);
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
+      const res = await axios.get(`/api/tasks/${today}`);
+      setTasks(res.data);
+    } catch (e) { console.error(e); }
+  };
+
+  const toggle = async (task) => {
+    const status = task.status === 'completed' ? 'not-started' : 'completed';
+    await axios.put(`/api/tasks/${task.id}`, { status });
+    fetchTasks();
+  };
+
+  const remove = async (id) => {
+    await axios.delete(`/api/tasks/${id}`);
+    fetchTasks();
+  };
+
+  const add = async (e) => {
+    e.preventDefault();
+    if (!draft.taskName.trim()) return;
+    await axios.post('/api/tasks', { date: today, ...draft });
+    setDraft({ taskName: '', priority: 'must-do' });
+    setAdding(false);
+    fetchTasks();
+  };
+
+  const done = tasks.filter((t) => t.status === 'completed').length;
+  const rate = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
+
+  const order = { 'must-do': 0, 'should-do': 1, 'nice-to-have': 2 };
+  const sorted = [...tasks].sort((a, b) => {
+    if ((a.status === 'completed') !== (b.status === 'completed')) {
+      return a.status === 'completed' ? 1 : -1;
     }
-  };
-
-  const mustDo = tasks.filter(t => t.priority === 'must-do');
-  const shouldDo = tasks.filter(t => t.priority === 'should-do');
-  const niceTohave = tasks.filter(t => t.priority === 'nice-to-have');
-  const completed = tasks.filter(t => t.status === 'completed');
-
-  const completionRate = tasks.length > 0 ? Math.round((completed.length / tasks.length) * 100) : 0;
-
-  const handleTaskToggle = async (taskId, currentStatus) => {
-    try {
-      const newStatus = currentStatus === 'completed' ? 'not-started' : 'completed';
-      await axios.put(`/api/tasks/${taskId}`, { status: newStatus });
-      fetchTasks();
-    } catch (error) {
-      console.error('Error updating task:', error);
-    }
-  };
-
-  const priorityColors = {
-    'must-do': '#f44336',
-    'should-do': '#ff9800',
-    'nice-to-have': '#4caf50'
-  };
+    return (order[a.priority] ?? 3) - (order[b.priority] ?? 3);
+  });
 
   return (
-    <div>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '20px'
-      }}>
-        <h2 style={{ margin: 0, color: '#2d5016', fontSize: '18px', fontWeight: 700 }}>
-          ✅ Today's Tasks
-        </h2>
-        <div style={{
-          background: '#4a7c2c',
-          color: '#fffbf0',
-          padding: '10px 15px',
-          borderRadius: '6px',
-          fontSize: '13px',
-          fontWeight: 600
-        }}>
-          {completionRate}% Complete
+    <div className="tasklist">
+      <div className="tasklist-top">
+        <div className="tasklist-progress">
+          <div className="tasklist-progress-bar">
+            <div className="tasklist-progress-fill" style={{ width: `${rate}%` }} />
+          </div>
+          <span className="tasklist-rate">{rate}%</span>
         </div>
+        <button className="task-add-btn" onClick={() => setAdding(!adding)}>
+          {adding ? '✕' : '+ Add'}
+        </button>
       </div>
 
-      {tasks.length === 0 ? (
-        <div style={{
-          textAlign: 'center',
-          padding: '30px',
-          color: '#999',
-          fontSize: '13px',
-          background: '#f9f9f7',
-          borderRadius: '6px'
-        }}>
-          No tasks yet. Plan your day! 🚀
-        </div>
-      ) : (
-        <div>
-          {mustDo.length > 0 && (
-            <div style={{ marginBottom: '20px' }}>
-              <h4 style={{
-                color: '#f44336',
-                fontSize: '12px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                marginBottom: '10px',
-                paddingBottom: '8px',
-                borderBottom: '2px solid #f44336'
-              }}>
-                🔴 MUST DO ({mustDo.length})
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {mustDo.map(task => (
-                  <TaskItem
-                    key={task.id}
-                    task={task}
-                    onToggle={handleTaskToggle}
-                    color={priorityColors[task.priority]}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {shouldDo.length > 0 && (
-            <div style={{ marginBottom: '20px' }}>
-              <h4 style={{
-                color: '#ff9800',
-                fontSize: '12px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                marginBottom: '10px',
-                paddingBottom: '8px',
-                borderBottom: '2px solid #ff9800'
-              }}>
-                🟡 SHOULD DO ({shouldDo.length})
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {shouldDo.map(task => (
-                  <TaskItem
-                    key={task.id}
-                    task={task}
-                    onToggle={handleTaskToggle}
-                    color={priorityColors[task.priority]}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {niceTohave.length > 0 && (
-            <div style={{ marginBottom: '20px' }}>
-              <h4 style={{
-                color: '#4caf50',
-                fontSize: '12px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                marginBottom: '10px',
-                paddingBottom: '8px',
-                borderBottom: '2px solid #4caf50'
-              }}>
-                🟢 NICE TO HAVE ({niceTohave.length})
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {niceTohave.map(task => (
-                  <TaskItem
-                    key={task.id}
-                    task={task}
-                    onToggle={handleTaskToggle}
-                    color={priorityColors[task.priority]}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {completed.length > 0 && (
-            <div style={{ marginBottom: '20px', opacity: 0.7 }}>
-              <h4 style={{
-                color: '#4a7c2c',
-                fontSize: '12px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                marginBottom: '10px',
-                paddingBottom: '8px',
-                borderBottom: '2px solid #90c695'
-              }}>
-                ✅ COMPLETED ({completed.length})
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {completed.map(task => (
-                  <TaskItem
-                    key={task.id}
-                    task={task}
-                    onToggle={handleTaskToggle}
-                    color={priorityColors[task.priority]}
-                    isCompleted
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+      {adding && (
+        <form className="task-form" onSubmit={add}>
+          <input
+            autoFocus
+            placeholder="What needs doing today?"
+            value={draft.taskName}
+            onChange={(e) => setDraft({ ...draft, taskName: e.target.value })}
+          />
+          <div className="task-form-row">
+            <select
+              value={draft.priority}
+              onChange={(e) => setDraft({ ...draft, priority: e.target.value })}
+            >
+              <option value="must-do">🔴 Must do</option>
+              <option value="should-do">🟡 Should do</option>
+              <option value="nice-to-have">🟢 Nice to have</option>
+            </select>
+            <button type="submit">Add</button>
+          </div>
+        </form>
       )}
-    </div>
-  );
-}
 
-function TaskItem({ task, onToggle, color, isCompleted }) {
-  return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-      padding: '10px 12px',
-      background: isCompleted ? '#f0f0ed' : 'white',
-      border: '1px solid #e8e8e5',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease'
-    }}>
-      <input
-        type="checkbox"
-        checked={isCompleted}
-        onChange={() => onToggle(task.id, task.status)}
-        style={{
-          width: '18px',
-          height: '18px',
-          cursor: 'pointer',
-          accentColor: '#90c695'
-        }}
-      />
-      <div style={{
-        flex: 1,
-        color: isCompleted ? '#999' : '#2d5016',
-        textDecoration: isCompleted ? 'line-through' : 'none',
-        fontSize: '13px'
-      }}>
-        <div style={{ fontWeight: 500 }}>{task.taskName}</div>
+      {sorted.length === 0 && !adding && (
+        <div className="task-empty">No tasks yet — plan your day 🌱</div>
+      )}
+
+      <div className="task-items">
+        {sorted.map((task) => {
+          const p = PRIORITY[task.priority] || PRIORITY['should-do'];
+          const completed = task.status === 'completed';
+          return (
+            <div key={task.id} className={`task-row ${completed ? 'completed' : ''}`}>
+              <button
+                className={`task-check ${completed ? 'on' : ''}`}
+                style={{ borderColor: p.color, background: completed ? p.color : 'transparent' }}
+                onClick={() => toggle(task)}
+              >
+                {completed ? '✓' : ''}
+              </button>
+              <span className="task-name">{task.taskName}</span>
+              <span className="task-tag" style={{ color: p.color }}>{p.label}</span>
+              <button className="task-del" onClick={() => remove(task.id)}>×</button>
+            </div>
+          );
+        })}
       </div>
-      <div style={{
-        width: '4px',
-        height: '24px',
-        background: color,
-        borderRadius: '2px'
-      }}></div>
     </div>
   );
 }
