@@ -38,7 +38,11 @@ export const theme = {
     'ai-tools': '#8aa2bd',
     'online-work': '#d6bd92',
     'apps': '#b095bf',
+    'uber-delivery': '#c79a8f',
   },
+
+  // Encouraging "behind pace" tone — warm amber, never alarm red.
+  amber: '#d6a96a',
 
   shadow: {
     soft: '0 4px 18px rgba(90, 100, 110, 0.07)',
@@ -51,4 +55,5 @@ export const pathInfo = {
   'ai-tools': { name: 'AI Tools', emoji: '⚙️', short: 'Tools' },
   'online-work': { name: 'Online Work', emoji: '💻', short: 'Online' },
   'apps': { name: 'Monetizable Apps', emoji: '📱', short: 'Apps' },
+  'uber-delivery': { name: 'Uber Delivery', emoji: '🚗', short: 'Uber' },
 };

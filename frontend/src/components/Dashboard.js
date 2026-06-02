@@ -4,47 +4,59 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, Legend,
+  ResponsiveContainer, Legend,
 } from 'recharts';
 import Widget from './Widget';
 import ChartCard from './ChartCard';
 import AnimatedNumber from './AnimatedNumber';
 import TaskList from './TaskList';
+import NextMove from './NextMove';
+import BurnupChart from './BurnupChart';
+import Consistency from './Consistency';
+import UberTracker from './UberTracker';
 import { theme, pathInfo } from '../theme';
 import './Dashboard.css';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const PATHS = ['ai-consulting', 'ai-tools', 'online-work', 'apps'];
-const MONTHS = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const PATHS = ['ai-consulting', 'ai-tools', 'online-work', 'apps', 'uber-delivery'];
 
 const layouts = {
   lg: [
-    { i: 'revenue', x: 0, y: 0, w: 5, h: 10, minW: 3, minH: 8 },
-    { i: 'countdown', x: 5, y: 0, w: 3, h: 10, minW: 2, minH: 8 },
-    { i: 'tasks', x: 8, y: 0, w: 4, h: 21, minW: 3, minH: 9 },
-    { i: 'pace', x: 0, y: 10, w: 8, h: 11, minW: 4, minH: 8 },
-    { i: 'hours', x: 0, y: 21, w: 4, h: 11, minW: 3, minH: 8 },
-    { i: 'experiments', x: 4, y: 21, w: 4, h: 11, minW: 3, minH: 8 },
-    { i: 'comparison', x: 8, y: 21, w: 4, h: 11, minW: 3, minH: 8 },
+    { i: 'nextmove', x: 0, y: 0, w: 12, h: 4, minW: 6, minH: 4 },
+    { i: 'revenue', x: 0, y: 4, w: 5, h: 11, minW: 3, minH: 8 },
+    { i: 'countdown', x: 5, y: 4, w: 3, h: 11, minW: 2, minH: 8 },
+    { i: 'tasks', x: 8, y: 4, w: 4, h: 22, minW: 3, minH: 9 },
+    { i: 'burnup', x: 0, y: 15, w: 8, h: 12, minW: 4, minH: 9 },
+    { i: 'hours', x: 0, y: 27, w: 4, h: 11, minW: 3, minH: 8 },
+    { i: 'uber', x: 4, y: 27, w: 4, h: 13, minW: 3, minH: 10 },
+    { i: 'experiments', x: 8, y: 27, w: 4, h: 11, minW: 3, minH: 8 },
+    { i: 'comparison', x: 0, y: 40, w: 7, h: 11, minW: 4, minH: 8 },
+    { i: 'consistency', x: 7, y: 40, w: 5, h: 11, minW: 3, minH: 8 },
   ],
   md: [
-    { i: 'revenue', x: 0, y: 0, w: 5, h: 10 },
-    { i: 'countdown', x: 5, y: 0, w: 5, h: 10 },
-    { i: 'pace', x: 0, y: 10, w: 10, h: 10 },
-    { i: 'tasks', x: 0, y: 20, w: 5, h: 11 },
-    { i: 'hours', x: 5, y: 20, w: 5, h: 11 },
-    { i: 'experiments', x: 0, y: 31, w: 5, h: 10 },
-    { i: 'comparison', x: 5, y: 31, w: 5, h: 10 },
+    { i: 'nextmove', x: 0, y: 0, w: 10, h: 4 },
+    { i: 'revenue', x: 0, y: 4, w: 5, h: 11 },
+    { i: 'countdown', x: 5, y: 4, w: 5, h: 11 },
+    { i: 'burnup', x: 0, y: 15, w: 10, h: 11 },
+    { i: 'tasks', x: 0, y: 26, w: 5, h: 12 },
+    { i: 'uber', x: 5, y: 26, w: 5, h: 12 },
+    { i: 'hours', x: 0, y: 38, w: 5, h: 11 },
+    { i: 'experiments', x: 5, y: 38, w: 5, h: 11 },
+    { i: 'comparison', x: 0, y: 49, w: 5, h: 11 },
+    { i: 'consistency', x: 5, y: 49, w: 5, h: 11 },
   ],
   sm: [
-    { i: 'revenue', x: 0, y: 0, w: 6, h: 10 },
-    { i: 'countdown', x: 0, y: 10, w: 6, h: 9 },
-    { i: 'pace', x: 0, y: 19, w: 6, h: 10 },
-    { i: 'hours', x: 0, y: 29, w: 6, h: 10 },
-    { i: 'experiments', x: 0, y: 39, w: 6, h: 10 },
-    { i: 'comparison', x: 0, y: 49, w: 6, h: 10 },
-    { i: 'tasks', x: 0, y: 59, w: 6, h: 11 },
+    { i: 'nextmove', x: 0, y: 0, w: 6, h: 5 },
+    { i: 'revenue', x: 0, y: 5, w: 6, h: 11 },
+    { i: 'countdown', x: 0, y: 16, w: 6, h: 9 },
+    { i: 'burnup', x: 0, y: 25, w: 6, h: 12 },
+    { i: 'uber', x: 0, y: 37, w: 6, h: 13 },
+    { i: 'hours', x: 0, y: 50, w: 6, h: 10 },
+    { i: 'experiments', x: 0, y: 60, w: 6, h: 10 },
+    { i: 'comparison', x: 0, y: 70, w: 6, h: 11 },
+    { i: 'consistency', x: 0, y: 81, w: 6, h: 10 },
+    { i: 'tasks', x: 0, y: 91, w: 6, h: 12 },
   ],
 };
 
@@ -70,14 +82,8 @@ function Dashboard({ experiments, revenue, countdown }) {
   const target = revenue.target || 5000;
   const pct = Math.min(100, (totalRevenue / target) * 100);
   const timelinePct = Math.min(100, ((184 - countdown.daysLeft) / 184) * 100);
-
-  // Monthly pace series — actual revenue lands on the current month; target line flat at monthly goal.
-  const currentMonthIdx = Math.max(0, new Date().getMonth() - 5); // Jun = index 0
-  const paceData = MONTHS.map((m, i) => ({
-    name: m,
-    actual: i === currentMonthIdx ? totalRevenue : (i < currentMonthIdx ? 0 : null),
-    target,
-  }));
+  // Behind ideal pace → encourage with amber framing, never alarm red.
+  const behindPace = pct < timelinePct;
 
   const comparisonData = pathData.map((d) => ({ name: d.name, revenue: d.revenue, hours: d.hours }));
 
@@ -100,14 +106,21 @@ function Dashboard({ experiments, revenue, countdown }) {
       draggableHandle=".widget-drag-handle"
       useCSSTransforms
     >
+      {/* NEXT MOVE (ADHD hero — one clear action) */}
+      <div key="nextmove">
+        <Widget title="Focus" icon="🎯" accent={theme.colors.sage}>
+          <NextMove />
+        </Widget>
+      </div>
+
       {/* REVENUE */}
       <div key="revenue">
-        <Widget title="Monthly Revenue" icon="💰" accent={theme.colors.sage}
+        <Widget title="Monthly Revenue" icon="💰" accent={behindPace ? theme.colors.amber : theme.colors.sage}
           headerRight={<span className="widget-pill">{Math.round(pct)}% of ${target}</span>}>
           <div className="stat-figure"><AnimatedNumber value={totalRevenue} prefix="$" /></div>
           <div className="stat-caption">of ${target.toLocaleString()} CAD target this month</div>
           <div className="mini-progress">
-            <div className="mini-progress-fill" style={{ width: `${pct}%`, background: theme.colors.sage }} />
+            <div className="mini-progress-fill" style={{ width: `${pct}%`, background: behindPace ? theme.colors.amber : theme.colors.sage }} />
           </div>
           <div style={{ marginTop: 12 }}>
             <ChartCard data={revenueChart} chartTypes={['bar', 'line', 'area', 'pie']} defaultType="bar" height={180} />
@@ -140,26 +153,10 @@ function Dashboard({ experiments, revenue, countdown }) {
         </Widget>
       </div>
 
-      {/* REVENUE PACE (big trend) */}
-      <div key="pace">
-        <Widget title="Revenue Pace vs Target" icon="📈" accent={theme.colors.sage}>
-          <ResponsiveContainer width="100%" height="100%" minHeight={150}>
-            <ComposedChart data={paceData} margin={{ top: 8, right: 8, left: -10, bottom: 0 }}>
-              <defs>
-                <linearGradient id="paceFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={theme.colors.sage} stopOpacity={0.5} />
-                  <stop offset="100%" stopColor={theme.colors.sage} stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={theme.colors.grid} vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 11, fill: theme.colors.textSecondary }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: theme.colors.textSecondary }} axisLine={false} tickLine={false} width={44} />
-              <Tooltip contentStyle={tip} />
-              <ReferenceLine y={target} stroke={theme.colors.clay} strokeDasharray="5 4" label={{ value: 'Target', fontSize: 10, fill: theme.colors.clay, position: 'insideTopRight' }} />
-              <Bar dataKey="actual" name="Actual" barSize={26} radius={[6, 6, 0, 0]} fill={theme.colors.sage} fillOpacity={0.9} />
-              <Line type="monotone" dataKey="actual" name="Trend" stroke={theme.colors.slate} strokeWidth={2.5} dot={{ r: 3 }} connectNulls />
-            </ComposedChart>
-          </ResponsiveContainer>
+      {/* BURN-UP — cumulative revenue vs ideal pace + projected finish */}
+      <div key="burnup">
+        <Widget title="Revenue Burn-Up → Dec 1" icon="📈" accent={behindPace ? theme.colors.amber : theme.colors.sage}>
+          <BurnupChart />
         </Widget>
       </div>
 
@@ -200,6 +197,20 @@ function Dashboard({ experiments, revenue, countdown }) {
               <Line yAxisId="r" type="monotone" dataKey="hours" name="Hours" stroke={theme.colors.clay} strokeWidth={2.5} dot={{ r: 3 }} />
             </ComposedChart>
           </ResponsiveContainer>
+        </Widget>
+      </div>
+
+      {/* UBER DELIVERY */}
+      <div key="uber">
+        <Widget title="Uber Delivery" icon="🚗" accent={theme.colors.clay}>
+          <UberTracker />
+        </Widget>
+      </div>
+
+      {/* CONSISTENCY */}
+      <div key="consistency">
+        <Widget title="Consistency" icon="🔥" accent={theme.colors.sage}>
+          <Consistency />
         </Widget>
       </div>
     </ResponsiveGridLayout>

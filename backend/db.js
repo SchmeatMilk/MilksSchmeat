@@ -11,6 +11,28 @@ export const db = new sqlite3.Database(dbPath, (err) => {
   else console.log('✅ Connected to SQLite database');
 });
 
+// ---- Promise helpers (the rest of the app uses the callback API; ingest/ prefers await) ----
+export function run(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) reject(err);
+      else resolve({ changes: this.changes, lastID: this.lastID });
+    });
+  });
+}
+
+export function get(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
+  });
+}
+
+export function all(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows || [])));
+  });
+}
+
 export function initializeDatabase() {
   db.serialize(() => {
     // Experiments table
@@ -58,6 +80,79 @@ export function initializeDatabase() {
       )
     `);
 
+    // ---- Phase 2: ingestion + tracking tables ----
+
+    // Run ledger: one claimed row per local date. Prevents double-ingest and
+    // enables catch-up when the 8:30 job was missed (PC asleep/off).
+    db.run(`
+      CREATE TABLE IF NOT EXISTS ingest_runs (
+        run_date TEXT PRIMARY KEY,
+        trigger TEXT,
+        status TEXT DEFAULT 'running',
+        filesRead INTEGER DEFAULT 0,
+        factsApplied INTEGER DEFAULT 0,
+        errorCount INTEGER DEFAULT 0,
+        message TEXT,
+        startedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        finishedAt TEXT
+      )
+    `);
+
+    // File ledger: skip unchanged files; detect rewrites via hash.
+    db.run(`
+      CREATE TABLE IF NOT EXISTS ingest_files (
+        filePath TEXT PRIMARY KEY,
+        mtime TEXT,
+        size INTEGER,
+        hash TEXT,
+        lastSeenAt TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Extracted facts with provenance. factKey is unique on value+source span,
+    // so re-runs (cron + manual Sync) can never double-count.
+    db.run(`
+      CREATE TABLE IF NOT EXISTS extracted_facts (
+        id TEXT PRIMARY KEY,
+        factKey TEXT UNIQUE,
+        factType TEXT,
+        path TEXT,
+        experimentId TEXT,
+        value REAL,
+        textValue TEXT,
+        sourceFile TEXT,
+        sourceQuote TEXT,
+        sourceDate TEXT,
+        confidence REAL,
+        method TEXT,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Daily revenue snapshot → real history for the burn-up chart.
+    db.run(`
+      CREATE TABLE IF NOT EXISTS revenue_snapshots (
+        date TEXT PRIMARY KEY,
+        cumulativeRevenue REAL DEFAULT 0,
+        monthRevenue REAL DEFAULT 0,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Uber delivery shifts — quick manual entry + auto-ingested mentions.
+    db.run(`
+      CREATE TABLE IF NOT EXISTS uber_shifts (
+        id TEXT PRIMARY KEY,
+        date TEXT NOT NULL,
+        earnings REAL DEFAULT 0,
+        hours REAL DEFAULT 0,
+        trips INTEGER DEFAULT 0,
+        source TEXT DEFAULT 'manual',
+        note TEXT,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     console.log('✅ Database tables initialized');
   });
 }
@@ -96,6 +191,14 @@ export function seedDatabase() {
           name: 'Build first app',
           status: 'active',
           nextAction: 'Design mockups',
+          learnings: JSON.stringify([])
+        },
+        {
+          id: 'exp-5',
+          path: 'uber-delivery',
+          name: 'Uber delivery shifts',
+          status: 'active',
+          nextAction: 'Log this week\'s shifts',
           learnings: JSON.stringify([])
         }
       ];

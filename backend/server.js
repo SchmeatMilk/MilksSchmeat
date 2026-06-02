@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import cron from 'node-cron';
 import { initializeDatabase, seedDatabase } from './db.js';
 import * as routes from './routes.js';
+import { runIngest } from './ingest/index.js';
 
 const app = express();
 const PORT = 5000;
@@ -36,19 +37,28 @@ app.get('/api/countdown', routes.getCountdown);
 app.get('/api/news', routes.getNews);
 app.get('/api/trends', routes.getTrends);
 
-// System Update
+// Routes - Uber delivery
+app.get('/api/uber-shifts', routes.getUberShifts);
+app.post('/api/uber-shifts', routes.createUberShift);
+app.delete('/api/uber-shifts/:id', routes.deleteUberShift);
+
+// Routes - Dashboard intelligence
+app.get('/api/next-move', routes.getNextMove);
+app.get('/api/burnup', routes.getBurnup);
+app.get('/api/consistency', routes.getConsistency);
+
+// System Update (manual Sync)
 app.post('/api/system-update', routes.systemUpdate);
 
-// Daily update trigger (runs at 8:30 AM)
+// Daily update trigger (runs at 8:30 AM). node-cron is best-effort; the run is
+// idempotent and the startup catch-up below covers a missed morning.
 cron.schedule('30 8 * * *', async () => {
-  console.log('🔄 Running daily update at 8:30 AM');
+  console.log('🔄 Running daily ingestion at 8:30 AM');
   try {
-    // Trigger system update
-    await routes.systemUpdate({ body: {} }, {
-      json: (data) => console.log('Daily update result:', data)
-    });
+    const result = await runIngest({ trigger: 'cron' });
+    console.log('Daily ingestion result:', result);
   } catch (error) {
-    console.error('Daily update error:', error);
+    console.error('Daily ingestion error:', error);
   }
 });
 
@@ -56,5 +66,11 @@ app.listen(PORT, () => {
   console.log(`\n📊 Goals Dashboard Backend running on http://localhost:${PORT}`);
   console.log(`Access from phone: http://<YOUR-COMPUTER-IP>:${PORT}\n`);
   console.log('✅ Database initialized');
-  console.log('🔄 Daily update scheduled for 8:30 AM\n');
+  console.log('🔄 Daily update scheduled for 8:30 AM');
+
+  // Catch-up: if today's 8:30 run was missed (PC asleep/off), ingest on launch.
+  // Idempotent — if it already ran today, this no-ops.
+  runIngest({ trigger: 'startup-catchup' })
+    .then((r) => { if (!r.skipped) console.log('Startup catch-up ingestion:', r); })
+    .catch((e) => console.warn('Startup catch-up failed:', e.message));
 });

@@ -1,11 +1,6 @@
-import { db } from './db.js';
+import { db, run, get, all } from './db.js';
 import axios from 'axios';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { runIngest } from './ingest/index.js';
 
 // EXPERIMENTS
 export function getExperiments(req, res) {
@@ -266,82 +261,130 @@ export async function getTrends(req, res) {
   }
 }
 
-// SYSTEM UPDATE - Read from source files
+// SYSTEM UPDATE — manual Sync button. Runs the real ingestion pipeline.
 export async function systemUpdate(req, res) {
   try {
-    // Read from the Claude memory files
-    const memoryPath = path.join(
-      process.env.USERPROFILE || '/root',
-      'AppData/Roaming/Claude/local-agent-mode-sessions/420ba620-e91c-4186-b376-a27d8c85f089/149fc0ef-a76f-4bc8-8976-c48ff8fdc70c/spaces/93d48843-1a68-4671-bf54-ead362dd7032/memory'
-    );
-
-    // Try to read memory files
-    let memoryContent = '';
-    try {
-      const files = fs.readdirSync(memoryPath);
-      const recentFiles = files
-        .filter(f => f.endsWith('.json') || f.endsWith('.txt'))
-        .sort()
-        .reverse()
-        .slice(0, 5);
-
-      for (const file of recentFiles) {
-        const filePath = path.join(memoryPath, file);
-        const content = fs.readFileSync(filePath, 'utf8');
-        memoryContent += content + '\n';
-      }
-    } catch (fileError) {
-      console.warn('Could not read memory files:', fileError.message);
-    }
-
-    // Parse memory content for updates
-    // This is a basic implementation - enhance based on your memory format
-    const updates = parseMemoryForUpdates(memoryContent);
-
-    // Apply updates to database
-    for (const update of updates) {
-      if (update.type === 'experiment') {
-        await updateOrCreateExperiment(update);
-      }
-    }
-
-    res.json({
-      success: true,
-      message: 'Dashboard updated from source data',
-      updatesApplied: updates.length
-    });
+    const result = await runIngest({ trigger: 'manual', force: true });
+    res.json({ success: true, message: 'Dashboard synced from Claude memory files.', ...result });
   } catch (error) {
     console.error('System update error:', error);
-    res.status(500).json({
-      error: 'Failed to update from source',
-      message: error.message
-    });
+    res.status(500).json({ error: 'Failed to sync from source', message: error.message });
   }
 }
 
-function parseMemoryForUpdates(content) {
-  // Basic parsing - enhance this based on your memory format
-  const updates = [];
-
-  // Look for revenue mentions
-  const revenuePattern = /(?:earned|revenue|made|got)\s+\$?(\d+(?:,\d{3})*(?:\.\d{2})?)/gi;
-  const matches = content.matchAll(revenuePattern);
-
-  for (const match of matches) {
-    updates.push({
-      type: 'experiment',
-      field: 'revenueThisMonth',
-      value: parseFloat(match[1].replace(/,/g, ''))
-    });
-  }
-
-  return updates;
+// UBER DELIVERY SHIFTS
+export async function getUberShifts(req, res) {
+  try {
+    const rows = await all('SELECT * FROM uber_shifts ORDER BY date DESC, createdAt DESC LIMIT 60');
+    const totals = await get(
+      `SELECT COALESCE(SUM(earnings),0) AS earnings, COALESCE(SUM(hours),0) AS hours,
+              COALESCE(SUM(trips),0) AS trips FROM uber_shifts`);
+    res.json({ shifts: rows, totals });
+  } catch (e) { res.status(500).json({ error: e.message }); }
 }
 
-function updateOrCreateExperiment(update) {
-  return new Promise((resolve) => {
-    // This would update the latest experiment with the new value
-    // Enhance based on your actual memory format
-    resolve();
-  });
+export async function createUberShift(req, res) {
+  try {
+    const { date, earnings, hours, trips, note } = req.body;
+    const id = `uber-${Date.now()}`;
+    await run(
+      `INSERT INTO uber_shifts (id, date, earnings, hours, trips, source, note)
+       VALUES (?, ?, ?, ?, ?, 'manual', ?)`,
+      [id, date || new Date().toISOString().slice(0, 10),
+       Number(earnings) || 0, Number(hours) || 0, parseInt(trips, 10) || 0, note || '']);
+    // Roll the new shift into the uber-delivery experiment totals immediately.
+    const { finalizeAggregates } = await import('./ingest/applier.js');
+    await finalizeAggregates();
+    res.json({ success: true, id });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+export async function deleteUberShift(req, res) {
+  try {
+    await run('DELETE FROM uber_shifts WHERE id=?', [req.params.id]);
+    const { finalizeAggregates } = await import('./ingest/applier.js');
+    await finalizeAggregates();
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+// NEXT MOVE — single highest-priority action for the "do this now" hero.
+export async function getNextMove(req, res) {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const task = await get(
+      `SELECT taskName, priority, linkedPath FROM tasks
+       WHERE date=? AND status!='completed'
+       ORDER BY CASE priority WHEN 'must-do' THEN 0 WHEN 'should-do' THEN 1 ELSE 2 END, createdAt
+       LIMIT 1`, [today]);
+    if (task) {
+      return res.json({ source: 'task', text: task.taskName, priority: task.priority, path: task.linkedPath });
+    }
+    const exp = await get(
+      `SELECT nextAction, path FROM experiments
+       WHERE status!='completed' AND nextAction IS NOT NULL AND nextAction!=''
+       ORDER BY lastActivityDate DESC LIMIT 1`);
+    if (exp) return res.json({ source: 'experiment', text: exp.nextAction, path: exp.path });
+    res.json({ source: 'none', text: 'Plan one money-moving action for today.' });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+// BURN-UP — cumulative revenue vs ideal pace + projected revenue at deadline.
+export async function getBurnup(req, res) {
+  try {
+    const target = 5000;
+    const deadline = new Date('2026-12-01');
+    const snapshots = await all('SELECT date, cumulativeRevenue FROM revenue_snapshots ORDER BY date');
+
+    // Build a start anchor for the ideal-pace line.
+    const start = snapshots.length ? new Date(snapshots[0].date) : new Date();
+    const totalDays = Math.max(1, Math.round((deadline - start) / 86400000));
+
+    const points = snapshots.map((s) => {
+      const elapsed = Math.max(0, Math.round((new Date(s.date) - start) / 86400000));
+      return {
+        date: s.date,
+        actual: s.cumulativeRevenue,
+        ideal: Math.min(target, Math.round((target * elapsed) / totalDays)),
+      };
+    });
+
+    // Project finish at current pace (revenue per day over observed window).
+    let projected = 0;
+    if (snapshots.length >= 1) {
+      const last = snapshots[snapshots.length - 1];
+      const elapsed = Math.max(1, Math.round((new Date(last.date) - start) / 86400000));
+      const perDay = last.cumulativeRevenue / elapsed;
+      projected = Math.round(perDay * totalDays);
+    }
+
+    const current = snapshots.length ? snapshots[snapshots.length - 1].cumulativeRevenue : 0;
+    const daysLeft = Math.max(0, Math.ceil((deadline - new Date()) / 86400000));
+    const catchUpPace = daysLeft ? Math.max(0, Math.round((target - current) / daysLeft)) : 0;
+
+    res.json({ points, target, projected, current, daysLeft, catchUpPace, onPace: projected >= target });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+// CONSISTENCY — last 14 days of check-ins ("never miss twice", amber not red).
+export async function getConsistency(req, res) {
+  try {
+    const days = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      days.push(d.toISOString().slice(0, 10));
+    }
+    const rows = await all(
+      `SELECT date FROM checkins WHERE date >= ?`, [days[0]]);
+    const logged = new Set(rows.map((r) => r.date));
+    const series = days.map((date) => ({ date, done: logged.has(date) }));
+    const count = series.filter((s) => s.done).length;
+    const rate = Math.round((count / 14) * 100);
+    const yesterday = series[series.length - 2];
+    const today = series[series.length - 1];
+    // "Never miss twice": warn (amber) only if yesterday AND today both missing.
+    const missTwice = yesterday && !yesterday.done && today && !today.done;
+    res.json({ series, count, rate, missTwice });
+  } catch (e) { res.status(500).json({ error: e.message }); }
 }
