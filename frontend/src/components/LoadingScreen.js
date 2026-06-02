@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import './LoadingScreen.css';
 
@@ -14,21 +14,28 @@ function LoadingScreen({ onComplete }) {
   const [progress, setProgress] = useState(0);
   const [lineIndex, setLineIndex] = useState(0);
 
+  // Keep the latest onComplete in a ref so parent re-renders (e.g. the 1s clock
+  // tick in App) don't restart the boot timer. The effect below runs exactly once.
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+
   useEffect(() => {
     const start = Date.now();
     const duration = 2200;
+    let done = false;
     const interval = setInterval(() => {
       const elapsed = Date.now() - start;
       const pct = Math.min(100, (elapsed / duration) * 100);
       setProgress(pct);
       setLineIndex(Math.min(bootLines.length - 1, Math.floor((pct / 100) * bootLines.length)));
-      if (pct >= 100) {
+      if (pct >= 100 && !done) {
+        done = true;
         clearInterval(interval);
-        setTimeout(onComplete, 450);
+        setTimeout(() => onCompleteRef.current(), 450);
       }
     }, 30);
     return () => clearInterval(interval);
-  }, [onComplete]);
+  }, []);
 
   return (
     <motion.div
