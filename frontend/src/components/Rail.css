@@ -28,6 +28,19 @@
   flex-shrink: 0;
 }
 
+.rail-badge {
+  margin-left: auto;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(214, 169, 106, 0.15);
+  color: #9a7637;
+  padding: 3px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
 .rail-dot {
   width: 8px;
   height: 8px;

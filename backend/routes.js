@@ -181,7 +181,7 @@ export async function getNews(req, res) {
           image: a.urlToImage || stockPhoto(`news-${i}`),
           publishedAt: a.publishedAt || null,
         }));
-      if (news.length) return res.json(news);
+      if (news.length) return res.json({ items: news, isSample: false });
     } catch (error) {
       console.warn('NewsAPI failed, using fallback:', error.message);
     }
@@ -203,7 +203,7 @@ export async function getNews(req, res) {
     image: stockPhoto(`news-${i}`),
     publishedAt: new Date(Date.now() - i * 3600_000).toISOString(),
   }));
-  res.json(fallback);
+  res.json({ items: fallback, isSample: true });
 }
 
 // SOCIAL MEDIA TRENDS — live via Reddit's public JSON (no key needed).
@@ -236,7 +236,7 @@ export async function getTrends(req, res) {
         };
       });
 
-    if (trends.length) return res.json(trends);
+    if (trends.length) return res.json({ items: trends, isSample: false });
     throw new Error('No trends returned');
   } catch (error) {
     console.warn('Reddit trends failed, using fallback:', error.message);
@@ -257,7 +257,7 @@ export async function getTrends(req, res) {
       url: '#',
       thumbnail: stockPhoto(`trend-${i}`),
     }));
-    res.json(fallback);
+    res.json({ items: fallback, isSample: true });
   }
 }
 

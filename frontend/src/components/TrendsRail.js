@@ -9,9 +9,13 @@ function formatScore(n) {
 
 function TrendsRail() {
   const [trends, setTrends] = useState([]);
+  const [isSample, setIsSample] = useState(false);
 
   useEffect(() => {
-    const load = () => axios.get('/api/trends').then((r) => setTrends(r.data)).catch(() => {});
+    const load = () => axios.get('/api/trends').then((r) => {
+      setTrends(r.data.items || r.data);
+      setIsSample(r.data.isSample || false);
+    }).catch(() => {});
     load();
     const t = setInterval(load, 10 * 60 * 1000); // refresh every 10 min
     return () => clearInterval(t);
@@ -21,6 +25,7 @@ function TrendsRail() {
     <aside className="rail">
       <div className="rail-head">
         <span className="rail-dot trends" /> TOP 10 SOCIAL TRENDS
+        {isSample && <span className="rail-badge">sample data</span>}
       </div>
       <div className="rail-scroll">
         {trends.length === 0 && <div className="rail-empty">Fetching trends…</div>}

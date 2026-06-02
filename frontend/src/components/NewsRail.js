@@ -13,9 +13,13 @@ function timeAgo(iso) {
 
 function NewsRail() {
   const [news, setNews] = useState([]);
+  const [isSample, setIsSample] = useState(false);
 
   useEffect(() => {
-    const load = () => axios.get('/api/news').then((r) => setNews(r.data)).catch(() => {});
+    const load = () => axios.get('/api/news').then((r) => {
+      setNews(r.data.items || r.data);
+      setIsSample(r.data.isSample || false);
+    }).catch(() => {});
     load();
     const t = setInterval(load, 15 * 60 * 1000); // refresh every 15 min
     return () => clearInterval(t);
@@ -25,6 +29,7 @@ function NewsRail() {
     <aside className="rail">
       <div className="rail-head">
         <span className="rail-dot" /> LIVE HEADLINES
+        {isSample && <span className="rail-badge">sample data</span>}
       </div>
       <div className="rail-scroll">
         {news.length === 0 && <div className="rail-empty">Fetching headlines…</div>}
