@@ -1,46 +1,48 @@
-// Soft, light, low-contrast design system
-// Calm sage / slate / cream — easy on the eyes, no neon
+// Soft, warm, low-contrast design system — calm and easy on the eyes.
+// Muted teal/sage + slate on a warm paper background. No neon.
 
 export const theme = {
   colors: {
-    // Backgrounds
-    bgDeep: '#eef2f6',
-    bgSoft: '#e7edf3',
+    // Backgrounds (warm paper)
+    bgDeep: '#f3f1ec',
+    bgSoft: '#efece6',
     widget: '#ffffff',
-    widgetGlass: 'rgba(255, 255, 255, 0.72)',
+    widgetGlass: 'rgba(255, 255, 255, 0.74)',
 
-    // Text
-    textPrimary: '#3a4452',
-    textSecondary: '#7c8a9a',
-    textMuted: '#aab4c0',
+    // Text (soft, never harsh black)
+    textPrimary: '#42505f',
+    textSecondary: '#7a8794',
+    textMuted: '#a7b0bb',
 
-    // Accents (soft, muted)
-    sage: '#88b09e',
-    sageLight: '#b4cfc2',
-    slate: '#8fa8c4',
-    slateLight: '#bcd0e3',
-    sand: '#d8c9a8',
-    blush: '#d9a8a8',
+    // Accents (muted, harmonious)
+    sage: '#7fa893',
+    sageLight: '#aecabb',
+    slate: '#8aa2bd',
+    slateLight: '#b9cadd',
+    sand: '#d6bd92',
+    blush: '#cfa3a3',
+    clay: '#c79a8f',
+    plum: '#b095bf',
 
     // Lines / borders
-    border: '#e3e9f0',
-    grid: '#eef2f6',
+    border: '#e6e1d8',
+    grid: '#ece8e0',
   },
 
-  // Soft palette for charts — pastel, harmonious
-  chartPalette: ['#88b09e', '#8fa8c4', '#d8b48a', '#c79bb8', '#9ec3a8', '#a8b8d9'],
+  // Harmonious 6-tone pastel palette for charts.
+  chartPalette: ['#7fa893', '#8aa2bd', '#d6bd92', '#c79a8f', '#9bbfa6', '#b095bf'],
 
-  // Per-path identity colors (muted)
+  // Per-path identity colors (muted).
   pathColors: {
-    'ai-consulting': '#88b09e',
-    'ai-tools': '#8fa8c4',
-    'online-work': '#d8b48a',
-    'apps': '#c79bb8',
+    'ai-consulting': '#7fa893',
+    'ai-tools': '#8aa2bd',
+    'online-work': '#d6bd92',
+    'apps': '#b095bf',
   },
 
   shadow: {
-    soft: '0 4px 20px rgba(80, 100, 120, 0.08)',
-    lift: '0 10px 30px rgba(80, 100, 120, 0.15)',
+    soft: '0 4px 18px rgba(90, 100, 110, 0.07)',
+    lift: '0 12px 32px rgba(90, 100, 110, 0.14)',
   },
 };
 

@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -33,6 +34,7 @@ app.get('/api/countdown', routes.getCountdown);
 
 // Routes - External Data
 app.get('/api/news', routes.getNews);
+app.get('/api/trends', routes.getTrends);
 
 // System Update
 app.post('/api/system-update', routes.systemUpdate);

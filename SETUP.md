@@ -135,6 +135,25 @@ The app comes pre-populated with sample experiments for your 4 paths. Delete the
 
 ---
 
+## 📰 Live News & Social Trends
+
+The dashboard has two side panels:
+
+- **Top 10 Social Trends** (left) — pulls live from Reddit's public feed. **No setup needed.**
+- **Live Headlines** (right) — shows news with photos.
+
+Both work out of the box with realistic content. To make the **news headlines fully live**, add a free NewsAPI key:
+
+1. Go to **https://newsapi.org/register** and sign up (free, ~2 minutes)
+2. Copy your API key from the dashboard
+3. In the `backend` folder, make a copy of `.env.example` and name it `.env`
+4. Open `.env` and paste your key after `NEWS_API_KEY=`
+5. Restart the backend
+
+Until you do this, the news panel shows sample articles with photos — the app works fine without it.
+
+---
+
 ## 💾 Your Data is Local
 
 Everything is stored in `goals.db` on your computer. Your data never leaves your machine unless you share the database file.

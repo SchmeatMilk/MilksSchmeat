@@ -151,34 +151,118 @@ export function getCountdown(req, res) {
   });
 }
 
-// NEWS API
+// Decode HTML entities Reddit puts in image URLs (&amp; -> &, etc.)
+function decodeEntities(str = '') {
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+}
+
+// A photo URL good enough to always render a card with an image.
+function stockPhoto(seed) {
+  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/400/240`;
+}
+
+// NEWS API — live via NewsAPI when NEWS_API_KEY is set; image-rich fallback otherwise.
 export async function getNews(req, res) {
+  const key = process.env.NEWS_API_KEY;
+
+  if (key) {
+    try {
+      const response = await axios.get('https://newsapi.org/v2/top-headlines', {
+        params: { country: 'us', pageSize: 12, apiKey: key },
+        timeout: 8000,
+      });
+      const news = (response.data.articles || [])
+        .filter((a) => a.title && a.title !== '[Removed]')
+        .slice(0, 12)
+        .map((a, i) => ({
+          title: a.title,
+          source: a.source?.name || 'News',
+          url: a.url,
+          image: a.urlToImage || stockPhoto(`news-${i}`),
+          publishedAt: a.publishedAt || null,
+        }));
+      if (news.length) return res.json(news);
+    } catch (error) {
+      console.warn('NewsAPI failed, using fallback:', error.message);
+    }
+  }
+
+  // Fallback — always has images so the rail looks complete.
+  const fallback = [
+    { title: 'Global Markets Climb on Strong Tech Earnings', source: 'Reuters' },
+    { title: 'Canada Unveils National AI Strategy', source: 'CBC' },
+    { title: 'AI Startups Raise Record Funding This Quarter', source: 'TechCrunch' },
+    { title: 'Small Businesses Adopt AI Tools at Record Pace', source: 'Forbes' },
+    { title: 'The Creator Economy Crosses $250B', source: 'Bloomberg' },
+    { title: 'Remote Work Reshapes the Job Market', source: 'WSJ' },
+    { title: 'New Frameworks Make Web Apps Faster', source: 'The Verge' },
+    { title: 'Investors Bet Big on Productivity Software', source: 'VentureBeat' },
+  ].map((n, i) => ({
+    ...n,
+    url: '#',
+    image: stockPhoto(`news-${i}`),
+    publishedAt: new Date(Date.now() - i * 3600_000).toISOString(),
+  }));
+  res.json(fallback);
+}
+
+// SOCIAL MEDIA TRENDS — live via Reddit's public JSON (no key needed).
+export async function getTrends(req, res) {
   try {
-    const response = await axios.get('https://newsapi.org/v2/top-headlines', {
-      params: {
-        country: 'ca',
-        pageSize: 6,
-        apiKey: 'demo' // Will work with demo key, or use your own
-      }
+    const response = await axios.get('https://www.reddit.com/r/popular/top.json', {
+      params: { limit: 12, t: 'day' },
+      headers: { 'User-Agent': 'IncomeHuntDashboard/1.0 (local)' },
+      timeout: 8000,
     });
 
-    const news = response.data.articles.slice(0, 6).map(article => ({
-      title: article.title,
-      source: article.source.name,
-      url: article.url
-    }));
+    const children = response.data?.data?.children || [];
+    const trends = children
+      .map((c) => c.data)
+      .filter((d) => d && !d.over_18)
+      .slice(0, 10)
+      .map((d, i) => {
+        let thumb = '';
+        const preview = d.preview?.images?.[0]?.source?.url;
+        if (preview) thumb = decodeEntities(preview);
+        else if (d.thumbnail && /^https?:\/\//.test(d.thumbnail)) thumb = d.thumbnail;
+        return {
+          rank: i + 1,
+          title: d.title,
+          source: 'r/' + d.subreddit,
+          url: 'https://reddit.com' + d.permalink,
+          thumbnail: thumb || stockPhoto(`trend-${i}`),
+          score: d.score || 0,
+          comments: d.num_comments || 0,
+        };
+      });
 
-    res.json(news);
+    if (trends.length) return res.json(trends);
+    throw new Error('No trends returned');
   } catch (error) {
-    // Fallback if API fails
-    res.json([
-      { title: 'Global Markets Rise on Tech Gains', source: 'Reuters', url: '#' },
-      { title: 'Canada Announces New Tech Initiative', source: 'CTV', url: '#' },
-      { title: 'AI Industry Continues Rapid Growth', source: 'TechCrunch', url: '#' },
-      { title: 'Startup Ecosystem Thrives', source: 'VentureBeat', url: '#' },
-      { title: 'Digital Transformation Accelerates', source: 'Forbes', url: '#' },
-      { title: 'Entrepreneurs Share Success Stories', source: 'Entrepreneur', url: '#' }
-    ]);
+    console.warn('Reddit trends failed, using fallback:', error.message);
+    const fallback = [
+      { title: 'AI agents are taking over workflow automation', source: 'r/technology', score: 48200, comments: 3100 },
+      { title: 'This indie app hit $20k MRR in 3 months', source: 'r/SideProject', score: 31400, comments: 1200 },
+      { title: 'The no-code movement is bigger than ever', source: 'r/Entrepreneur', score: 27800, comments: 940 },
+      { title: 'New open-source model rivals the big players', source: 'r/MachineLearning', score: 25100, comments: 1500 },
+      { title: 'Creators share their best monetization tips', source: 'r/content_marketing', score: 19900, comments: 720 },
+      { title: 'Freelancers are charging more in 2026', source: 'r/freelance', score: 17500, comments: 680 },
+      { title: 'Productivity stack that actually works', source: 'r/productivity', score: 15300, comments: 540 },
+      { title: 'How small teams ship faster than ever', source: 'r/startups', score: 14100, comments: 430 },
+      { title: 'Design trends defining this year', source: 'r/web_design', score: 12600, comments: 390 },
+      { title: 'The side-hustle that became a business', source: 'r/smallbusiness', score: 11200, comments: 360 },
+    ].map((t, i) => ({
+      ...t,
+      rank: i + 1,
+      url: '#',
+      thumbnail: stockPhoto(`trend-${i}`),
+    }));
+    res.json(fallback);
   }
 }
 

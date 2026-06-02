@@ -5,6 +5,8 @@ import './App.css';
 import LoadingScreen from './components/LoadingScreen';
 import AnimatedBackground from './components/AnimatedBackground';
 import Dashboard from './components/Dashboard';
+import NewsRail from './components/NewsRail';
+import TrendsRail from './components/TrendsRail';
 
 const QUOTES = [
   'Discipline is choosing between what you want now and what you want most.',
@@ -23,7 +25,6 @@ function App() {
   const [revenue, setRevenue] = useState({ thisMonth: 0, cumulative: 0, target: 5000 });
   const [countdown, setCountdown] = useState({ daysLeft: 184 });
   const [quote, setQuote] = useState(QUOTES[0]);
-  const [news, setNews] = useState([]);
   const [updating, setUpdating] = useState(false);
   const [clock, setClock] = useState(new Date());
 
@@ -45,7 +46,6 @@ function App() {
   useEffect(() => {
     fetchData();
     setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
-    axios.get('/api/news').then((r) => setNews(r.data)).catch(() => {});
     const dataTimer = setInterval(fetchData, 30000);
     const clockTimer = setInterval(() => setClock(new Date()), 1000);
     return () => { clearInterval(dataTimer); clearInterval(clockTimer); };
@@ -119,24 +119,13 @@ function App() {
           </header>
 
           <div className="main-area">
+            <TrendsRail />
+
             <main className="dashboard-area">
               <Dashboard experiments={experiments} revenue={revenue} countdown={countdown} />
             </main>
 
-            <aside className="news-rail">
-              <div className="news-head">
-                <span className="news-dot" /> LIVE HEADLINES
-              </div>
-              <div className="news-items">
-                {news.length === 0 && <div className="news-empty">Fetching headlines…</div>}
-                {news.map((n, i) => (
-                  <a key={i} className="news-card" href={n.url} target="_blank" rel="noopener noreferrer">
-                    <div className="news-title">{n.title}</div>
-                    <div className="news-source">{n.source}</div>
-                  </a>
-                ))}
-              </div>
-            </aside>
+            <NewsRail />
           </div>
         </div>
       )}

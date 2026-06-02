@@ -3,56 +3,54 @@
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  background: linear-gradient(140deg, #eef2f6 0%, #e7edf3 55%, #eaf0f4 100%);
+  background: linear-gradient(150deg, #f5f3ee 0%, #efece6 55%, #f1eee8 100%);
 }
 
-.bg-grid {
+.bg-topo {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(143, 168, 196, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(143, 168, 196, 0.07) 1px, transparent 1px);
-  background-size: 38px 38px;
-  animation: bgGridDrift 30s linear infinite;
+  width: 100%;
+  height: 100%;
+  animation: topoDrift 40s ease-in-out infinite alternate;
 }
 
-@keyframes bgGridDrift {
-  from { background-position: 0 0, 0 0; }
-  to { background-position: 38px 38px, 38px 38px; }
+@keyframes topoDrift {
+  from { transform: translate3d(0, 0, 0) scale(1.02); }
+  to { transform: translate3d(-24px, -16px, 0) scale(1.06); }
 }
 
 .bg-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(70px);
-  opacity: 0.5;
+  filter: blur(80px);
+  opacity: 0.42;
 }
 
 .blob-1 {
-  width: 480px;
-  height: 480px;
-  background: radial-gradient(circle, rgba(136, 176, 158, 0.35), transparent 70%);
-  top: -120px;
-  left: -100px;
-  animation: floatA 22s ease-in-out infinite;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(127, 168, 147, 0.4), transparent 70%);
+  top: -130px;
+  left: -110px;
+  animation: floatA 24s ease-in-out infinite;
 }
 
 .blob-2 {
-  width: 420px;
-  height: 420px;
-  background: radial-gradient(circle, rgba(143, 168, 196, 0.32), transparent 70%);
-  bottom: -140px;
-  right: -80px;
-  animation: floatB 26s ease-in-out infinite;
+  width: 440px;
+  height: 440px;
+  background: radial-gradient(circle, rgba(138, 162, 189, 0.36), transparent 70%);
+  bottom: -150px;
+  right: -90px;
+  animation: floatB 28s ease-in-out infinite;
 }
 
 .blob-3 {
-  width: 360px;
-  height: 360px;
-  background: radial-gradient(circle, rgba(216, 180, 138, 0.22), transparent 70%);
-  top: 40%;
-  left: 55%;
-  animation: floatC 30s ease-in-out infinite;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(214, 189, 146, 0.28), transparent 70%);
+  top: 42%;
+  left: 56%;
+  animation: floatC 32s ease-in-out infinite;
 }
 
 @keyframes floatA {
