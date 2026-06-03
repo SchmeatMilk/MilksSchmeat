@@ -61,7 +61,7 @@ function LoadingScreen({ onComplete }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          INCOME HUNT
+          MILK'S SCHMEAT
         </motion.h1>
         <motion.p
           className="loading-subtitle"

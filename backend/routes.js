@@ -605,3 +605,117 @@ export async function exportStatus(req, res) {
     res.json({ success: true, written: result.written, errors: result.errors });
   } catch (e) { res.status(500).json({ error: e.message }); }
 }
+
+// ── PROJECT DETAIL PAGES ──────────────────────────────────────────────
+
+// Single experiment ("project") with derived stats + related data.
+export async function getProjectDetail(req, res) {
+  try {
+    const exp = await get('SELECT * FROM experiments WHERE id = ?', [req.params.id]);
+    if (!exp) return res.status(404).json({ error: 'Project not found' });
+    exp.learnings = exp.learnings ? JSON.parse(exp.learnings) : [];
+
+    // Sibling experiments share the same path; expenses/milestones are path-scoped.
+    const siblings = await all('SELECT id, name, status, revenueThisMonth, hoursInvested FROM experiments WHERE path = ?', [exp.path]);
+    const expenses = await all(
+      `SELECT category, COALESCE(SUM(amount),0) AS total FROM expenses
+       WHERE path = ? GROUP BY category ORDER BY total DESC`, [exp.path]);
+    const milestones = await all(
+      `SELECT * FROM earned_milestones
+       WHERE milestoneType LIKE ? OR id LIKE ?
+       ORDER BY earnedAt DESC`, [`%${exp.path}%`, `%${exp.path}%`]);
+    // Recent logged facts attributed to this path (progress feed).
+    let recentFacts = [];
+    try {
+      recentFacts = await all(
+        `SELECT factType, value, textValue, sourceQuote, sourceFile, createdAt
+         FROM extracted_facts WHERE path = ? ORDER BY createdAt DESC LIMIT 8`, [exp.path]);
+    } catch { recentFacts = []; }
+
+    res.json({ project: exp, siblings, expensesByCategory: expenses, milestones, recentFacts });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+// AI idea/suggestion generator. Uses Claude when ANTHROPIC_API_KEY is set;
+// otherwise returns curated starter ideas (clearly labeled, never faked).
+export async function getProjectIdeas(req, res) {
+  try {
+    const exp = await get('SELECT * FROM experiments WHERE id = ?', [req.params.id]);
+    if (!exp) return res.status(404).json({ error: 'Project not found' });
+
+    const pathLabels = {
+      'ai-consulting': 'AI consulting services',
+      'ai-tools': 'AI tools / SaaS products',
+      'online-work': 'online freelance work',
+      'apps': 'monetizable apps',
+      'uber-delivery': 'Uber delivery driving',
+    };
+    const focus = pathLabels[exp.path] || exp.path;
+
+    if (process.env.ANTHROPIC_API_KEY && process.env.INGEST_USE_LLM !== 'false') {
+      try {
+        const { default: Anthropic } = await import('@anthropic-ai/sdk');
+        const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+        const resp = await client.messages.create({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 700,
+          messages: [{
+            role: 'user',
+            content: `I'm running a side project called "${exp.name}" in the area of ${focus}. `
+              + `So far: $${exp.revenueThisMonth || 0} revenue this month, ${exp.hoursInvested || 0} hours invested. `
+              + `Next action noted: "${exp.nextAction || 'none'}". `
+              + `Give me 5 concrete, actionable ideas to grow revenue or move this project forward. `
+              + `Each idea: one punchy sentence, action-oriented, specific to ${focus}. Return as a plain numbered list, no preamble.`,
+          }],
+        });
+        const text = resp.content.find((b) => b.type === 'text')?.text || '';
+        const ideas = text.split('\n')
+          .map((l) => l.replace(/^\s*\d+[.)]\s*/, '').trim())
+          .filter((l) => l.length > 3);
+        if (ideas.length) return res.json({ source: 'claude', ideas });
+      } catch (err) {
+        console.warn('Claude idea generation failed, using starter ideas:', err.message);
+      }
+    }
+
+    // Curated fallback — honest "starter ideas", not AI-generated.
+    const starters = {
+      'ai-consulting': [
+        'Package your last engagement into a fixed-price "audit" offer with a clear deliverable.',
+        'Reach out to 5 past contacts with a specific result you can replicate for them.',
+        'Write one case study showing a concrete outcome and dollar figure.',
+        'Raise your rate 20% on the next proposal and frame it around ROI.',
+        'Offer a paid 60-minute strategy call as a low-friction entry point.',
+      ],
+      'ai-tools': [
+        'Ship the smallest version that solves one painful task end-to-end.',
+        'Add a usage-based or $9/mo tier to start collecting real revenue signal.',
+        'Post a 30-second demo in 3 niche communities and track sign-ups.',
+        'Instrument the top drop-off step and remove one click of friction.',
+        'Email your first 10 users and ask what they would pay for next.',
+      ],
+      'online-work': [
+        'Apply to 5 listings today with a tailored 2-line pitch each.',
+        'Productize your most-requested task into a fixed-price gig.',
+        'Raise your minimum project size to protect your hourly rate.',
+        'Ask every finished client for a referral and a testimonial.',
+        'Block two deep-work hours daily for the highest-paying skill.',
+      ],
+      'apps': [
+        'Define the single metric that proves the app is worth building.',
+        'Launch a waitlist landing page and drive 100 visits this week.',
+        'Add one paywalled feature behind a 7-day trial.',
+        'Ship to one app store and ask 10 friends for honest reviews.',
+        'Pick one acquisition channel and post daily for two weeks.',
+      ],
+      'uber-delivery': [
+        'Drive only your two best earning windows from the pattern data.',
+        'Batch trips near peak-demand zones to cut idle time.',
+        'Track fuel + mileage every shift so net pay is honest.',
+        'Set a per-shift earnings target and stop once you hit it.',
+        'Avoid long-distance low-pay offers; keep your $/hr above target.',
+      ],
+    };
+    res.json({ source: 'starter', ideas: starters[exp.path] || starters['online-work'] });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
