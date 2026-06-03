@@ -1,0 +1,66 @@
+.milestone-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  animation: slideIn 0.3s ease-out;
+  z-index: 999;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
+.milestone-toast-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.88));
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  padding: 16px 20px;
+  box-shadow: 0 8px 32px rgba(90, 100, 110, 0.15);
+  max-width: 320px;
+}
+
+.milestone-emoji {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.milestone-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #42505f;
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .milestone-toast {
+    bottom: 12px;
+    right: 12px;
+    left: 12px;
+  }
+
+  .milestone-toast-inner {
+    max-width: none;
+  }
+}

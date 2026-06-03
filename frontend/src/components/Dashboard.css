@@ -1,0 +1,87 @@
+.dashboard-rgl {
+  position: relative;
+  z-index: 1;
+}
+
+.widget-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: #5b8a73;
+  background: rgba(136, 176, 158, 0.16);
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.mini-progress {
+  height: 7px;
+  background: rgba(143, 168, 196, 0.16);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.mini-progress-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Countdown radial gauge */
+.countdown-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-top: 6px;
+}
+
+.radial-gauge {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, #ffffff 78%, transparent 79% 100%),
+    conic-gradient(#8fa8c4 var(--p), rgba(143, 168, 196, 0.15) 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radial-inner {
+  text-align: center;
+}
+
+.countdown-meta {
+  text-align: center;
+}
+
+.countdown-target {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5a6675;
+  margin-bottom: 4px;
+}
+
+.dash-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.dash-toggle {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #e6e1d8;
+  color: #5a6675;
+  padding: 6px 14px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.dash-toggle:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #d6bd92;
+}

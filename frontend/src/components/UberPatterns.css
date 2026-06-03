@@ -1,0 +1,54 @@
+.uber-patterns {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #ece8e0;
+}
+
+.patterns-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #8a96a3;
+  margin-bottom: 6px;
+}
+
+.patterns-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pattern-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  padding: 6px;
+  border-radius: 6px;
+  background: rgba(199, 154, 143, 0.06);
+}
+
+.pattern-window {
+  flex: 1;
+  font-weight: 600;
+  color: #42505f;
+}
+
+.pattern-rate {
+  font-weight: 700;
+  color: #c79a8f;
+  min-width: 50px;
+}
+
+.pattern-count {
+  color: #a7b0bb;
+  font-size: 10px;
+}
+
+.uber-patterns-msg {
+  font-size: 11px;
+  color: #a7b0bb;
+  padding: 8px;
+  text-align: center;
+}

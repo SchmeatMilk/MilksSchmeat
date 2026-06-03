@@ -1,0 +1,216 @@
+.rail {
+  width: 290px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(90, 100, 110, 0.07);
+  padding: 14px;
+  position: sticky;
+  top: 14px;
+  max-height: calc(100vh - 28px);
+  display: flex;
+  flex-direction: column;
+}
+
+.rail-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: #5a6675;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.rail-badge {
+  margin-left: auto;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(214, 169, 106, 0.15);
+  color: #9a7637;
+  padding: 3px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.rail-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7fa893;
+  animation: railPulse 2s infinite;
+}
+
+.rail-dot.trends { background: #c79a8f; animation-delay: 0.5s; }
+
+@keyframes railPulse {
+  0% { box-shadow: 0 0 0 0 rgba(127, 168, 147, 0.5); }
+  70% { box-shadow: 0 0 0 8px rgba(127, 168, 147, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(127, 168, 147, 0); }
+}
+
+.rail-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.rail-empty {
+  font-size: 12px;
+  color: #a7b0bb;
+  text-align: center;
+  padding: 18px 0;
+}
+
+/* ---------- News card ---------- */
+.news-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(230, 225, 216, 0.8);
+  transition: all 0.2s ease;
+}
+
+.news-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(90, 100, 110, 0.12);
+}
+
+.news-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #ece8e0;
+}
+
+.news-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.news-body { padding: 9px 11px 11px; }
+
+.news-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #42505f;
+  line-height: 1.34;
+  margin-bottom: 7px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.news-source {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #7fa893;
+  font-weight: 700;
+}
+
+.news-time { font-size: 10px; color: #a7b0bb; }
+
+/* ---------- Trend card ---------- */
+.trend-card {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+  padding: 7px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(230, 225, 216, 0.7);
+  transition: all 0.2s ease;
+}
+
+.trend-card:hover {
+  transform: translateX(3px);
+  background: #fff;
+  box-shadow: 0 6px 14px rgba(90, 100, 110, 0.1);
+}
+
+.trend-rank {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: #c79a8f;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.trend-thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 9px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #ece8e0;
+}
+
+.trend-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.trend-body { min-width: 0; flex: 1; }
+
+.trend-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #42505f;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.trend-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.trend-source {
+  font-size: 10px;
+  color: #8aa2bd;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trend-score {
+  font-size: 10px;
+  color: #7fa893;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .rail { width: 100%; position: static; max-height: none; }
+  .rail-scroll { max-height: 420px; }
+}
