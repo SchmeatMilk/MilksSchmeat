@@ -7,6 +7,8 @@ import AnimatedBackground from './components/AnimatedBackground';
 import Dashboard from './components/Dashboard';
 import NewsRail from './components/NewsRail';
 import TrendsRail from './components/TrendsRail';
+import ReminderBanner from './components/ReminderBanner';
+import MilestoneToast from './components/MilestoneToast';
 
 const QUOTES = [
   'Discipline is choosing between what you want now and what you want most.',
@@ -26,6 +28,7 @@ function App() {
   const [countdown, setCountdown] = useState({ daysLeft: 184 });
   const [quote, setQuote] = useState(QUOTES[0]);
   const [updating, setUpdating] = useState(false);
+  const [pushing, setPushing] = useState(false);
   const [clock, setClock] = useState(new Date());
 
   const fetchData = useCallback(async () => {
@@ -60,6 +63,18 @@ function App() {
       console.error('Update failed:', e);
     } finally {
       setTimeout(() => setUpdating(false), 600);
+    }
+  };
+
+  // Push current dashboard state into Claude Desktop memory (reverse sync).
+  const handlePush = async () => {
+    setPushing(true);
+    try {
+      await axios.post('/api/export-status');
+    } catch (e) {
+      console.error('Push to Claude failed:', e);
+    } finally {
+      setTimeout(() => setPushing(false), 600);
     }
   };
 
@@ -115,8 +130,14 @@ function App() {
                 <span className="sync-icon">⟳</span>
                 {updating ? 'Syncing' : 'Sync'}
               </button>
+              <button className={`sync-btn push-btn ${pushing ? 'spinning' : ''}`} onClick={handlePush} title="Write live status into Claude Desktop memory">
+                <span className="sync-icon">↗</span>
+                {pushing ? 'Pushing' : 'Push to Claude'}
+              </button>
             </div>
           </header>
+
+          <ReminderBanner />
 
           <div className="main-area">
             <TrendsRail />
@@ -127,6 +148,8 @@ function App() {
 
             <NewsRail />
           </div>
+
+          <MilestoneToast />
         </div>
       )}
     </>

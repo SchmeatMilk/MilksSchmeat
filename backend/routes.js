@@ -301,13 +301,18 @@ export async function getUberShifts(req, res) {
 
 export async function createUberShift(req, res) {
   try {
-    const { date, earnings, hours, trips, note } = req.body;
+    const { date, earnings, hours, trips, note, startHour } = req.body;
     const id = `uber-${Date.now()}`;
+    // startHour is optional (0-23); null when unset so analytics skips it.
+    const sh = startHour === '' || startHour === undefined || startHour === null
+      ? null
+      : Math.max(0, Math.min(23, parseInt(startHour, 10)));
     await run(
-      `INSERT INTO uber_shifts (id, date, earnings, hours, trips, source, note)
-       VALUES (?, ?, ?, ?, ?, 'manual', ?)`,
+      `INSERT INTO uber_shifts (id, date, earnings, hours, trips, source, note, startHour)
+       VALUES (?, ?, ?, ?, ?, 'manual', ?, ?)`,
       [id, date || new Date().toISOString().slice(0, 10),
-       Number(earnings) || 0, Number(hours) || 0, parseInt(trips, 10) || 0, note || '']);
+       Number(earnings) || 0, Number(hours) || 0, parseInt(trips, 10) || 0, note || '',
+       Number.isNaN(sh) ? null : sh]);
     // Roll the new shift into the uber-delivery experiment totals immediately.
     const { finalizeAggregates } = await import('./ingest/applier.js');
     await finalizeAggregates();

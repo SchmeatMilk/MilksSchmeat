@@ -4,6 +4,7 @@ import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import AnimatedNumber from './AnimatedNumber';
+import UberPatterns from './UberPatterns';
 import { theme } from '../theme';
 import './UberTracker.css';
 
@@ -14,7 +15,7 @@ function UberTracker() {
   const [shifts, setShifts] = useState([]);
   const [totals, setTotals] = useState({ earnings: 0, hours: 0, trips: 0 });
   const [adding, setAdding] = useState(false);
-  const [draft, setDraft] = useState({ date: today(), earnings: '', hours: '', trips: '' });
+  const [draft, setDraft] = useState({ date: today(), earnings: '', hours: '', trips: '', startHour: '' });
 
   const fetchShifts = () => axios.get('/api/uber-shifts').then((r) => {
     setShifts(r.data.shifts || []);
@@ -27,7 +28,7 @@ function UberTracker() {
     e.preventDefault();
     if (!draft.earnings) return;
     await axios.post('/api/uber-shifts', draft);
-    setDraft({ date: today(), earnings: '', hours: '', trips: '' });
+    setDraft({ date: today(), earnings: '', hours: '', trips: '', startHour: '' });
     setAdding(false);
     fetchShifts();
   };
@@ -40,6 +41,9 @@ function UberTracker() {
     earnings: s.earnings,
     perHour: s.hours ? Math.round((s.earnings / s.hours) * 10) / 10 : null,
   }));
+
+  // Real hourly rate — gross earnings per logged hour (Improvement 3).
+  const perHour = totals.hours ? totals.earnings / totals.hours : 0;
 
   const tip = {
     background: 'rgba(255,255,255,0.97)', border: `1px solid ${theme.colors.border}`,
@@ -58,6 +62,10 @@ function UberTracker() {
           <div className="uber-total-lbl">driven</div>
         </div>
         <div className="uber-total">
+          <div className="uber-total-val"><AnimatedNumber value={perHour} prefix="$" decimals={1} suffix="/hr" /></div>
+          <div className="uber-total-lbl">real rate</div>
+        </div>
+        <div className="uber-total">
           <div className="uber-total-val"><AnimatedNumber value={totals.trips} /></div>
           <div className="uber-total-lbl">trips</div>
         </div>
@@ -73,6 +81,8 @@ function UberTracker() {
             onChange={(e) => setDraft({ ...draft, hours: e.target.value })} />
           <input type="number" placeholder="trips" value={draft.trips}
             onChange={(e) => setDraft({ ...draft, trips: e.target.value })} />
+          <input type="number" min="0" max="23" placeholder="start hr (0-23)" value={draft.startHour}
+            onChange={(e) => setDraft({ ...draft, startHour: e.target.value })} />
           <button type="submit">Save</button>
         </form>
       )}
@@ -105,6 +115,8 @@ function UberTracker() {
           ))}
         </div>
       )}
+
+      <UberPatterns />
     </div>
   );
 }

@@ -62,3 +62,26 @@
   color: #5a6675;
   margin-bottom: 4px;
 }
+
+.dash-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.dash-toggle {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #e6e1d8;
+  color: #5a6675;
+  padding: 6px 14px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.dash-toggle:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #d6bd92;
+}

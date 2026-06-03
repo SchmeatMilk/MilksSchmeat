@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -14,6 +14,9 @@ import NextMove from './NextMove';
 import BurnupChart from './BurnupChart';
 import Consistency from './Consistency';
 import UberTracker from './UberTracker';
+import ExpenseTracker from './ExpenseTracker';
+import VolatilityIndex from './VolatilityIndex';
+import BadgesWidget from './BadgesWidget';
 import { theme, pathInfo } from '../theme';
 import './Dashboard.css';
 
@@ -21,7 +24,11 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const PATHS = ['ai-consulting', 'ai-tools', 'online-work', 'apps', 'uber-delivery'];
 
-const layouts = {
+// Always-visible primary widgets; the rest are gated behind the details toggle.
+const PRIMARY = ['nextmove', 'revenue', 'countdown', 'burnup', 'uber', 'consistency'];
+
+// Full view — every widget, including the Phase 3 additions.
+const layoutsFull = {
   lg: [
     { i: 'nextmove', x: 0, y: 0, w: 12, h: 4, minW: 6, minH: 4 },
     { i: 'revenue', x: 0, y: 4, w: 5, h: 11, minW: 3, minH: 8 },
@@ -33,6 +40,9 @@ const layouts = {
     { i: 'experiments', x: 8, y: 27, w: 4, h: 11, minW: 3, minH: 8 },
     { i: 'comparison', x: 0, y: 40, w: 7, h: 11, minW: 4, minH: 8 },
     { i: 'consistency', x: 7, y: 40, w: 5, h: 11, minW: 3, minH: 8 },
+    { i: 'expenses', x: 0, y: 51, w: 5, h: 13, minW: 3, minH: 9 },
+    { i: 'volatility', x: 5, y: 51, w: 4, h: 13, minW: 3, minH: 9 },
+    { i: 'badges', x: 9, y: 51, w: 3, h: 13, minW: 2, minH: 8 },
   ],
   md: [
     { i: 'nextmove', x: 0, y: 0, w: 10, h: 4 },
@@ -45,6 +55,9 @@ const layouts = {
     { i: 'experiments', x: 5, y: 38, w: 5, h: 11 },
     { i: 'comparison', x: 0, y: 49, w: 5, h: 11 },
     { i: 'consistency', x: 5, y: 49, w: 5, h: 11 },
+    { i: 'expenses', x: 0, y: 60, w: 5, h: 13 },
+    { i: 'volatility', x: 5, y: 60, w: 5, h: 13 },
+    { i: 'badges', x: 0, y: 73, w: 10, h: 10 },
   ],
   sm: [
     { i: 'nextmove', x: 0, y: 0, w: 6, h: 5 },
@@ -57,10 +70,52 @@ const layouts = {
     { i: 'comparison', x: 0, y: 70, w: 6, h: 11 },
     { i: 'consistency', x: 0, y: 81, w: 6, h: 10 },
     { i: 'tasks', x: 0, y: 91, w: 6, h: 12 },
+    { i: 'expenses', x: 0, y: 103, w: 6, h: 13 },
+    { i: 'volatility', x: 0, y: 116, w: 6, h: 13 },
+    { i: 'badges', x: 0, y: 129, w: 6, h: 10 },
+  ],
+};
+
+// Focus view — only the 6 primary widgets, re-flowed to fill the freed space.
+const layoutsFocus = {
+  lg: [
+    { i: 'nextmove', x: 0, y: 0, w: 12, h: 4, minW: 6, minH: 4 },
+    { i: 'revenue', x: 0, y: 4, w: 5, h: 11, minW: 3, minH: 8 },
+    { i: 'countdown', x: 5, y: 4, w: 3, h: 11, minW: 2, minH: 8 },
+    { i: 'consistency', x: 8, y: 4, w: 4, h: 11, minW: 3, minH: 8 },
+    { i: 'burnup', x: 0, y: 15, w: 8, h: 13, minW: 4, minH: 9 },
+    { i: 'uber', x: 8, y: 15, w: 4, h: 13, minW: 3, minH: 10 },
+  ],
+  md: [
+    { i: 'nextmove', x: 0, y: 0, w: 10, h: 4 },
+    { i: 'revenue', x: 0, y: 4, w: 5, h: 11 },
+    { i: 'countdown', x: 5, y: 4, w: 5, h: 11 },
+    { i: 'burnup', x: 0, y: 15, w: 10, h: 12 },
+    { i: 'uber', x: 0, y: 27, w: 5, h: 13 },
+    { i: 'consistency', x: 5, y: 27, w: 5, h: 13 },
+  ],
+  sm: [
+    { i: 'nextmove', x: 0, y: 0, w: 6, h: 5 },
+    { i: 'revenue', x: 0, y: 5, w: 6, h: 11 },
+    { i: 'countdown', x: 0, y: 16, w: 6, h: 9 },
+    { i: 'burnup', x: 0, y: 25, w: 6, h: 12 },
+    { i: 'uber', x: 0, y: 37, w: 6, h: 13 },
+    { i: 'consistency', x: 0, y: 50, w: 6, h: 10 },
   ],
 };
 
 function Dashboard({ experiments, revenue, countdown }) {
+  const [showDetails, setShowDetails] = useState(() => {
+    const saved = localStorage.getItem('ih-show-details');
+    return saved === null ? true : saved === 'true';
+  });
+
+  const toggleDetails = () => {
+    setShowDetails((prev) => {
+      localStorage.setItem('ih-show-details', String(!prev));
+      return !prev;
+    });
+  };
   const pathData = useMemo(() => PATHS.map((p) => {
     const exps = experiments.filter((e) => e.path === p);
     return {
@@ -95,7 +150,17 @@ function Dashboard({ experiments, revenue, countdown }) {
     color: theme.colors.textPrimary,
   };
 
+  const layouts = showDetails ? layoutsFull : layoutsFocus;
+  // In focus mode, render only primary widgets so RGL has matching children.
+  const show = (key) => showDetails || PRIMARY.includes(key);
+
   return (
+    <>
+    <div className="dash-toolbar">
+      <button className="dash-toggle" onClick={toggleDetails}>
+        {showDetails ? 'Focus view ⌃' : 'Show details ⌄'}
+      </button>
+    </div>
     <ResponsiveGridLayout
       className="dashboard-rgl"
       layouts={layouts}
@@ -147,11 +212,13 @@ function Dashboard({ experiments, revenue, countdown }) {
       </div>
 
       {/* TASKS */}
+      {show('tasks') && (
       <div key="tasks">
         <Widget title="Today's Tasks" icon="✅" accent={theme.colors.sand}>
           <TaskList />
         </Widget>
       </div>
+      )}
 
       {/* BURN-UP — cumulative revenue vs ideal pace + projected finish */}
       <div key="burnup">
@@ -161,6 +228,7 @@ function Dashboard({ experiments, revenue, countdown }) {
       </div>
 
       {/* HOURS */}
+      {show('hours') && (
       <div key="hours">
         <Widget title="Hours Invested" icon="⏱️" accent={theme.colors.slate}>
           <div className="stat-figure" style={{ fontSize: 28 }}><AnimatedNumber value={totalHours} decimals={1} suffix="h" /></div>
@@ -170,8 +238,10 @@ function Dashboard({ experiments, revenue, countdown }) {
           </div>
         </Widget>
       </div>
+      )}
 
       {/* EXPERIMENTS */}
+      {show('experiments') && (
       <div key="experiments">
         <Widget title="Active Experiments" icon="🔬" accent={theme.colors.blush}>
           <div className="stat-figure" style={{ fontSize: 28 }}><AnimatedNumber value={totalExp} /></div>
@@ -181,8 +251,10 @@ function Dashboard({ experiments, revenue, countdown }) {
           </div>
         </Widget>
       </div>
+      )}
 
       {/* PATHS COMPARISON (revenue vs hours) */}
+      {show('comparison') && (
       <div key="comparison">
         <Widget title="Paths: Revenue × Hours" icon="📊" accent={theme.colors.plum}>
           <ResponsiveContainer width="100%" height="100%" minHeight={150}>
@@ -199,6 +271,7 @@ function Dashboard({ experiments, revenue, countdown }) {
           </ResponsiveContainer>
         </Widget>
       </div>
+      )}
 
       {/* UBER DELIVERY */}
       <div key="uber">
@@ -213,7 +286,35 @@ function Dashboard({ experiments, revenue, countdown }) {
           <Consistency />
         </Widget>
       </div>
+
+      {/* EXPENSES (Phase 3 — tax-deductible expense tracking) */}
+      {show('expenses') && (
+      <div key="expenses">
+        <Widget title="Expenses & Deductions" icon="🧾" accent={theme.colors.clay}>
+          <ExpenseTracker />
+        </Widget>
+      </div>
+      )}
+
+      {/* VOLATILITY (Phase 3 — income variability + month-end forecast) */}
+      {show('volatility') && (
+      <div key="volatility">
+        <Widget title="Volatility & Forecast" icon="📉" accent={theme.colors.slate}>
+          <VolatilityIndex />
+        </Widget>
+      </div>
+      )}
+
+      {/* BADGES (Phase 3 — milestone Hall of Fame) */}
+      {show('badges') && (
+      <div key="badges">
+        <Widget title="Hall of Fame" icon="🏆" accent={theme.colors.sand}>
+          <BadgesWidget />
+        </Widget>
+      </div>
+      )}
     </ResponsiveGridLayout>
+    </>
   );
 }
 
