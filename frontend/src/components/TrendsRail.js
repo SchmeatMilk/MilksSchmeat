@@ -24,7 +24,7 @@ function TrendsRail() {
   return (
     <aside className="rail">
       <div className="rail-head">
-        <span className="rail-dot trends" /> TOP 10 SOCIAL TRENDS
+        <span className="rail-dot trends" /> TOP 20 X TRENDING
         {isSample && <span className="rail-badge">sample data</span>}
       </div>
       <div className="rail-scroll">

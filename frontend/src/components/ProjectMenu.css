@@ -1,4 +1,4 @@
-.project-menu { position: relative; z-index: 5; }
+.project-menu { position: relative; z-index: 100; }
 
 .project-menu-btn {
   display: inline-flex;
@@ -30,6 +30,7 @@
   gap: 2px;
   max-height: 360px;
   overflow-y: auto;
+  z-index: 1000;
 }
 
 .pm-item {
