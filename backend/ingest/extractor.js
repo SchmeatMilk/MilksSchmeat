@@ -80,6 +80,33 @@ export function extractLocal(text, sourceFile, sourceDate) {
     });
   }
 
+  // Expenses: "$X spent on" / "spent $X" / "paid $X for" / "cost $X" (but not already matched as revenue).
+  const expenseRe = /(?:\$\s?(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)|(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)\s?(?:CAD|USD))/gi;
+  const matchedRevenueQuotes = new Set(facts.filter(f => f.factType === 'revenue' || f.factType === 'uber').map(f => f.sourceQuote));
+  while ((m = expenseRe.exec(text)) !== null) {
+    const num = m[1] || m[2];
+    const value = parseFloat(num.replace(/,/g, ''));
+    if (!value || value <= 0) continue;
+    const ctx = windowAround(text, m.index, m[0].length);
+    // Skip if already marked as revenue
+    if (matchedRevenueQuotes.has(ctx)) continue;
+    // Must have expense context
+    if (!/\b(spent|cost|expense|paid for|paid out|bought|fuel|gas|subscription|phone|software|tool|mileage)\b/i.test(ctx)) continue;
+    // Guess category from context
+    let category = 'other';
+    if (/mileage|miles|km|driving/.test(ctx)) category = 'mileage';
+    else if (/fuel|gas|petrol/.test(ctx)) category = 'fuel';
+    else if (/food|meal|lunch|coffee/.test(ctx)) category = 'meals';
+    else if (/supplies|equipment|tool/.test(ctx)) category = 'supplies';
+    else if (/software|subscription|saas|app/.test(ctx)) category = 'software';
+    else if (/phone|data|internet/.test(ctx)) category = 'phone';
+    else if (/car|vehicle|maintenance|repair/.test(ctx)) category = 'vehicle';
+    facts.push({
+      factType: 'expense', path: attributePath(ctx), value, textValue: category,
+      sourceQuote: ctx, sourceDate, confidence: 0.6, method: 'regex',
+    });
+  }
+
   // Status, next actions + learnings — all line-scoped so attribution doesn't
   // bleed across section boundaries.
   for (const line of text.split(/\r?\n/)) {

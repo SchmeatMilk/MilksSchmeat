@@ -127,6 +127,37 @@ async function writeSnapshot() {
 }
 
 // Apply a batch of facts from one file. Returns count of newly-applied facts.
+async function recomputePathExpenses() {
+  for (const path of PATHS) {
+    const exp = await primaryExperiment(path);
+    if (!exp) continue;
+
+    const expenseData = await get(
+      `SELECT COALESCE(SUM(amount),0) AS v FROM expenses
+       WHERE path=? AND deductible=1`, [path]);
+    const totalExpenses = expenseData?.v || 0;
+
+    await run(`UPDATE experiments SET totalExpenses=? WHERE id=?`, [totalExpenses, exp.id]);
+  }
+}
+
+async function applyExpenses() {
+  const expenseFacts = await all(
+    `SELECT id FROM extracted_facts WHERE factType='expense' AND id NOT IN (SELECT id FROM expenses)`
+  );
+
+  for (const fact of expenseFacts) {
+    const expFact = await get(`SELECT * FROM extracted_facts WHERE id=?`, [fact.id]);
+    const expId = `exp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+    await run(
+      `INSERT INTO expenses (id, date, amount, category, path, source, deductible, createdAt)
+       VALUES (?, ?, ?, ?, ?, 'ingest', 1, CURRENT_TIMESTAMP)`,
+      [expId, expFact.sourceDate, expFact.value, expFact.textValue, expFact.path]
+    );
+  }
+}
+
 export async function applyFacts(facts, sourceFile) {
   let applied = 0;
   const uberShiftRows = [];
@@ -142,6 +173,15 @@ export async function applyFacts(facts, sourceFile) {
 // Called once per run after all files applied — derive aggregates + snapshot.
 export async function finalizeAggregates() {
   await recomputePathTotals();
+  await recomputePathExpenses();
   await applyTextFacts();
+  await applyExpenses();
   await writeSnapshot();
+
+  // Import dynamically to avoid circular dependency at load time
+  const { checkMilestones } = await import('./milestones.js');
+  const { exportDashboardStatus } = await import('./exporter.js');
+
+  await checkMilestones();
+  await exportDashboardStatus();
 }

@@ -20,7 +20,12 @@ export function listIngestibleFiles(dir) {
   return entries
     .filter((e) => e.isFile())
     .map((e) => e.name)
-    .filter((n) => /\.(md|json)$/i.test(n) && !/\.tmp$/i.test(n))
+    .filter((n) => {
+      // Skip .tmp files and the auto-generated status file
+      if (/\.tmp$/i.test(n)) return false;
+      if (n === 'INCOME_HUNT_STATUS.md') return false;
+      return /\.(md|json)$/i.test(n);
+    })
     .map((n) => path.join(dir, n));
 }
 

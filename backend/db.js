@@ -45,6 +45,7 @@ export function initializeDatabase() {
         revenueThisMonth REAL DEFAULT 0,
         revenueCumulative REAL DEFAULT 0,
         hoursInvested REAL DEFAULT 0,
+        totalExpenses REAL DEFAULT 0,
         lastActivityDate TEXT,
         nextAction TEXT,
         learnings TEXT,
@@ -147,9 +148,43 @@ export function initializeDatabase() {
         earnings REAL DEFAULT 0,
         hours REAL DEFAULT 0,
         trips INTEGER DEFAULT 0,
+        startHour INTEGER,
         source TEXT DEFAULT 'manual',
         note TEXT,
         createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // ---- Phase 3: Power features (expenses, volatility, milestones) ----
+
+    // Expense tracking — categorized spending with deduction flags.
+    db.run(`
+      CREATE TABLE IF NOT EXISTS expenses (
+        id TEXT PRIMARY KEY,
+        date TEXT NOT NULL,
+        amount REAL NOT NULL,
+        category TEXT NOT NULL,
+        path TEXT,
+        note TEXT,
+        source TEXT DEFAULT 'manual',
+        deductible INTEGER DEFAULT 1,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    db.run(`CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_expenses_path ON expenses(path)`);
+
+    // Earned milestones — one row per badge, ever. Used to award exactly once and for Hall of Fame display.
+    db.run(`
+      CREATE TABLE IF NOT EXISTS earned_milestones (
+        id TEXT PRIMARY KEY,
+        milestoneType TEXT NOT NULL,
+        milestoneValue REAL,
+        emoji TEXT,
+        message TEXT,
+        earnedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        seenAt TEXT
       )
     `);
 

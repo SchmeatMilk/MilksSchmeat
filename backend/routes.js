@@ -1,6 +1,10 @@
 import { db, run, get, all } from './db.js';
 import axios from 'axios';
 import { runIngest } from './ingest/index.js';
+import { calculateStreak } from './utils/streak.js';
+import { computeVolatility } from './ingest/volatility.js';
+import { uberPatternsByWindow } from './ingest/analytics.js';
+import { exportDashboardStatus } from './ingest/exporter.js';
 
 // EXPERIMENTS
 export function getExperiments(req, res) {
@@ -397,6 +401,202 @@ export async function getConsistency(req, res) {
     const today = series[series.length - 1];
     // "Never miss twice": warn (amber) only if yesterday AND today both missing.
     const missTwice = yesterday && !yesterday.done && today && !today.done;
-    res.json({ series, count, rate, missTwice });
+
+    // Current streak (consecutive days ending today or yesterday)
+    const { currentStreak } = await calculateStreak();
+
+    res.json({ series, count, rate, missTwice, currentStreak });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+// EXPENSES — tracked deductions with categories.
+export async function getExpenses(req, res) {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const dateStr = thirtyDaysAgo.toISOString().slice(0, 10);
+
+    const items = await all(
+      `SELECT * FROM expenses WHERE date >= ? ORDER BY date DESC`,
+      [dateStr]
+    );
+
+    const totals = await get(
+      `SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= ? AND deductible = 1`,
+      [dateStr]
+    );
+
+    const thisMonth = new Date().toISOString().slice(0, 7);
+    const monthRevenue = await get(
+      `SELECT COALESCE(SUM(revenueThisMonth), 0) as total FROM experiments`
+    );
+
+    const netIncome = (monthRevenue?.total || 0) - (totals?.total || 0);
+
+    res.json({
+      items,
+      totalsByCategory: items.reduce((acc, e) => {
+        acc[e.category] = (acc[e.category] || 0) + e.amount;
+        return acc;
+      }, {}),
+      totalDeductions: totals?.total || 0,
+      netIncomeThisMonth: netIncome,
+    });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+export async function createExpense(req, res) {
+  try {
+    const { date, amount, category, path, note } = req.body;
+    if (!date || !amount || !category) return res.status(400).json({ error: 'Missing required fields' });
+
+    const id = `exp-${Date.now()}`;
+    const result = await run(
+      `INSERT INTO expenses (id, date, amount, category, path, note, source, createdAt)
+       VALUES (?, ?, ?, ?, ?, ?, 'manual', CURRENT_TIMESTAMP)`,
+      [id, date, amount, category, path, note]
+    );
+
+    // Re-compute aggregates
+    const { finalizeAggregates } = await import('./ingest/applier.js');
+    await finalizeAggregates();
+
+    res.json({ success: true, id });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+export async function deleteExpense(req, res) {
+  try {
+    const { id } = req.params;
+    await run(`DELETE FROM expenses WHERE id = ?`, [id]);
+
+    // Re-compute aggregates
+    const { finalizeAggregates } = await import('./ingest/applier.js');
+    await finalizeAggregates();
+
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+// VOLATILITY — income forecast based on 28-day history.
+export async function getVolatility(req, res) {
+  try {
+    const result = await computeVolatility();
+    res.json(result);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+// UBER PATTERNS — best earning windows based on historical shifts.
+export async function getUberPatterns(req, res) {
+  try {
+    const result = await uberPatternsByWindow();
+    res.json(result);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+// MILESTONES — earned badges + Hall of Fame.
+export async function getMilestones(req, res) {
+  try {
+    const earned = await all(
+      `SELECT * FROM earned_milestones ORDER BY earnedAt DESC`
+    );
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const dateStr = thirtyDaysAgo.toISOString().slice(0, 10);
+
+    const recent = earned.filter((m) => m.earnedAt >= dateStr);
+
+    res.json({ earned, recent });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+export async function markMilestoneSeen(req, res) {
+  try {
+    const { id } = req.params;
+    await run(
+      `UPDATE earned_milestones SET seenAt = CURRENT_TIMESTAMP WHERE id = ?`,
+      [id]
+    );
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+// REMINDERS — computed hints based on current state.
+export async function getReminders(req, res) {
+  try {
+    const items = [];
+
+    // Check-in reminder
+    const today = new Date().toISOString().slice(0, 10);
+    const todayCheckin = await get(`SELECT id FROM checkins WHERE date = ?`, [today]);
+    if (!todayCheckin && new Date().getHours() >= 8) {
+      items.push({
+        id: 'checkin-daily',
+        type: 'checkin',
+        severity: 'sage',
+        message: 'Log a quick check-in for today 📝'
+      });
+    }
+
+    // Pace reminder
+    const revenue = await get(`SELECT SUM(revenueCumulative) as total FROM experiments`);
+    const countdown = await get(`SELECT CAST((julianday('2026-12-01') - julianday('now')) AS INTEGER) as daysLeft`);
+    const daysLeft = countdown?.daysLeft || 0;
+    const totalDays = 184;
+    const elapsed = totalDays - daysLeft;
+    const timelinePct = Math.min(100, (elapsed / totalDays) * 100);
+    const target = 5000;
+    const totalRevenue = revenue?.total || 0;
+    const pct = Math.min(100, (totalRevenue / target) * 100);
+
+    if (pct < timelinePct) {
+      const delta = Math.round(target - totalRevenue);
+      const catchUpPace = daysLeft > 0 ? Math.ceil(delta / daysLeft) : 0;
+      items.push({
+        id: 'pace-behind',
+        type: 'pace',
+        severity: 'amber',
+        message: `You're $${delta} behind ideal. Catch-up pace: $${catchUpPace}/day.`
+      });
+    }
+
+    // Streak protect reminder
+    const { currentStreak } = await calculateStreak();
+    if (currentStreak >= 5) {
+      items.push({
+        id: 'streak-protect',
+        type: 'streak-protect',
+        severity: 'sage',
+        message: `You're on a ${currentStreak}-day streak — don't break it today.`
+      });
+    }
+
+    // Uber cold reminder
+    const lastUber = await get(
+      `SELECT date FROM uber_shifts ORDER BY date DESC LIMIT 1`
+    );
+    if (lastUber) {
+      const lastDate = new Date(lastUber.date);
+      const daysSince = Math.floor((new Date() - lastDate) / (1000 * 60 * 60 * 24));
+      if (daysSince >= 7) {
+        items.push({
+          id: 'uber-cold',
+          type: 'uber-cold',
+          severity: 'slate',
+          message: `It's been ${daysSince} days since your last Uber shift. Log a drive today?`
+        });
+      }
+    }
+
+    res.json({ items });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+// EXPORT STATUS — manual trigger to write dashboard status to memory.
+export async function exportStatus(req, res) {
+  try {
+    const result = await exportDashboardStatus();
+    res.json({ success: true, written: result.written, errors: result.errors });
   } catch (e) { res.status(500).json({ error: e.message }); }
 }

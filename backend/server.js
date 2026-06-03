@@ -47,6 +47,21 @@ app.get('/api/next-move', routes.getNextMove);
 app.get('/api/burnup', routes.getBurnup);
 app.get('/api/consistency', routes.getConsistency);
 
+// Routes - Phase 3: Power features
+app.get('/api/expenses', routes.getExpenses);
+app.post('/api/expenses', routes.createExpense);
+app.delete('/api/expenses/:id', routes.deleteExpense);
+
+app.get('/api/volatility', routes.getVolatility);
+app.get('/api/uber-patterns', routes.getUberPatterns);
+
+app.get('/api/milestones', routes.getMilestones);
+app.post('/api/milestones/:id/seen', routes.markMilestoneSeen);
+
+app.get('/api/reminders', routes.getReminders);
+
+app.post('/api/export-status', routes.exportStatus);
+
 // System Update (manual Sync)
 app.post('/api/system-update', routes.systemUpdate);
 
