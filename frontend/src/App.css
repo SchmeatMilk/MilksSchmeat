@@ -7,6 +7,7 @@
 /* ---------------- Top bar ---------------- */
 .topbar {
   position: relative;
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: 20px;

@@ -107,7 +107,7 @@ export function extractLocal(text, sourceFile, sourceDate) {
     });
   }
 
-  // Status, next actions + learnings — all line-scoped so attribution doesn't
+  // Status, next actions, learnings, and tasks — all line-scoped so attribution doesn't
   // bleed across section boundaries.
   for (const line of text.split(/\r?\n/)) {
     const statusMatch = line.match(/\b(shipped|launched|completed|done|finished|paused|blocked|on hold)\b/i);
@@ -133,6 +133,15 @@ export function extractLocal(text, sourceFile, sourceDate) {
         factType: 'learning', path: attributePath(line), value: null,
         textValue: learn[1].trim(), sourceQuote: line.trim(), sourceDate,
         confidence: 0.6, method: 'regex',
+      });
+    }
+    // Tasks: "Task: description" OR "TODO: description" OR "Important: description"
+    const taskMatch = line.match(/^\s*(?:task|todo|important|priority)\s*:?\s*(.+)$/i);
+    if (taskMatch && taskMatch[1].trim().length > 3) {
+      facts.push({
+        factType: 'task', path: attributePath(line), value: null,
+        textValue: taskMatch[1].trim(), sourceQuote: line.trim(), sourceDate,
+        confidence: 0.65, method: 'regex',
       });
     }
   }
@@ -181,7 +190,7 @@ export async function extractLLM(text, sourceFile, sourceDate) {
           items: {
             type: 'object',
             properties: {
-              factType: { type: 'string', enum: ['revenue', 'hours', 'uber', 'trips', 'status', 'learning', 'nextAction', 'checkin'] },
+              factType: { type: 'string', enum: ['revenue', 'hours', 'uber', 'trips', 'status', 'learning', 'nextAction', 'task', 'checkin'] },
               path: { type: 'string', enum: ['ai-consulting', 'ai-tools', 'online-work', 'apps', 'uber-delivery', 'none'] },
               value: { type: ['number', 'null'] },
               textValue: { type: ['string', 'null'] },

@@ -159,6 +159,23 @@ async function applyExpenses() {
   }
 }
 
+async function applyTasks() {
+  const taskFacts = await all(
+    `SELECT id FROM extracted_facts WHERE factType='task' AND id NOT IN (SELECT id FROM tasks)`
+  );
+
+  for (const fact of taskFacts) {
+    const taskFact = await get(`SELECT * FROM extracted_facts WHERE id=?`, [fact.id]);
+    const today = new Date().toISOString().split('T')[0];
+
+    await run(
+      `INSERT OR IGNORE INTO tasks (id, date, taskName, priority, linkedPath, status, createdAt)
+       VALUES (?, ?, ?, 'should-do', ?, 'not-started', CURRENT_TIMESTAMP)`,
+      [taskFact.id, taskFact.sourceDate || today, taskFact.textValue, taskFact.path]
+    );
+  }
+}
+
 export async function applyFacts(facts, sourceFile) {
   let applied = 0;
   const uberShiftRows = [];
@@ -180,6 +197,7 @@ export async function finalizeAggregates() {
   await applyExpenses();
   await recomputePathExpenses();
   await applyTextFacts();
+  await applyTasks();
   await writeSnapshot();
 
   // Import dynamically to avoid circular dependency at load time
