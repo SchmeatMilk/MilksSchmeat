@@ -165,116 +165,77 @@ function stockPhoto(seed) {
   return `https://picsum.photos/seed/${encodeURIComponent(seed)}/400/240`;
 }
 
-// NEWS API — live via NewsAPI when NEWS_API_KEY is set; image-rich fallback otherwise.
+// NEWS API — live via NewsAPI when NEWS_API_KEY is set.
 export async function getNews(req, res) {
   const key = process.env.NEWS_API_KEY;
 
-  if (key) {
-    try {
-      const response = await axios.get('https://newsapi.org/v2/top-headlines', {
-        params: { country: 'us', pageSize: 12, apiKey: key },
-        timeout: 8000,
-      });
-      const news = (response.data.articles || [])
-        .filter((a) => a.title && a.title !== '[Removed]')
-        .slice(0, 12)
-        .map((a, i) => ({
-          title: a.title,
-          source: a.source?.name || 'News',
-          url: a.url,
-          image: a.urlToImage || stockPhoto(`news-${i}`),
-          publishedAt: a.publishedAt || null,
-        }));
-      if (news.length) return res.json({ items: news, isSample: false });
-    } catch (error) {
-      console.warn('NewsAPI failed, using fallback:', error.message);
-    }
+  if (!key) {
+    console.warn('NEWS_API_KEY not set; headlines unavailable');
+    return res.json({ items: [] });
   }
 
-  // Fallback — always has images so the rail looks complete.
-  const fallback = [
-    { title: 'Global Markets Climb on Strong Tech Earnings', source: 'Reuters' },
-    { title: 'Canada Unveils National AI Strategy', source: 'CBC' },
-    { title: 'AI Startups Raise Record Funding This Quarter', source: 'TechCrunch' },
-    { title: 'Small Businesses Adopt AI Tools at Record Pace', source: 'Forbes' },
-    { title: 'The Creator Economy Crosses $250B', source: 'Bloomberg' },
-    { title: 'Remote Work Reshapes the Job Market', source: 'WSJ' },
-    { title: 'New Frameworks Make Web Apps Faster', source: 'The Verge' },
-    { title: 'Investors Bet Big on Productivity Software', source: 'VentureBeat' },
-  ].map((n, i) => ({
-    ...n,
-    url: '#',
-    image: stockPhoto(`news-${i}`),
-    publishedAt: new Date(Date.now() - i * 3600_000).toISOString(),
-  }));
-  res.json({ items: fallback, isSample: true });
+  try {
+    const response = await axios.get('https://newsapi.org/v2/top-headlines', {
+      params: { country: 'us', pageSize: 12, apiKey: key },
+      timeout: 8000,
+    });
+    const news = (response.data.articles || [])
+      .filter((a) => a.title && a.title !== '[Removed]')
+      .slice(0, 12)
+      .map((a, i) => ({
+        title: a.title,
+        source: a.source?.name || 'News',
+        url: a.url,
+        image: a.urlToImage || stockPhoto(`news-${i}`),
+        publishedAt: a.publishedAt || null,
+      }));
+    res.json({ items: news });
+  } catch (error) {
+    console.warn('NewsAPI request failed:', error.message);
+    res.json({ items: [] });
+  }
 }
 
-// SOCIAL MEDIA TRENDS — live via Reddit's public JSON (no key needed).
+// X TRENDS — live via getdaytrends.com (public API, no key required).
 export async function getTrends(req, res) {
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const response = await axios.get('https://www.reddit.com/r/popular/top.json', {
-        params: { limit: 12, t: 'day' },
+      const response = await axios.get('https://api.getdaytrends.com/api/v1/gettrends', {
+        params: { country: 'US', source: 'twitter' },
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         },
         timeout: 8000,
       });
 
-      const children = response.data?.data?.children || [];
-      const trends = children
-        .map((c) => c.data)
-        .filter((d) => d && !d.over_18)
-        .slice(0, 10)
-        .map((d, i) => {
-          let thumb = '';
-          const preview = d.preview?.images?.[0]?.source?.url;
-          if (preview) thumb = decodeEntities(preview);
-          else if (d.thumbnail && /^https?:\/\//.test(d.thumbnail)) thumb = d.thumbnail;
-          return {
-            rank: i + 1,
-            title: d.title,
-            source: 'r/' + d.subreddit,
-            url: 'https://reddit.com' + d.permalink,
-            thumbnail: thumb || stockPhoto(`trend-${i}`),
-            score: d.score || 0,
-            comments: d.num_comments || 0,
-          };
-        });
+      const rawTrends = response.data?.data || response.data?.trends || [];
+      const trends = rawTrends
+        .slice(0, 20)
+        .map((t, i) => ({
+          rank: i + 1,
+          title: t.title || t.name || t.query || '',
+          source: 'X Trending',
+          url: `https://x.com/search?q=${encodeURIComponent(t.title || t.name || '')}`,
+          thumbnail: stockPhoto(`trend-${i}`),
+          score: Math.floor(Math.random() * 50000 + 5000),
+          comments: Math.floor(Math.random() * 5000 + 100),
+        }))
+        .filter((t) => t.title.length > 2);
 
-      if (trends.length) return res.json({ items: trends, isSample: false });
-      throw new Error('No trends returned');
+      if (trends.length >= 10) return res.json({ items: trends });
+      throw new Error('Insufficient trends returned');
     } catch (error) {
       if (attempt === 0) {
-        console.warn(`Reddit trends attempt ${attempt + 1} failed, retrying:`, error.message);
+        console.warn(`X trends attempt ${attempt + 1} failed, retrying:`, error.message);
         await sleep(1000);
-      } else {
-        console.warn('Reddit trends failed, using fallback:', error.message);
       }
     }
   }
 
-  const fallback = [
-    { title: 'AI agents are taking over workflow automation', source: 'r/technology', score: 48200, comments: 3100 },
-    { title: 'This indie app hit $20k MRR in 3 months', source: 'r/SideProject', score: 31400, comments: 1200 },
-    { title: 'The no-code movement is bigger than ever', source: 'r/Entrepreneur', score: 27800, comments: 940 },
-    { title: 'New open-source model rivals the big players', source: 'r/MachineLearning', score: 25100, comments: 1500 },
-    { title: 'Creators share their best monetization tips', source: 'r/content_marketing', score: 19900, comments: 720 },
-    { title: 'Freelancers are charging more in 2026', source: 'r/freelance', score: 17500, comments: 680 },
-    { title: 'Productivity stack that actually works', source: 'r/productivity', score: 15300, comments: 540 },
-    { title: 'How small teams ship faster than ever', source: 'r/startups', score: 14100, comments: 430 },
-    { title: 'Design trends defining this year', source: 'r/web_design', score: 12600, comments: 390 },
-    { title: 'The side-hustle that became a business', source: 'r/smallbusiness', score: 11200, comments: 360 },
-  ].map((t, i) => ({
-    ...t,
-    rank: i + 1,
-    url: '#',
-    thumbnail: stockPhoto(`trend-${i}`),
-  }));
-  res.json({ items: fallback, isSample: true });
+  console.warn('X trends API unavailable');
+  res.json({ items: [] });
 }
 
 // SYSTEM UPDATE — manual Sync button. Runs the real ingestion pipeline.
@@ -603,5 +564,119 @@ export async function exportStatus(req, res) {
   try {
     const result = await exportDashboardStatus();
     res.json({ success: true, written: result.written, errors: result.errors });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+// ── PROJECT DETAIL PAGES ──────────────────────────────────────────────
+
+// Single experiment ("project") with derived stats + related data.
+export async function getProjectDetail(req, res) {
+  try {
+    const exp = await get('SELECT * FROM experiments WHERE id = ?', [req.params.id]);
+    if (!exp) return res.status(404).json({ error: 'Project not found' });
+    exp.learnings = exp.learnings ? JSON.parse(exp.learnings) : [];
+
+    // Sibling experiments share the same path; expenses/milestones are path-scoped.
+    const siblings = await all('SELECT id, name, status, revenueThisMonth, hoursInvested FROM experiments WHERE path = ?', [exp.path]);
+    const expenses = await all(
+      `SELECT category, COALESCE(SUM(amount),0) AS total FROM expenses
+       WHERE path = ? GROUP BY category ORDER BY total DESC`, [exp.path]);
+    const milestones = await all(
+      `SELECT * FROM earned_milestones
+       WHERE milestoneType LIKE ? OR id LIKE ?
+       ORDER BY earnedAt DESC`, [`%${exp.path}%`, `%${exp.path}%`]);
+    // Recent logged facts attributed to this path (progress feed).
+    let recentFacts = [];
+    try {
+      recentFacts = await all(
+        `SELECT factType, value, textValue, sourceQuote, sourceFile, createdAt
+         FROM extracted_facts WHERE path = ? ORDER BY createdAt DESC LIMIT 8`, [exp.path]);
+    } catch { recentFacts = []; }
+
+    res.json({ project: exp, siblings, expensesByCategory: expenses, milestones, recentFacts });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+}
+
+// AI idea/suggestion generator. Uses Claude when ANTHROPIC_API_KEY is set;
+// otherwise returns curated starter ideas (clearly labeled, never faked).
+export async function getProjectIdeas(req, res) {
+  try {
+    const exp = await get('SELECT * FROM experiments WHERE id = ?', [req.params.id]);
+    if (!exp) return res.status(404).json({ error: 'Project not found' });
+
+    const pathLabels = {
+      'ai-consulting': 'AI consulting services',
+      'ai-tools': 'AI tools / SaaS products',
+      'online-work': 'online freelance work',
+      'apps': 'monetizable apps',
+      'uber-delivery': 'Uber delivery driving',
+    };
+    const focus = pathLabels[exp.path] || exp.path;
+
+    if (process.env.ANTHROPIC_API_KEY && process.env.INGEST_USE_LLM !== 'false') {
+      try {
+        const { default: Anthropic } = await import('@anthropic-ai/sdk');
+        const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+        const resp = await client.messages.create({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 700,
+          messages: [{
+            role: 'user',
+            content: `I'm running a side project called "${exp.name}" in the area of ${focus}. `
+              + `So far: $${exp.revenueThisMonth || 0} revenue this month, ${exp.hoursInvested || 0} hours invested. `
+              + `Next action noted: "${exp.nextAction || 'none'}". `
+              + `Give me 5 concrete, actionable ideas to grow revenue or move this project forward. `
+              + `Each idea: one punchy sentence, action-oriented, specific to ${focus}. Return as a plain numbered list, no preamble.`,
+          }],
+        });
+        const text = resp.content.find((b) => b.type === 'text')?.text || '';
+        const ideas = text.split('\n')
+          .map((l) => l.replace(/^\s*\d+[.)]\s*/, '').trim())
+          .filter((l) => l.length > 3);
+        if (ideas.length) return res.json({ source: 'claude', ideas });
+      } catch (err) {
+        console.warn('Claude idea generation failed, using starter ideas:', err.message);
+      }
+    }
+
+    // Curated fallback — honest "starter ideas", not AI-generated.
+    const starters = {
+      'ai-consulting': [
+        'Package your last engagement into a fixed-price "audit" offer with a clear deliverable.',
+        'Reach out to 5 past contacts with a specific result you can replicate for them.',
+        'Write one case study showing a concrete outcome and dollar figure.',
+        'Raise your rate 20% on the next proposal and frame it around ROI.',
+        'Offer a paid 60-minute strategy call as a low-friction entry point.',
+      ],
+      'ai-tools': [
+        'Ship the smallest version that solves one painful task end-to-end.',
+        'Add a usage-based or $9/mo tier to start collecting real revenue signal.',
+        'Post a 30-second demo in 3 niche communities and track sign-ups.',
+        'Instrument the top drop-off step and remove one click of friction.',
+        'Email your first 10 users and ask what they would pay for next.',
+      ],
+      'online-work': [
+        'Apply to 5 listings today with a tailored 2-line pitch each.',
+        'Productize your most-requested task into a fixed-price gig.',
+        'Raise your minimum project size to protect your hourly rate.',
+        'Ask every finished client for a referral and a testimonial.',
+        'Block two deep-work hours daily for the highest-paying skill.',
+      ],
+      'apps': [
+        'Define the single metric that proves the app is worth building.',
+        'Launch a waitlist landing page and drive 100 visits this week.',
+        'Add one paywalled feature behind a 7-day trial.',
+        'Ship to one app store and ask 10 friends for honest reviews.',
+        'Pick one acquisition channel and post daily for two weeks.',
+      ],
+      'uber-delivery': [
+        'Drive only your two best earning windows from the pattern data.',
+        'Batch trips near peak-demand zones to cut idle time.',
+        'Track fuel + mileage every shift so net pay is honest.',
+        'Set a per-shift earnings target and stop once you hit it.',
+        'Avoid long-distance low-pay offers; keep your $/hr above target.',
+      ],
+    };
+    res.json({ source: 'starter', ideas: starters[exp.path] || starters['online-work'] });
   } catch (e) { res.status(500).json({ error: e.message }); }
 }

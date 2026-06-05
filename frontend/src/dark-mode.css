@@ -1,0 +1,128 @@
+/* ============================================================
+   Dark mode — activated by `body.dark`. Additive overrides only;
+   light mode is untouched. Pastel accent colors (charts, badges)
+   stay as-is since they read well on a dark surface.
+   ============================================================ */
+
+body.dark {
+  background: #15171c;
+  color: #d4dae3;
+}
+
+/* App shell + structural backgrounds */
+body.dark .app-shell { background: transparent; }
+
+body.dark .topbar {
+  background: rgba(30, 34, 42, 0.72);
+  border-bottom: 1px solid #2c323d;
+}
+
+body.dark .brand-name { color: #e8edf3; }
+body.dark .brand-sub { color: #8a94a3; }
+body.dark .quote { color: #9aa4b2; }
+body.dark .clock-time { color: #e8edf3; }
+body.dark .clock-date { color: #8a94a3; }
+
+/* Widget cards */
+body.dark .widget-card {
+  background: rgba(33, 38, 47, 0.86);
+  border: 1px solid #2c323d;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+body.dark .widget-card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+body.dark .widget-head {
+  border-bottom: 1px solid #2c323d;
+}
+body.dark .widget-title { color: #d4dae3; }
+body.dark .widget-pill {
+  background: rgba(143, 168, 196, 0.16);
+  color: #b9cadd;
+}
+
+/* Stat figures + captions */
+body.dark .stat-figure { color: #eaeff5; }
+body.dark .stat-caption { color: #8a94a3; }
+body.dark .mini-progress { background: #2c323d; }
+
+/* Side rails (trends / news) */
+body.dark .rail {
+  background: rgba(33, 38, 47, 0.86);
+  border: 1px solid #2c323d;
+}
+body.dark .rail-head { color: #b9c2cd; }
+body.dark .rail-item,
+body.dark .trend-item,
+body.dark .news-item { border-color: #2c323d; }
+body.dark .rail-item-title,
+body.dark .trend-title,
+body.dark .news-title { color: #d4dae3; }
+body.dark .rail-empty { color: #8a94a3; }
+
+/* Forms / inputs (Uber, expenses, tasks, project pages) */
+body.dark input,
+body.dark select,
+body.dark textarea {
+  background: #20242c !important;
+  border-color: #353c47 !important;
+  color: #d4dae3 !important;
+}
+body.dark input::placeholder { color: #6b7480; }
+
+/* Chart-type switcher buttons */
+body.dark .chart-type-btn {
+  background: rgba(143, 168, 196, 0.12);
+  color: #9aa4b2;
+}
+body.dark .chart-type-btn:hover { color: #e8edf3; }
+body.dark .chart-type-btn.active {
+  background: #2c323d;
+  color: #e8edf3;
+  border-color: #3c44510;
+}
+
+/* Dashboard details toggle */
+body.dark .dash-toggle {
+  background: rgba(33, 38, 47, 0.86);
+  border-color: #353c47;
+  color: #b9c2cd;
+}
+body.dark .dash-toggle:hover { background: #2c323d; }
+
+/* Phase 3 widgets — generic text/surface fixes */
+body.dark .expense-row,
+body.dark .uber-row,
+body.dark .pattern-row,
+body.dark .badge-item,
+body.dark .forecast-bound,
+body.dark .forecast-mid {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: #2c323d;
+}
+body.dark .badge-title { color: #b9c2cd; }
+body.dark .badge-date,
+body.dark .pattern-count,
+body.dark .meta-label,
+body.dark .bound-label,
+body.dark .mid-label { color: #8a94a3; }
+body.dark .bound-value,
+body.dark .mid-value,
+body.dark .meta-value { color: #d4dae3; }
+
+/* Reminder banner */
+body.dark .reminder-banner {
+  background: rgba(33, 38, 47, 0.94);
+  color: #d4dae3;
+}
+
+/* Sync / push buttons keep their gradient; just darken the secondary */
+body.dark .push-btn {
+  background: rgba(33, 38, 47, 0.86);
+  border: 1px solid #353c47;
+  color: #b9c2cd;
+}
+
+/* Scrollbars */
+body.dark ::-webkit-scrollbar-thumb { background: rgba(143, 168, 196, 0.25); }
+body.dark ::-webkit-scrollbar-thumb:hover { background: rgba(143, 168, 196, 0.4); }

@@ -1,0 +1,63 @@
+.project-menu { position: relative; z-index: 100; }
+
+.project-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #e6e1d8;
+  color: #5a6675;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.project-menu-btn:hover { background: rgba(255, 255, 255, 0.95); border-color: #d6bd92; }
+.pm-caret { font-size: 10px; color: #a7b0bb; }
+
+.project-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 280px;
+  background: #ffffff;
+  border: 1px solid #e6e1d8;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(90, 100, 110, 0.18);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 360px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.pm-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 10px;
+  text-align: left;
+}
+.pm-item:hover { background: rgba(127, 168, 147, 0.1); }
+
+.pm-item-emoji { font-size: 18px; flex-shrink: 0; }
+.pm-item-text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.pm-item-name { font-size: 13px; font-weight: 600; color: #42505f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pm-item-path { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #a7b0bb; }
+.pm-item-rev { font-size: 13px; font-weight: 700; color: #7fa893; flex-shrink: 0; }
+
+.pm-empty { padding: 14px; text-align: center; color: #a7b0bb; font-size: 13px; }
+
+/* Dark mode */
+body.dark .project-menu-btn { background: rgba(33,38,47,0.86); border-color: #353c47; color: #b9c2cd; }
+body.dark .project-menu-btn:hover { background: #2c323d; }
+body.dark .project-menu-dropdown { background: #21262f; border-color: #2c323d; }
+body.dark .pm-item:hover { background: rgba(127,168,147,0.14); }
+body.dark .pm-item-name { color: #d4dae3; }
+body.dark .pm-item-path { color: #8a94a3; }

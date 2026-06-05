@@ -62,6 +62,10 @@ app.get('/api/reminders', routes.getReminders);
 
 app.post('/api/export-status', routes.exportStatus);
 
+// Routes - Project detail pages
+app.get('/api/projects/:id', routes.getProjectDetail);
+app.post('/api/projects/:id/ideas', routes.getProjectIdeas);
+
 // System Update (manual Sync)
 app.post('/api/system-update', routes.systemUpdate);
 

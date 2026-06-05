@@ -9,6 +9,8 @@ import NewsRail from './components/NewsRail';
 import TrendsRail from './components/TrendsRail';
 import ReminderBanner from './components/ReminderBanner';
 import MilestoneToast from './components/MilestoneToast';
+import ProjectMenu from './components/ProjectMenu';
+import ProjectPage from './components/ProjectPage';
 
 const QUOTES = [
   'Discipline is choosing between what you want now and what you want most.',
@@ -30,6 +32,23 @@ function App() {
   const [updating, setUpdating] = useState(false);
   const [pushing, setPushing] = useState(false);
   const [clock, setClock] = useState(new Date());
+  const [dark, setDark] = useState(() => localStorage.getItem('ms-dark') === 'true');
+  const [route, setRoute] = useState(window.location.hash);
+
+  // Reflect dark-mode preference onto <body> and persist it.
+  useEffect(() => {
+    document.body.classList.toggle('dark', dark);
+    localStorage.setItem('ms-dark', String(dark));
+  }, [dark]);
+
+  // Lightweight hash router (no dependency) for project detail pages.
+  useEffect(() => {
+    const onHash = () => setRoute(window.location.hash);
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  const projectMatch = route.match(/^#\/project\/(.+)$/);
+  const goDashboard = () => { window.location.hash = ''; };
 
   const fetchData = useCallback(async () => {
     try {
@@ -103,10 +122,11 @@ function App() {
               <div className="brand">
                 <span className="brand-mark" />
                 <div>
-                  <div className="brand-name">INCOME HUNT</div>
-                  <div className="brand-sub">Command Dashboard</div>
+                  <div className="brand-name">MILK'S SCHMEAT</div>
+                  <div className="brand-sub">$ Hunter</div>
                 </div>
               </div>
+              <ProjectMenu experiments={experiments} />
             </div>
 
             <div className="topbar-center">
@@ -126,6 +146,10 @@ function App() {
                 <div className="clock-time mono">{clock.toLocaleTimeString('en-US', { hour12: false })}</div>
                 <div className="clock-date">{clock.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
               </div>
+              <button className="sync-btn push-btn" onClick={() => setDark((d) => !d)} title="Toggle dark mode">
+                <span className="sync-icon">{dark ? '☀️' : '🌙'}</span>
+                {dark ? 'Light' : 'Dark'}
+              </button>
               <button className={`sync-btn ${updating ? 'spinning' : ''}`} onClick={handleUpdate} title="Pull latest from source files">
                 <span className="sync-icon">⟳</span>
                 {updating ? 'Syncing' : 'Sync'}
@@ -137,17 +161,25 @@ function App() {
             </div>
           </header>
 
-          <ReminderBanner />
+          {!projectMatch && <ReminderBanner />}
 
-          <div className="main-area">
-            <TrendsRail />
+          {projectMatch ? (
+            <div className="main-area">
+              <main className="dashboard-area">
+                <ProjectPage projectId={decodeURIComponent(projectMatch[1])} onBack={goDashboard} />
+              </main>
+            </div>
+          ) : (
+            <div className="main-area">
+              <TrendsRail />
 
-            <main className="dashboard-area">
-              <Dashboard experiments={experiments} revenue={revenue} countdown={countdown} />
-            </main>
+              <main className="dashboard-area">
+                <Dashboard experiments={experiments} revenue={revenue} countdown={countdown} />
+              </main>
 
-            <NewsRail />
-          </div>
+              <NewsRail />
+            </div>
+          )}
 
           <MilestoneToast />
         </div>

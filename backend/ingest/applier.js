@@ -148,12 +148,30 @@ async function applyExpenses() {
 
   for (const fact of expenseFacts) {
     const expFact = await get(`SELECT * FROM extracted_facts WHERE id=?`, [fact.id]);
-    const expId = `exp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+    // Use the deterministic fact id as the expense id so re-running finalize is
+    // idempotent — the NOT IN check above and INSERT OR IGNORE both rely on this.
+    await run(
+      `INSERT OR IGNORE INTO expenses (id, date, amount, category, path, source, deductible, createdAt)
+       VALUES (?, ?, ?, ?, ?, 'ingest', 1, CURRENT_TIMESTAMP)`,
+      [expFact.id, expFact.sourceDate, expFact.value, expFact.textValue, expFact.path]
+    );
+  }
+}
+
+async function applyTasks() {
+  const taskFacts = await all(
+    `SELECT id FROM extracted_facts WHERE factType='task' AND id NOT IN (SELECT id FROM tasks)`
+  );
+
+  for (const fact of taskFacts) {
+    const taskFact = await get(`SELECT * FROM extracted_facts WHERE id=?`, [fact.id]);
+    const today = new Date().toISOString().split('T')[0];
 
     await run(
-      `INSERT INTO expenses (id, date, amount, category, path, source, deductible, createdAt)
-       VALUES (?, ?, ?, ?, ?, 'ingest', 1, CURRENT_TIMESTAMP)`,
-      [expId, expFact.sourceDate, expFact.value, expFact.textValue, expFact.path]
+      `INSERT OR IGNORE INTO tasks (id, date, taskName, priority, linkedPath, status, createdAt)
+       VALUES (?, ?, ?, 'should-do', ?, 'not-started', CURRENT_TIMESTAMP)`,
+      [taskFact.id, taskFact.sourceDate || today, taskFact.textValue, taskFact.path]
     );
   }
 }
@@ -173,9 +191,13 @@ export async function applyFacts(facts, sourceFile) {
 // Called once per run after all files applied — derive aggregates + snapshot.
 export async function finalizeAggregates() {
   await recomputePathTotals();
+  // applyExpenses() must run BEFORE recomputePathExpenses() so the freshly
+  // ingested expense rows are summed into experiment.totalExpenses this pass,
+  // not one sync later.
+  await applyExpenses();
   await recomputePathExpenses();
   await applyTextFacts();
-  await applyExpenses();
+  await applyTasks();
   await writeSnapshot();
 
   // Import dynamically to avoid circular dependency at load time

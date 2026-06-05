@@ -36,6 +36,14 @@ derivable number) instead.
 - **Dashboard layout:** `react-grid-layout` with `lg`/`md`/`sm` breakpoints. The details toggle
   swaps between `layoutsFull` (all widgets) and `layoutsFocus` (6 primary widgets); detail
   widgets are conditionally rendered so RGL children always match the active layout.
+- **Routing:** no router dependency — a lightweight hash router in `App.js` (`#/project/<id>`)
+  switches between the dashboard and `ProjectPage`. Project pages are *additional* views; the
+  dashboard is never replaced. `ProjectMenu` (topbar) lists active experiments and sets the hash.
+- **Dark mode:** toggled by adding/removing `body.dark` (persisted in `localStorage` as `ms-dark`).
+  All overrides live in `frontend/src/dark-mode.css` as `body.dark <selector>` rules — additive
+  only, light mode untouched. Inline pastel chart colors stay as-is (they read fine on dark).
+- **AI suggestions:** `POST /api/projects/:id/ideas` uses Claude Haiku when `ANTHROPIC_API_KEY`
+  is set, else returns curated per-path "starter" ideas clearly labeled as such (never fake AI).
 
 ## Build / run
 - Frontend: `cd frontend && CI=false npx react-scripts build`

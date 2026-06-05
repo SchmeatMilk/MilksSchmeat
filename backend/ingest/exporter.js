@@ -14,7 +14,8 @@ export async function exportDashboardStatus() {
 
   const results = { written: [], skipped: [], errors: [] };
 
-  for (const dir of dirs) {
+  // discoverMemoryDirs() returns [{ dir, lastActivity }] — pull the path string.
+  for (const { dir } of dirs) {
     try {
       const statusPath = path.join(dir, 'INCOME_HUNT_STATUS.md');
       const content = await generateStatusMarkdown();
