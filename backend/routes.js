@@ -165,59 +165,43 @@ function stockPhoto(seed) {
   return `https://picsum.photos/seed/${encodeURIComponent(seed)}/400/240`;
 }
 
-// NEWS API — live via NewsAPI when NEWS_API_KEY is set; image-rich fallback otherwise.
+// NEWS API — live via NewsAPI when NEWS_API_KEY is set.
 export async function getNews(req, res) {
   const key = process.env.NEWS_API_KEY;
 
-  if (key) {
-    try {
-      const response = await axios.get('https://newsapi.org/v2/top-headlines', {
-        params: { country: 'us', pageSize: 12, apiKey: key },
-        timeout: 8000,
-      });
-      const news = (response.data.articles || [])
-        .filter((a) => a.title && a.title !== '[Removed]')
-        .slice(0, 12)
-        .map((a, i) => ({
-          title: a.title,
-          source: a.source?.name || 'News',
-          url: a.url,
-          image: a.urlToImage || stockPhoto(`news-${i}`),
-          publishedAt: a.publishedAt || null,
-        }));
-      if (news.length) return res.json({ items: news, isSample: false });
-    } catch (error) {
-      console.warn('NewsAPI failed, using fallback:', error.message);
-    }
+  if (!key) {
+    console.warn('NEWS_API_KEY not set; headlines unavailable');
+    return res.json({ items: [] });
   }
 
-  // Fallback — always has images so the rail looks complete.
-  const fallback = [
-    { title: 'Global Markets Climb on Strong Tech Earnings', source: 'Reuters' },
-    { title: 'Canada Unveils National AI Strategy', source: 'CBC' },
-    { title: 'AI Startups Raise Record Funding This Quarter', source: 'TechCrunch' },
-    { title: 'Small Businesses Adopt AI Tools at Record Pace', source: 'Forbes' },
-    { title: 'The Creator Economy Crosses $250B', source: 'Bloomberg' },
-    { title: 'Remote Work Reshapes the Job Market', source: 'WSJ' },
-    { title: 'New Frameworks Make Web Apps Faster', source: 'The Verge' },
-    { title: 'Investors Bet Big on Productivity Software', source: 'VentureBeat' },
-  ].map((n, i) => ({
-    ...n,
-    url: '#',
-    image: stockPhoto(`news-${i}`),
-    publishedAt: new Date(Date.now() - i * 3600_000).toISOString(),
-  }));
-  res.json({ items: fallback, isSample: true });
+  try {
+    const response = await axios.get('https://newsapi.org/v2/top-headlines', {
+      params: { country: 'us', pageSize: 12, apiKey: key },
+      timeout: 8000,
+    });
+    const news = (response.data.articles || [])
+      .filter((a) => a.title && a.title !== '[Removed]')
+      .slice(0, 12)
+      .map((a, i) => ({
+        title: a.title,
+        source: a.source?.name || 'News',
+        url: a.url,
+        image: a.urlToImage || stockPhoto(`news-${i}`),
+        publishedAt: a.publishedAt || null,
+      }));
+    res.json({ items: news });
+  } catch (error) {
+    console.warn('NewsAPI request failed:', error.message);
+    res.json({ items: [] });
+  }
 }
 
-// SOCIAL MEDIA TRENDS — live via Reddit's public JSON (no key needed).
+// X TRENDS — live via getdaytrends.com (public API, no key required).
 export async function getTrends(req, res) {
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-  // Try to fetch from a public X/trending data API
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      // Attempt to use getdaytrends.com API for X trending data
       const response = await axios.get('https://api.getdaytrends.com/api/v1/gettrends', {
         params: { country: 'US', source: 'twitter' },
         headers: {
@@ -240,53 +224,18 @@ export async function getTrends(req, res) {
         }))
         .filter((t) => t.title.length > 2);
 
-      if (trends.length >= 10) return res.json({ items: trends, isSample: false });
+      if (trends.length >= 10) return res.json({ items: trends });
       throw new Error('Insufficient trends returned');
     } catch (error) {
       if (attempt === 0) {
         console.warn(`X trends attempt ${attempt + 1} failed, retrying:`, error.message);
         await sleep(1000);
-      } else {
-        console.warn('X trends failed, using fallback:', error.message);
       }
     }
   }
 
-  // Fallback: realistic X/Twitter trending simulation
-  const xTrends = [
-    { title: '#AI is changing everything', source: 'Trending Worldwide', count: '245K posts' },
-    { title: '#IndieHackers building in public', source: 'Trending Worldwide', count: '187K posts' },
-    { title: 'Claude released new features', source: 'Technology · Trending', count: '156K posts' },
-    { title: '#SideHustle success stories', source: 'Trending Worldwide', count: '142K posts' },
-    { title: 'Remote work trends 2026', source: 'Business · Trending', count: '128K posts' },
-    { title: '#ProductHunt new launches', source: 'Trending Worldwide', count: '119K posts' },
-    { title: 'Crypto market moves today', source: 'Finance · Trending', count: '98K posts' },
-    { title: '#NoCode development boom', source: 'Technology · Trending', count: '87K posts' },
-    { title: 'Startup funding announcements', source: 'Business · Trending', count: '76K posts' },
-    { title: '#ContentCreators monetization', source: 'Creator Economy · Trending', count: '65K posts' },
-    { title: 'Open source breakthroughs', source: 'Technology · Trending', count: '54K posts' },
-    { title: '#Freelance marketplace trends', source: 'Business · Trending', count: '43K posts' },
-    { title: 'Developer tools roundup', source: 'Technology · Trending', count: '38K posts' },
-    { title: '#SEO best practices 2026', source: 'Marketing · Trending', count: '32K posts' },
-    { title: 'Machine learning breakthroughs', source: 'Technology · Trending', count: '28K posts' },
-    { title: '#SaaS metrics explained', source: 'Business · Trending', count: '24K posts' },
-    { title: 'Web3 latest updates', source: 'Crypto · Trending', count: '19K posts' },
-    { title: '#GrowthHacking strategies', source: 'Marketing · Trending', count: '16K posts' },
-    { title: 'Productivity tools comparison', source: 'Business · Trending', count: '14K posts' },
-    { title: '#Entrepreneurship lessons', source: 'Business · Trending', count: '12K posts' },
-  ];
-
-  const fallback = xTrends.map((t, i) => ({
-    rank: i + 1,
-    title: t.title,
-    source: t.source,
-    url: `https://x.com/search?q=${encodeURIComponent(t.title)}`,
-    thumbnail: stockPhoto(`trend-${i}`),
-    score: Math.floor(Math.random() * 50000 + 5000),
-    comments: Math.floor(Math.random() * 5000 + 100),
-  }));
-
-  res.json({ items: fallback, isSample: true });
+  console.warn('X trends API unavailable');
+  res.json({ items: [] });
 }
 
 // SYSTEM UPDATE — manual Sync button. Runs the real ingestion pipeline.

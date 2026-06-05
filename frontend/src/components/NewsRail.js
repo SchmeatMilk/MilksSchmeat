@@ -13,13 +13,18 @@ function timeAgo(iso) {
 
 function NewsRail() {
   const [news, setNews] = useState([]);
-  const [isSample, setIsSample] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const load = () => axios.get('/api/news').then((r) => {
-      setNews(r.data.items || r.data);
-      setIsSample(r.data.isSample || false);
-    }).catch(() => {});
+    const load = () => {
+      setLoading(true);
+      return axios.get('/api/news').then((r) => {
+        setNews(r.data.items || r.data);
+      }).catch((err) => {
+        console.warn('News fetch failed:', err.message);
+        setNews([]);
+      }).finally(() => setLoading(false));
+    };
     load();
     const t = setInterval(load, 15 * 60 * 1000); // refresh every 15 min
     return () => clearInterval(t);
@@ -29,10 +34,10 @@ function NewsRail() {
     <aside className="rail">
       <div className="rail-head">
         <span className="rail-dot" /> LIVE HEADLINES
-        {isSample && <span className="rail-badge">sample data</span>}
       </div>
       <div className="rail-scroll">
-        {news.length === 0 && <div className="rail-empty">Fetching headlines…</div>}
+        {loading && news.length === 0 && <div className="rail-empty">Fetching headlines…</div>}
+        {!loading && news.length === 0 && <div className="rail-empty">Set NEWS_API_KEY to see headlines</div>}
         {news.map((n, i) => (
           <a key={i} className="news-card" href={n.url} target="_blank" rel="noopener noreferrer">
             <div className="news-thumb">

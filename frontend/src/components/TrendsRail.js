@@ -9,13 +9,18 @@ function formatScore(n) {
 
 function TrendsRail() {
   const [trends, setTrends] = useState([]);
-  const [isSample, setIsSample] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const load = () => axios.get('/api/trends').then((r) => {
-      setTrends(r.data.items || r.data);
-      setIsSample(r.data.isSample || false);
-    }).catch(() => {});
+    const load = () => {
+      setLoading(true);
+      return axios.get('/api/trends').then((r) => {
+        setTrends(r.data.items || r.data);
+      }).catch((err) => {
+        console.warn('Trends fetch failed:', err.message);
+        setTrends([]);
+      }).finally(() => setLoading(false));
+    };
     load();
     const t = setInterval(load, 10 * 60 * 1000); // refresh every 10 min
     return () => clearInterval(t);
@@ -25,10 +30,10 @@ function TrendsRail() {
     <aside className="rail">
       <div className="rail-head">
         <span className="rail-dot trends" /> TOP 20 X TRENDING
-        {isSample && <span className="rail-badge">sample data</span>}
       </div>
       <div className="rail-scroll">
-        {trends.length === 0 && <div className="rail-empty">Fetching trends…</div>}
+        {loading && trends.length === 0 && <div className="rail-empty">Fetching trends…</div>}
+        {!loading && trends.length === 0 && <div className="rail-empty">X trends unavailable</div>}
         {trends.map((t, i) => (
           <a key={i} className="trend-card" href={t.url} target="_blank" rel="noopener noreferrer">
             <span className="trend-rank">{t.rank || i + 1}</span>
