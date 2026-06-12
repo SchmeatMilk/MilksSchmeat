@@ -1,3 +1,9 @@
+# Project Memory
+
+## Repo layout (two independent projects)
+- **`income-hunt/`** — the Income Hunt tracking dashboard (Node/Express backend + React frontend). Everything below applies to this project.
+- **`naruto-shinobi-chronicles/`** — Godot 4.3 GBA-style RPG demake. Has its own README with architecture rules; key one: `BattleEngine` stays pure (no scene/autoload access, all RNG through `BattleState.rng`).
+
 # Income Hunt — Project Memory
 
 ## Design principles
@@ -21,14 +27,14 @@ Only display figures we can actually derive from logged data. Don't fabricate a
 derivable number) instead.
 
 ## Architecture (do not rebuild)
-- **DB:** SQLite via Promise helpers `run` / `get` / `all` in `backend/db.js`.
+- **DB:** SQLite via Promise helpers `run` / `get` / `all` in `income-hunt/backend/db.js`.
 - **Idempotent fact log:** extracted facts deduped by `factKey`; experiment totals are always
   **re-derived** from the fact table in `finalizeAggregates()`, never incremented in place.
-- **`finalizeAggregates()`** (`backend/ingest/applier.js`) is the single choke point — it
+- **`finalizeAggregates()`** (`income-hunt/backend/ingest/applier.js`) is the single choke point — it
   recomputes path totals + expenses, applies text facts, writes a snapshot, awards
   milestones, and reverse-syncs the status file. Cron, manual Sync, and every CRUD route
   call it, so all aggregates and side effects stay consistent.
-- **Reverse sync:** `backend/ingest/exporter.js` atomically writes `INCOME_HUNT_STATUS.md`
+- **Reverse sync:** `income-hunt/backend/ingest/exporter.js` atomically writes `INCOME_HUNT_STATUS.md`
   (`.tmp` + rename) into each discovered memory dir so the user's Claude Desktop assistant
   always has fresh context. The ingest reader skips that filename to prevent a re-ingest loop.
 - **Frontend widgets:** use the `Widget` shell + `theme.colors` + `AnimatedNumber` + `ChartCard`;
@@ -38,5 +44,6 @@ derivable number) instead.
   widgets are conditionally rendered so RGL children always match the active layout.
 
 ## Build / run
-- Frontend: `cd frontend && CI=false npx react-scripts build`
-- Backend: `cd backend && node server.js` (port 5000)
+- Frontend: `cd income-hunt/frontend && CI=false npx react-scripts build`
+- Backend: `cd income-hunt/backend && node server.js` (port 5000)
+- Game: `godot --path naruto-shinobi-chronicles` (Godot 4.3); tests: `godot --headless -s tests/run_tests.gd`
