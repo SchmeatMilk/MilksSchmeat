@@ -1,0 +1,45 @@
+{
+  "id": "forest_of_death",
+  "name": "Forest of Death — Area 44",
+  "music": "dungeon_theme",
+  "palette": {"floor": "#3a4a30", "wall": "#1a2414", "grass": "#2c5a28", "water": "#2a4a6a"},
+  "grid": [
+    "###############",
+    "#,,,,#....#,,,#",
+    "#,##,#.##.#,#,#",
+    "#,#,,,.#,,,,#,#",
+    "#,#.####.##.#,#",
+    ".,,..,,,,,,..,#",
+    "#,#.#,##,#.#.,#",
+    "#,#,,,#,,,.#,,#",
+    "#,##,#,#.#,##,#",
+    "#,,,,,,#,,,,,B#"
+  ],
+  "npcs": [
+    {"id": "anko", "name": "Anko Mitarashi", "cell": [2, 5], "color": "#9a7a9a",
+     "dialogue": ["Exam rules: reach the far corner of the forest alive.", "Something in here is wearing a face that isn't theirs. Watch your back, Commander."],
+     "action": ""},
+    {"id": "orochimaru_boss", "name": "Disguised Genin", "cell": [13, 9], "color": "#d8d8e8",
+     "dialogue": ["Kukuku... such promising material walks into my forest.", "Show me what your contract bonds are worth!"],
+     "action": "boss_battle",
+     "boss": {"party": [["forest_snake", 9], ["sound_genin", 10], ["orochimaru", 12]],
+              "flag": "forest_of_death_cleared",
+              "reward_items": {"scroll_of_heaven": 1, "scroll_of_earth": 1},
+              "reward_ryo": 1500,
+              "victory_text": "The figure peels away into mud and snakes. You claim both scrolls — the exam is yours."}
+    }
+  ],
+  "warps": [
+    {"cell": [0, 5], "to_map": "konoha", "to_cell": [12, 3], "label": "Konoha Gate"}
+  ],
+  "encounters": {
+    "rate": 0.22,
+    "table": [
+      {"unit": "forest_snake", "weight": 35, "min_level": 6, "max_level": 10},
+      {"unit": "giant_centipede", "weight": 30, "min_level": 6, "max_level": 10},
+      {"unit": "sound_genin", "weight": 25, "min_level": 7, "max_level": 11},
+      {"unit": "mist_swordsman", "weight": 8, "min_level": 8, "max_level": 12},
+      {"unit": "haku", "weight": 2, "min_level": 10, "max_level": 12}
+    ]
+  }
+}

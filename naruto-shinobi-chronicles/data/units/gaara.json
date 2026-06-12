@@ -1,0 +1,60 @@
+{
+  "id": "gaara",
+  "name": "Gaara",
+  "growth_curve": "slow",
+  "nature": "stoic",
+  "affinities": [
+    "earth"
+  ],
+  "trait": "sand_shield",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "sand_coffin"
+    },
+    {
+      "level": 1,
+      "jutsu": "earth_mud_wall"
+    },
+    {
+      "level": 8,
+      "jutsu": "earth_headhunter"
+    },
+    {
+      "level": 15,
+      "jutsu": "sand_burial"
+    },
+    {
+      "level": 24,
+      "jutsu": "earth_swamp"
+    },
+    {
+      "level": 34,
+      "jutsu": "earth_tectonic"
+    }
+  ],
+  "promotion": {
+    "level": 20,
+    "story_flag": "konoha_crush_resolved",
+    "target_id": "gaara_kazekage"
+  },
+  "rarity": "legendary",
+  "catch_rate": 0,
+  "base_exp": 110,
+  "village": "sand",
+  "threat_level": "A",
+  "bingo_entry": "Jinchuriki of the One-Tail. Do not engage alone. The sand moves on its own.",
+  "palette": {
+    "primary": "#c8a878",
+    "secondary": "#6a1f1f",
+    "accent": "#50c8c8"
+  },
+  "base_stats": {
+    "hp": 80,
+    "str": 50,
+    "nin": 90,
+    "def": 85,
+    "res": 75,
+    "spd": 40
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "id": "giant_centipede",
+  "name": "Giant Centipede",
+  "growth_curve": "fast",
+  "nature": "sturdy",
+  "affinities": [
+    "earth"
+  ],
+  "trait": "hardened_body",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "yang_leaf_hurricane"
+    },
+    {
+      "level": 7,
+      "jutsu": "earth_headhunter"
+    },
+    {
+      "level": 16,
+      "jutsu": "striking_shadow_snake"
+    },
+    {
+      "level": 25,
+      "jutsu": "earth_mud_wall"
+    }
+  ],
+  "promotion": {},
+  "rarity": "common",
+  "catch_rate": 200,
+  "base_exp": 38,
+  "village": "rogue",
+  "threat_level": "D",
+  "bingo_entry": "Chitin like riot armor. Aim for the joints. There are many, many joints.",
+  "palette": {
+    "primary": "#7a4a2a",
+    "secondary": "#2e1a0e",
+    "accent": "#c8a060"
+  },
+  "base_stats": {
+    "hp": 60,
+    "str": 60,
+    "nin": 25,
+    "def": 65,
+    "res": 30,
+    "spd": 45
+  }
+}

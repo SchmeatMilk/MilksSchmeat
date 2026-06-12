@@ -1,0 +1,52 @@
+{
+  "id": "neji",
+  "name": "Neji Hyuga",
+  "growth_curve": "fast",
+  "nature": "stoic",
+  "affinities": [
+    "yang"
+  ],
+  "trait": "byakugan",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "yang_gentle_fist"
+    },
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 8,
+      "jutsu": "yang_eight_trigrams"
+    },
+    {
+      "level": 16,
+      "jutsu": "yang_chakra_scalpel"
+    },
+    {
+      "level": 26,
+      "jutsu": "yang_twin_lion_fists"
+    }
+  ],
+  "promotion": {},
+  "rarity": "rare",
+  "catch_rate": 40,
+  "base_exp": 80,
+  "village": "leaf",
+  "threat_level": "B",
+  "bingo_entry": "A genius of the branch house. 64 palms, zero mercy, 361 sealed points.",
+  "palette": {
+    "primary": "#d8d0c0",
+    "secondary": "#4a4438",
+    "accent": "#7a6a50"
+  },
+  "base_stats": {
+    "hp": 70,
+    "str": 75,
+    "nin": 60,
+    "def": 65,
+    "res": 70,
+    "spd": 75
+  }
+}

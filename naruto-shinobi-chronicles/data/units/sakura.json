@@ -1,0 +1,64 @@
+{
+  "id": "sakura",
+  "name": "Sakura Haruno",
+  "growth_curve": "medium",
+  "nature": "calm",
+  "affinities": [
+    "yang"
+  ],
+  "trait": "chakra_control",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "substitution"
+    },
+    {
+      "level": 5,
+      "jutsu": "yang_chakra_scalpel"
+    },
+    {
+      "level": 10,
+      "jutsu": "medical_palm"
+    },
+    {
+      "level": 16,
+      "jutsu": "yang_leaf_hurricane"
+    },
+    {
+      "level": 22,
+      "jutsu": "earth_mud_wall"
+    },
+    {
+      "level": 30,
+      "jutsu": "poison_mist"
+    }
+  ],
+  "promotion": {
+    "level": 20,
+    "item": "scroll_of_earth",
+    "target_id": "sakura_apprentice"
+  },
+  "rarity": "legendary",
+  "catch_rate": 0,
+  "base_exp": 85,
+  "village": "leaf",
+  "threat_level": "D",
+  "bingo_entry": "Deceptively precise chakra control. The weakest-looking one is the trap.",
+  "palette": {
+    "primary": "#e87a90",
+    "secondary": "#7a1f33",
+    "accent": "#fff0f3"
+  },
+  "base_stats": {
+    "hp": 75,
+    "str": 60,
+    "nin": 55,
+    "def": 60,
+    "res": 75,
+    "spd": 55
+  }
+}

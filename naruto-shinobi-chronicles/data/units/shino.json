@@ -1,0 +1,52 @@
+{
+  "id": "shino",
+  "name": "Shino Aburame",
+  "growth_curve": "medium",
+  "nature": "stoic",
+  "affinities": [
+    "yin"
+  ],
+  "trait": "sensor",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "substitution"
+    },
+    {
+      "level": 7,
+      "jutsu": "yin_chakra_leech"
+    },
+    {
+      "level": 14,
+      "jutsu": "poison_mist"
+    },
+    {
+      "level": 22,
+      "jutsu": "yin_binding"
+    }
+  ],
+  "promotion": {},
+  "rarity": "uncommon",
+  "catch_rate": 55,
+  "base_exp": 70,
+  "village": "leaf",
+  "threat_level": "C",
+  "bingo_entry": "The Aburame hive answers to him. The buzzing is the last thing you hear.",
+  "palette": {
+    "primary": "#3a4a4a",
+    "secondary": "#161e1e",
+    "accent": "#90b0a0"
+  },
+  "base_stats": {
+    "hp": 70,
+    "str": 50,
+    "nin": 75,
+    "def": 60,
+    "res": 70,
+    "spd": 55
+  }
+}

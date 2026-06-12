@@ -1,0 +1,69 @@
+{
+  "id": "sasuke",
+  "name": "Sasuke Uchiha",
+  "growth_curve": "fast",
+  "nature": "swift",
+  "affinities": [
+    "fire",
+    "lightning"
+  ],
+  "trait": "sharingan",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "shuriken_barrage"
+    },
+    {
+      "level": 5,
+      "jutsu": "fire_fireball"
+    },
+    {
+      "level": 9,
+      "jutsu": "substitution"
+    },
+    {
+      "level": 13,
+      "jutsu": "fire_phoenix_flower"
+    },
+    {
+      "level": 18,
+      "jutsu": "lightning_chidori"
+    },
+    {
+      "level": 26,
+      "jutsu": "yin_sharingan_gaze"
+    },
+    {
+      "level": 34,
+      "jutsu": "lightning_chidori_current"
+    }
+  ],
+  "promotion": {
+    "level": 20,
+    "item": "scroll_of_heaven",
+    "target_id": "sasuke_cm2"
+  },
+  "rarity": "legendary",
+  "catch_rate": 0,
+  "base_exp": 90,
+  "village": "leaf",
+  "threat_level": "C",
+  "bingo_entry": "Last loyal Uchiha. The Sharingan sees everything; pray it never sees you.",
+  "palette": {
+    "primary": "#27408b",
+    "secondary": "#0e1626",
+    "accent": "#e8e8e8"
+  },
+  "base_stats": {
+    "hp": 65,
+    "str": 65,
+    "nin": 80,
+    "def": 50,
+    "res": 55,
+    "spd": 85
+  }
+}

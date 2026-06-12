@@ -1,0 +1,52 @@
+{
+  "id": "kankuro",
+  "name": "Kankuro",
+  "growth_curve": "medium",
+  "nature": "sturdy",
+  "affinities": [
+    "none"
+  ],
+  "trait": "puppet_master",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "puppet_strike"
+    },
+    {
+      "level": 9,
+      "jutsu": "poison_mist"
+    },
+    {
+      "level": 17,
+      "jutsu": "striking_shadow_snake"
+    },
+    {
+      "level": 26,
+      "jutsu": "explosive_tag"
+    }
+  ],
+  "promotion": {},
+  "rarity": "rare",
+  "catch_rate": 40,
+  "base_exp": 78,
+  "village": "sand",
+  "threat_level": "B",
+  "bingo_entry": "Puppet corps. The thing you're fighting is never where he is.",
+  "palette": {
+    "primary": "#5a5a6a",
+    "secondary": "#26262e",
+    "accent": "#b06ad0"
+  },
+  "base_stats": {
+    "hp": 75,
+    "str": 70,
+    "nin": 65,
+    "def": 65,
+    "res": 55,
+    "spd": 55
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "id": "tsunade",
+  "name": "Tsunade Senju",
+  "growth_curve": "slow",
+  "nature": "brave",
+  "affinities": [
+    "yang",
+    "earth"
+  ],
+  "trait": "medical_ninja",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "yang_chakra_scalpel"
+    },
+    {
+      "level": 1,
+      "jutsu": "medical_palm"
+    },
+    {
+      "level": 8,
+      "jutsu": "earth_tectonic"
+    },
+    {
+      "level": 15,
+      "jutsu": "healing_burst"
+    },
+    {
+      "level": 24,
+      "jutsu": "yang_primary_lotus"
+    }
+  ],
+  "promotion": {},
+  "rarity": "mythic",
+  "catch_rate": 0,
+  "base_exp": 180,
+  "village": "leaf",
+  "threat_level": "S",
+  "bingo_entry": "Sannin. The Slug Princess. The ground is a weapon and she knows it.",
+  "palette": {
+    "primary": "#e8d090",
+    "secondary": "#3a6a3a",
+    "accent": "#90c8e8"
+  },
+  "base_stats": {
+    "hp": 110,
+    "str": 100,
+    "nin": 85,
+    "def": 80,
+    "res": 90,
+    "spd": 55
+  }
+}

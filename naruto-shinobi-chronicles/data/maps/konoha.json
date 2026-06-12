@@ -1,0 +1,37 @@
+{
+  "id": "konoha",
+  "name": "Konohagakure",
+  "music": "town_theme",
+  "palette": {"floor": "#c8b088", "wall": "#7a5230", "grass": "#5a8a4a", "water": "#4a78b0"},
+  "grid": [
+    "###############",
+    "#.....##......#",
+    "#.....##..~~..#",
+    "#.............#",
+    "###..#####..###",
+    "#.............#",
+    "#..,,......,,.#",
+    "#..,,......,,.#",
+    "#.............#",
+    "######.########"
+  ],
+  "npcs": [
+    {"id": "hokage", "name": "Third Hokage", "cell": [3, 1], "color": "#e8e0d0",
+     "dialogue": ["Welcome back, Commander.", "Your team has been fully healed.", "The Chunin Exams await in the Forest of Death — south gate, when you are ready."],
+     "action": "heal_party"},
+    {"id": "shopkeep", "name": "Tool Shop Keeper", "cell": [11, 1], "color": "#d0a060",
+     "dialogue": ["Tags, pills, and steel — everything a Commander needs."],
+     "action": "open_shop"},
+    {"id": "ichiraku", "name": "Ichiraku Teuchi", "cell": [3, 5], "color": "#f0d8b0",
+     "dialogue": ["One bowl of the usual? On the house.", "Your whole squad looks livelier already!"],
+     "action": "heal_party"},
+    {"id": "iruka", "name": "Iruka Sensei", "cell": [11, 5], "color": "#b08868",
+     "dialogue": ["Remember your basics: type advantage wins fights.", "Fire burns Wind. Wind cuts Lightning. Lightning splits Earth. Earth dams Water. Water douses Fire.", "Genjutsu (Yin) breaks Taijutsu (Yang), and Yang shatters Yin."],
+     "action": ""}
+  ],
+  "warps": [
+    {"cell": [6, 9], "to_map": "training_grounds", "to_cell": [7, 1], "label": "Training Grounds"},
+    {"cell": [13, 3], "to_map": "forest_of_death", "to_cell": [1, 5], "label": "Forest of Death"}
+  ],
+  "encounters": {"rate": 0.0, "table": []}
+}

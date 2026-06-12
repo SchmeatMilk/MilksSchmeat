@@ -1,0 +1,19 @@
+{
+  "blood_pill":       {"name": "Blood Pill",       "kind": "heal_hp",    "amount": 50,  "price": 200,  "pocket": "pills", "description": "Restores 50 HP."},
+  "vitality_pill":    {"name": "Vitality Pill",    "kind": "heal_hp",    "amount": 120, "price": 600,  "pocket": "pills", "description": "Restores 120 HP."},
+  "chakra_pill":      {"name": "Chakra Pill",      "kind": "restore_cp", "amount": 50,  "price": 350,  "pocket": "pills", "description": "Restores 50 team CP."},
+  "soldier_pill":     {"name": "Soldier Pill",     "kind": "restore_cp", "amount": 100, "price": 800,  "pocket": "pills", "description": "Restores 100 team CP."},
+  "antidote":         {"name": "Antidote",         "kind": "cure_status", "cures": ["poison", "bleed"],  "price": 150, "pocket": "medical", "description": "Cures poison and bleeding."},
+  "burn_salve":       {"name": "Burn Salve",       "kind": "cure_status", "cures": ["burn"],             "price": 150, "pocket": "medical", "description": "Cures burns."},
+  "smelling_salts":   {"name": "Smelling Salts",   "kind": "cure_status", "cures": ["sleep", "stun", "confusion"], "price": 200, "pocket": "medical", "description": "Wakes and steadies an ally."},
+  "tonic":            {"name": "Full Tonic",       "kind": "cure_status", "cures": ["all"],              "price": 500, "pocket": "medical", "description": "Cures any status condition."},
+  "revival_pill":     {"name": "Revival Pill",     "kind": "revive",     "fraction": 0.5, "price": 1200, "pocket": "pills", "description": "Revives a defeated ally at half HP."},
+  "sealing_tag":      {"name": "Sealing Tag",      "kind": "capture",    "mod": 1.0, "price": 300,  "pocket": "capture", "description": "Forms a contract with a weakened wild shinobi."},
+  "cursed_seal_tag":  {"name": "Cursed Seal Tag",  "kind": "capture",    "mod": 1.5, "price": 900,  "pocket": "capture", "description": "A stronger seal for rare targets."},
+  "scroll_of_heaven": {"name": "Scroll of Heaven", "kind": "promotion",  "price": 0, "pocket": "scrolls", "description": "Chunin Exam scroll. Required for some promotions."},
+  "scroll_of_earth":  {"name": "Scroll of Earth",  "kind": "promotion",  "price": 0, "pocket": "scrolls", "description": "Chunin Exam scroll. Required for some promotions."},
+  "forbidden_scroll": {"name": "Forbidden Scroll", "kind": "promotion",  "price": 0, "pocket": "scrolls", "description": "Unlocks legendary promotions."},
+  "kunai_set":        {"name": "Kunai Set",        "kind": "tool",       "price": 250, "pocket": "tools", "description": "Held: physical jutsu +10% power."},
+  "chakra_blade":     {"name": "Chakra Blade",     "kind": "tool",       "price": 700, "pocket": "tools", "description": "Held: special jutsu +10% power."},
+  "focus_band":       {"name": "Focus Band",       "kind": "tool",       "price": 800, "pocket": "tools", "description": "Held: prevents confusion self-hits."}
+}

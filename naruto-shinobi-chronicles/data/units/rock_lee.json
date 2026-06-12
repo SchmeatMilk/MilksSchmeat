@@ -1,0 +1,52 @@
+{
+  "id": "rock_lee",
+  "name": "Rock Lee",
+  "growth_curve": "fast",
+  "nature": "brave",
+  "affinities": [
+    "yang"
+  ],
+  "trait": "hardened_body",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "yang_leaf_hurricane"
+    },
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 8,
+      "jutsu": "yang_primary_lotus"
+    },
+    {
+      "level": 18,
+      "jutsu": "yang_fang_over_fang"
+    },
+    {
+      "level": 30,
+      "jutsu": "yang_morning_peacock"
+    }
+  ],
+  "promotion": {},
+  "rarity": "rare",
+  "catch_rate": 40,
+  "base_exp": 80,
+  "village": "leaf",
+  "threat_level": "B",
+  "bingo_entry": "Cannot mold chakra. Does not need to. The springtime of youth hits like a truck.",
+  "palette": {
+    "primary": "#3a8a3a",
+    "secondary": "#143014",
+    "accent": "#ffb830"
+  },
+  "base_stats": {
+    "hp": 80,
+    "str": 90,
+    "nin": 10,
+    "def": 60,
+    "res": 50,
+    "spd": 90
+  }
+}
