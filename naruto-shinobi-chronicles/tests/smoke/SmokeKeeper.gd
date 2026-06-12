@@ -8,6 +8,14 @@ func _ready() -> void:
 	_smoke()
 
 
+func _press(action: String) -> void:
+	var ev := InputEventAction.new()
+	ev.action = action
+	ev.pressed = true
+	Input.parse_input_event(ev)
+	Input.flush_buffered_events()
+
+
 func _fail(msg: String) -> void:
 	printerr("SMOKE_FAIL: " + msg)
 	_failed = true
@@ -36,6 +44,26 @@ func _smoke() -> void:
 	var battle = get_tree().current_scene
 	if not battle.scene_file_path.ends_with("Battle.tscn"):
 		return _fail("battle scene did not load")
+
+	# Regression guard: the battle scene once shipped without an input handler,
+	# freezing the menu. Drive it with real synthesized input events.
+	var guard_intro := 0
+	while (battle._busy or not battle.menu.visible) and guard_intro < 20:
+		await get_tree().create_timer(0.5).timeout
+		guard_intro += 1
+	if guard_intro >= 20:
+		return _fail("battle menu never became interactive")
+	_press("ui_accept")
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if battle._page == "root":
+		return _fail("battle menu ignored ui_accept (input freeze)")
+	_press("ui_cancel")
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if battle._page != "root":
+		return _fail("ui_cancel did not return to root menu")
+	print("[smoke] battle menu responds to input events.")
 
 	print("[smoke] battling with taijutsu until resolution...")
 	var guard := 0

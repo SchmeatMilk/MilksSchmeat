@@ -353,3 +353,12 @@ func _finish_battle() -> void:
 		result = {"outcome": "victory", "boss": boss, "boss_npc_id": boss_npc_id}
 	await get_tree().create_timer(0.6).timeout
 	get_node("/root/SceneRouter").return_from_battle(result)
+
+
+# --- Input handling ----------------------------------------------------------
+
+func _unhandled_input(event: InputEvent) -> void:
+	if _busy:
+		return
+	if menu.handle_input(event):
+		get_viewport().set_input_as_handled()
