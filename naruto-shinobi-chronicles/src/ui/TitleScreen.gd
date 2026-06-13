@@ -14,6 +14,19 @@ func _ready() -> void:
 	bg.size = Vector2(240, 160)
 	bg.color = Color("#101a30")
 	add_child(bg)
+	# Wave 1 establishing-shot art as the title backdrop, dimmed for legibility.
+	var art_path := "res://assets/cutscenes/reference/village_gate_establishing_shot.jpg"
+	if ResourceLoader.exists(art_path):
+		var art := TextureRect.new()
+		art.size = Vector2(240, 160)
+		art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		art.texture = load(art_path)
+		add_child(art)
+		var dim := ColorRect.new()
+		dim.size = Vector2(240, 160)
+		dim.color = Color(0.04, 0.08, 0.16, 0.55)
+		add_child(dim)
 
 	var title := Label.new()
 	title.text = "NARUTO: SHINOBI CHRONICLES"

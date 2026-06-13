@@ -15,8 +15,14 @@ var enemy_hp_bar: ColorRect
 var player_name: Label
 var player_hp_bar: ColorRect
 var cp_label: Label
-var enemy_sprite: ColorRect
-var player_sprite: ColorRect
+var enemy_sprite: Control
+var player_sprite: Control
+var _shown_enemy_id := ""
+var _shown_player_id := ""
+
+const ENEMY_SPRITE_POS := Vector2(168, 14)
+const PLAYER_SPRITE_POS := Vector2(22, 44)
+const BATTLE_SPRITE_SIZE := Vector2(48, 48)
 
 var _page := "root"
 var _busy := false
@@ -58,8 +64,10 @@ func _build_ui() -> void:
 	bg.color = Color("#283848")
 	add_child(bg)
 
-	enemy_sprite = _make_unit_sprite(state.active("enemy"), Vector2(170, 24))
-	player_sprite = _make_unit_sprite(state.active("player"), Vector2(30, 64))
+	enemy_sprite = _make_unit_sprite(state.active("enemy"), ENEMY_SPRITE_POS)
+	_shown_enemy_id = state.active("enemy").unit_id
+	player_sprite = _make_unit_sprite(state.active("player"), PLAYER_SPRITE_POS)
+	_shown_player_id = state.active("player").unit_id
 
 	enemy_name = _make_label(Vector2(8, 8))
 	add_child(enemy_name)
@@ -115,20 +123,33 @@ func _make_bar(pos: Vector2, color: Color) -> ColorRect:
 	return bar
 
 
-func _make_unit_sprite(unit: UnitInstance, pos: Vector2) -> ColorRect:
-	# Placeholder pixel "sprite": palette block from unit data, art lands later.
-	var pal: Dictionary = unit.data().palette
-	var body := ColorRect.new()
-	body.position = pos
-	body.size = Vector2(32, 32)
-	body.color = Color(pal.get("primary", "#888888"))
-	add_child(body)
-	var trim := ColorRect.new()
-	trim.position = pos + Vector2(4, 20)
-	trim.size = Vector2(24, 8)
-	trim.color = Color(pal.get("secondary", "#444444"))
-	add_child(trim)
-	return body
+func _make_unit_sprite(unit: UnitInstance, pos: Vector2) -> Control:
+	# Real art via data/visuals/units.json when available; palette-block
+	# placeholder otherwise so unfinished units stay visible.
+	var root := Control.new()
+	root.position = pos
+	add_child(root)
+	var tex: Texture2D = get_node("/root/DataRegistry").unit_texture(unit.unit_id, "battle")
+	if tex != null:
+		var tr := TextureRect.new()
+		tr.size = BATTLE_SPRITE_SIZE
+		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tr.texture = tex
+		root.add_child(tr)
+	else:
+		var pal: Dictionary = unit.data().palette
+		var body := ColorRect.new()
+		body.position = Vector2(8, 8)
+		body.size = Vector2(32, 32)
+		body.color = Color(pal.get("primary", "#888888"))
+		root.add_child(body)
+		var trim := ColorRect.new()
+		trim.position = Vector2(12, 28)
+		trim.size = Vector2(24, 8)
+		trim.color = Color(pal.get("secondary", "#444444"))
+		root.add_child(trim)
+	return root
 
 
 func _refresh_panels() -> void:
@@ -141,8 +162,14 @@ func _refresh_panels() -> void:
 	player_hp_bar.size.x = 80.0 * p.current_hp / maxi(1, p.max_hp())
 	player_hp_bar.color = Color("#50c850") if p.current_hp * 2 > p.max_hp() else Color("#e8b020")
 	cp_label.text = "HP %d/%d  CP %d/%d" % [p.current_hp, p.max_hp(), state.player_cp, state.player_max_cp]
-	enemy_sprite.color = Color(e.data().palette.get("primary", "#888888"))
-	player_sprite.color = Color(p.data().palette.get("primary", "#888888"))
+	if e.unit_id != _shown_enemy_id:
+		_shown_enemy_id = e.unit_id
+		enemy_sprite.queue_free()
+		enemy_sprite = _make_unit_sprite(e, ENEMY_SPRITE_POS)
+	if p.unit_id != _shown_player_id:
+		_shown_player_id = p.unit_id
+		player_sprite.queue_free()
+		player_sprite = _make_unit_sprite(p, PLAYER_SPRITE_POS)
 
 
 # --- Menus ---------------------------------------------------------------

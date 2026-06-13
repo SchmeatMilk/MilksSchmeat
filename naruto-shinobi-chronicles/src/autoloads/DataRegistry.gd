@@ -13,6 +13,7 @@ var combos: Array = []            # combination jutsu definitions
 var natures: Dictionary = {}      # id -> {up, down}
 var growth_coefficients: Dictionary = {}  # curve -> float multiplier on n^3
 var maps: Dictionary = {}         # id -> Dictionary (overworld map definitions)
+var visuals: Dictionary = {}      # unit_id -> {overworld_sprite, battle_sprite, ...}
 var validation_errors: Array = []
 
 
@@ -34,6 +35,9 @@ func load_all(base: String) -> bool:
 	items = _read_json(base + "/items/items.json")
 	natures = _read_json(base + "/progress/natures.json")
 	growth_coefficients = _read_json(base + "/progress/level_curve.json").get("coefficients", {})
+	visuals = {}
+	if FileAccess.file_exists(base + "/visuals/units.json"):
+		visuals = _read_json(base + "/visuals/units.json")
 
 	for d in _read_json(base + "/jutsu/jutsu_master.json").get("jutsu", []):
 		var j := JutsuData.from_dict(d)
@@ -82,6 +86,22 @@ func map_def(id: String) -> Dictionary:
 	return maps.get(id, {})
 
 
+## Resolves a unit's texture for "battle" or "overworld" display.
+## Battle falls back to the overworld sprite; returns null when no art exists
+## yet, in which case callers draw the legacy palette-block placeholder.
+func unit_texture(unit_id: String, kind: String) -> Texture2D:
+	var v: Dictionary = visuals.get(unit_id, {})
+	var candidates: Array = []
+	if kind == "battle":
+		candidates = [v.get("battle_sprite", ""), v.get("overworld_sprite", "")]
+	else:
+		candidates = [v.get("overworld_sprite", "")]
+	for path in candidates:
+		if path != "" and ResourceLoader.exists(path):
+			return load(path)
+	return null
+
+
 ## Total exp required to BE at `level` (cubic curve scaled per growth group).
 func exp_for_level(curve: String, level: int) -> int:
 	var coeff := float(growth_coefficients.get(curve, 1.0))
@@ -125,6 +145,13 @@ func _validate() -> void:
 		for key in ["jutsu_a", "jutsu_b"]:
 			if not jutsu_db.has(combo.get(key, "")):
 				validation_errors.append("Combo '%s' references missing jutsu '%s'" % [combo.get("id", "?"), combo.get(key, "")])
+	for uid in visuals:
+		if not units.has(uid):
+			validation_errors.append("visuals/units.json references unknown unit '%s'" % uid)
+		for key in visuals[uid]:
+			var path: String = visuals[uid][key]
+			if not (FileAccess.file_exists(path) or ResourceLoader.exists(path)):
+				validation_errors.append("Visual asset missing for '%s': %s" % [uid, path])
 
 
 # --- IO helpers ------------------------------------------------------------

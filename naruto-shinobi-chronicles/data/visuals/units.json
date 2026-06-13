@@ -1,0 +1,36 @@
+{
+  "naruto": {
+    "overworld_sprite": "res://assets/sprites/units/overworld/naruto.jpg",
+    "battle_sprite": "res://assets/sprites/units/battle_reference/naruto/naruto_battle_stance.jpg"
+  },
+  "sasuke": {
+    "overworld_sprite": "res://assets/sprites/units/overworld/sasuke.jpg"
+  },
+  "sakura": {
+    "overworld_sprite": "res://assets/sprites/units/overworld/sakura.jpg"
+  },
+  "rock_lee": {
+    "overworld_sprite": "res://assets/sprites/units/overworld/rock_lee.jpg"
+  },
+  "hinata": {
+    "overworld_sprite": "res://assets/sprites/units/overworld/hinata.jpg"
+  },
+  "shikamaru": {
+    "overworld_sprite": "res://assets/sprites/units/overworld/shikamaru.jpg"
+  },
+  "choji": {
+    "overworld_sprite": "res://assets/sprites/units/overworld/choji.jpg"
+  },
+  "ino": {
+    "overworld_sprite": "res://assets/sprites/units/overworld/ino.jpg"
+  },
+  "kiba": {
+    "overworld_sprite": "res://assets/sprites/units/overworld/kiba.jpg"
+  },
+  "shino": {
+    "overworld_sprite": "res://assets/sprites/units/overworld/shino.jpg"
+  },
+  "tenten": {
+    "overworld_sprite": "res://assets/sprites/units/overworld/tenten.jpg"
+  }
+}

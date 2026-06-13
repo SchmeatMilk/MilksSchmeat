@@ -8,7 +8,8 @@ const FONT_SIZE := 8
 var map: Dictionary = {}
 var grid: Array = []          # array of row strings
 var npc_nodes: Dictionary = {}  # npc_id -> ColorRect
-var player_rect: ColorRect
+var player_rect: Control
+var _player_offset := Vector2(2, 2)
 var facing := Vector2i(0, 1)
 var moving := false
 
@@ -84,10 +85,26 @@ func _build_npcs() -> void:
 
 
 func _build_player(cell: Vector2i) -> void:
-	player_rect = ColorRect.new()
-	player_rect.size = Vector2(12, 12)
-	player_rect.color = Color("#ff4040")
-	player_rect.position = Vector2(cell.x * CELL + 2, cell.y * CELL + 2)
+	# Lead party unit walks the overworld; red block when no art exists yet.
+	var gs := get_node("/root/GameState")
+	var tex: Texture2D = null
+	if gs.party.size() > 0:
+		tex = get_node("/root/DataRegistry").unit_texture(gs.party[0].unit_id, "overworld")
+	if tex != null:
+		var tr := TextureRect.new()
+		tr.size = Vector2(16, 24)
+		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tr.texture = tex
+		_player_offset = Vector2(0, -8)  # feet on the tile, head overlaps above
+		player_rect = tr
+	else:
+		var rect := ColorRect.new()
+		rect.size = Vector2(12, 12)
+		rect.color = Color("#ff4040")
+		_player_offset = Vector2(2, 2)
+		player_rect = rect
+	player_rect.position = Vector2(cell.x * CELL, cell.y * CELL) + _player_offset
 	add_child(player_rect)
 
 
@@ -196,7 +213,7 @@ func _try_move(dir: Vector2i) -> void:
 	if not _walkable(dest) or _npc_at(dest).size() > 0:
 		return
 	gs.player_cell = dest
-	player_rect.position = Vector2(dest.x * CELL + 2, dest.y * CELL + 2)
+	player_rect.position = Vector2(dest.x * CELL, dest.y * CELL) + _player_offset
 
 	if _tile_at(dest) == ",":
 		_roll_encounter()

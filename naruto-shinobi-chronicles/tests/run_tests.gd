@@ -64,6 +64,10 @@ func test_data_integrity(load_ok: bool) -> void:
 	check(registry.combos.size() == 8, "8 combination jutsu loaded")
 	check(registry.status_defs.size() == 10, "10 status conditions defined")
 	check(registry.maps.size() >= 3, "3+ maps loaded")
+	check(registry.visuals.size() >= 11, "11+ unit visual entries loaded")
+	check(registry.unit_texture("naruto", "battle") != null, "naruto battle texture resolves")
+	check(registry.unit_texture("sasuke", "battle") != null, "battle falls back to overworld sprite")
+	check(registry.unit_texture("orochimaru", "battle") == null, "units without art fall back to placeholder (null)")
 
 
 func test_type_chart() -> void:
