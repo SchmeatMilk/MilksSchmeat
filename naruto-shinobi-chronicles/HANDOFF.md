@@ -30,14 +30,14 @@ Controls: arrows move · Enter/Space confirm/interact · Esc cancel / pause menu
 
 **Play (Android, no PC):** sideload the Godot 4.3 *Android editor* APK
 (godotengine.org/download/android), copy the branch ZIP to the phone, extract,
-Import the project folder, Play. ⚠ **Touch controls are not implemented** —
-a Bluetooth gamepad is required until backlog item #1 lands.
+Import the project folder, Play. On-screen touch controls (D-pad + A/B)
+appear automatically on touch devices via the `TouchControls` autoload.
 
 **Verify (headless — run before AND after changes):**
 ```bash
 cd naruto-shinobi-chronicles
 godot --headless --import                          # build .godot cache (first time / after asset changes)
-godot --headless -s tests/run_tests.gd             # expect: 67 passed, 0 failed
+godot --headless -s tests/run_tests.gd             # expect: 79 passed, 0 failed
 godot --headless res://tests/smoke/SmokeRunner.tscn  # expect: SMOKE_OK
 ```
 CI (`.github/workflows/shinobi-chronicles-ci.yml`) runs a Python JSON
@@ -96,7 +96,7 @@ naruto-shinobi-chronicles/
 │   ├── units/  jutsu/  types/  status/  items/  progress/  maps/  visuals/
 ├── assets/                        # Wave-1 art (see §6); reference + live sprites
 ├── tests/
-│   ├── run_tests.gd               # 67 assertions, seeded RNG, exits 1 on failure
+│   ├── run_tests.gd               # 79 assertions, seeded RNG, exits 1 on failure
 │   └── smoke/SmokeRunner.tscn     # full loop incl. synthesized-input regression guard
 ├── docs/WAVE1_VISUALS_HANDOFF.md  # verbatim Wave-1 art review/integration doc
 └── scenes/ Title.tscn · Overworld.tscn · Battle.tscn  (thin shells; UI built in code)
@@ -129,7 +129,7 @@ exp `floor(BaseExp·Level/5)` to all alive members; level cap 50; jutsu slots
 | Nature mastery picks (Lv 10/20/30) | ⚠ Field exists on `UnitInstance`, no picker UI |
 | Enemy AI personality variance | ⚠ One generic scorer for all enemies |
 | Quest log UI | ⚠ `story_flags` exist; no player-facing journal |
-| Touch controls | ❌ Not implemented (blocks phone play) |
+| Touch controls | ✅ Done — `TouchControls` autoload overlay (D-pad + A/B), auto-shown on touch devices |
 | Real audio | ❌ Synth blips only; `AudioDirector` ready for .ogg/.it drops |
 | Chunin Exam Stadium, Acts 4–6 | ❌ Not started |
 
@@ -158,9 +158,9 @@ exp `floor(BaseExp·Level/5)` to all alive members; level cap 50; jutsu slots
 
 ---
 
-## 7. Verified state (commit `cda80bd`)
+## 7. Verified state (current HEAD)
 
-- `godot --headless -s tests/run_tests.gd` → **67 passed, 0 failed**
+- `godot --headless -s tests/run_tests.gd` → **79 passed, 0 failed**
 - Smoke test → **SMOKE_OK** (input-event check included)
 - CI green on PR #3; data validation also re-run in pure Python in CI
 - Known cosmetic noise at headless exit: "ObjectDB instances leaked" warning —
@@ -170,26 +170,23 @@ exp `floor(BaseExp·Level/5)` to all alive members; level cap 50; jutsu slots
 
 ## 8. Prioritized backlog
 
-1. **Touch controls** — CanvasLayer D-pad + A/B emitting `ui_*` actions
-   (`Input.parse_input_event`), shown on touch devices. Unblocks phone play.
-   Also set `use_gradle_build=false` in `export_presets.cfg` for easy APKs.
-2. **Commander skills in battle UI** — surface the four skills in
+1. **Commander skills in battle UI** — surface the four skills in
    `BattleController`'s root menu; state/once-per-battle flags already exist.
-3. **Chunin Exam Stadium** — new map JSON + tournament bracket (Neji → Gaara →
+2. **Chunin Exam Stadium** — new map JSON + tournament bracket (Neji → Gaara →
    Temari → Kankuro scripted 1v1s); reward Chunin Vest (+1 tactical slot) +
    story flag (promotion gate already reads flags).
-4. **Jutsu slot-replacement UI** when learning with 8/8 slots full.
-5. **Art pipeline follow-ups** — slice Neji from the roster sheet; 16-color
+3. **Jutsu slot-replacement UI** when learning with 8/8 slots full.
+4. **Art pipeline follow-ups** — slice Neji from the roster sheet; 16-color
    indexed-PNG re-exports; Batch 2 art (Kakashi, Gaara, Jiraiya, Tsunade,
    Orochimaru); resolve `sasuke_cm2` + `naruto_sage` promoted sprites.
-6. **AI personality variance** — per-archetype weights in `BattleAI._score_jutsu`
+5. **AI personality variance** — per-archetype weights in `BattleAI._score_jutsu`
    (glass cannons favor damage, supports favor status/heal).
-7. **Quest log UI** — MenuSystem page rendering active/completed `story_flags`.
-8. **Nature mastery picker** at Lv 10/20/30.
-9. **Land of Waves arc** — map + Zabuza/Haku boss chain, Haku join reward.
-10. **Audio pass** — tracker/.ogg BGM into `assets/audio/music/`
+6. **Quest log UI** — MenuSystem page rendering active/completed `story_flags`.
+7. **Nature mastery picker** at Lv 10/20/30.
+8. **Land of Waves arc** — map + Zabuza/Haku boss chain, Haku join reward.
+9. **Audio pass** — tracker/.ogg BGM into `assets/audio/music/`
     (`AudioDirector.play_bgm` already no-ops gracefully).
-11. **Phase 3 (engine):** Camera2D scrolling for large maps; Acts 5–6 →
+10. **Phase 3 (engine):** Camera2D scrolling for large maps; Acts 5–6 →
     Valley of the End finale + ending-choice flag for the sequel import.
 
 ---
@@ -208,7 +205,7 @@ Continue the Naruto: Shinobi Chronicles game in SchmeatMilk/MilksSchmeat.
 - Verify before and after changes (download Godot 4.3 headless if needed):
     cd naruto-shinobi-chronicles
     godot --headless --import
-    godot --headless -s tests/run_tests.gd            # expect 67+ passed, 0 failed
+    godot --headless -s tests/run_tests.gd            # expect 79+ passed, 0 failed
     godot --headless res://tests/smoke/SmokeRunner.tscn  # expect SMOKE_OK
 - Work the backlog in §8 order unless told otherwise. Commit + push after each
   item, keep CI green, add headless test coverage for anything testable, and

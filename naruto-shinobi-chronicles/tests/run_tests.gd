@@ -28,6 +28,7 @@ func _initialize() -> void:
 	test_serialization_roundtrip()
 	test_full_battle_terminates()
 	test_combo_rules()
+	test_touch_controls()
 
 	print("\n========================================")
 	print("  %d passed, %d failed" % [passed, failed])
@@ -302,3 +303,27 @@ func test_combo_rules() -> void:
 	sasuke.current_hp = 0
 	check(ComboSystem.available_combos(s).filter(func(e): return e["combo"]["id"] == "combo_incinerating_flare").is_empty(),
 		"combo unavailable when a participant is down")
+
+
+func test_touch_controls() -> void:
+	print("\n[touch controls]")
+	var tc = load("res://src/autoloads/TouchControls.gd").new()
+	root.add_child(tc)
+	tc._ready()  # _ready is deferred in -s SceneTree mode; invoke directly (build is idempotent)
+	check(tc.buttons.size() == 6, "overlay builds 6 buttons")
+	for action in ["ui_up", "ui_down", "ui_left", "ui_right", "ui_accept", "ui_cancel"]:
+		check(tc.buttons.has(action), "button exists for " + action)
+	tc.set_enabled(true)
+	tc._on_button_down("ui_accept")
+	Input.flush_buffered_events()
+	check(Input.is_action_pressed("ui_accept"), "button press raises ui_accept action")
+	tc._on_button_up("ui_accept")
+	Input.flush_buffered_events()
+	check(not Input.is_action_pressed("ui_accept"), "button release lowers ui_accept action")
+	tc._on_button_down("ui_left")
+	check(tc._held.has("ui_left"), "held D-pad button registers for auto-repeat")
+	tc.set_enabled(false)
+	Input.flush_buffered_events()
+	check(not Input.is_action_pressed("ui_left"), "disabling overlay releases held actions")
+	check(tc._held.is_empty(), "disabling overlay clears held state")
+	tc.queue_free()

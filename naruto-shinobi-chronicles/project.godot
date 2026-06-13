@@ -18,6 +18,7 @@ GameState="*res://src/autoloads/GameState.gd"
 SaveManager="*res://src/autoloads/SaveManager.gd"
 SceneRouter="*res://src/autoloads/SceneRouter.gd"
 AudioDirector="*res://src/autoloads/AudioDirector.gd"
+TouchControls="*res://src/autoloads/TouchControls.gd"
 
 [display]
 
