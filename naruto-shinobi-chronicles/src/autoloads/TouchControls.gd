@@ -29,6 +29,15 @@ func set_enabled(on: bool) -> void:
 		_held.clear()
 
 
+func _input(event: InputEvent) -> void:
+	# F9 force-toggles the overlay so it can be previewed/tested on desktop,
+	# where touchscreen auto-detection (in _ready) leaves it hidden. The buttons
+	# are plain Buttons, so they respond to mouse clicks once shown.
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F9:
+		set_enabled(not visible)
+		get_viewport().set_input_as_handled()
+
+
 func _build() -> void:
 	if not buttons.is_empty():
 		return

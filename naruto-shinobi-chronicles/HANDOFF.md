@@ -31,13 +31,14 @@ Controls: arrows move · Enter/Space confirm/interact · Esc cancel / pause menu
 **Play (Android, no PC):** sideload the Godot 4.3 *Android editor* APK
 (godotengine.org/download/android), copy the branch ZIP to the phone, extract,
 Import the project folder, Play. On-screen touch controls (D-pad + A/B)
-appear automatically on touch devices via the `TouchControls` autoload.
+appear automatically on touch devices via the `TouchControls` autoload
+(press **F9** to force the overlay on/off for desktop preview/testing).
 
 **Verify (headless — run before AND after changes):**
 ```bash
 cd naruto-shinobi-chronicles
 godot --headless --import                          # build .godot cache (first time / after asset changes)
-godot --headless -s tests/run_tests.gd             # expect: 79 passed, 0 failed
+godot --headless -s tests/run_tests.gd             # expect: 81 passed, 0 failed
 godot --headless res://tests/smoke/SmokeRunner.tscn  # expect: SMOKE_OK
 ```
 CI (`.github/workflows/shinobi-chronicles-ci.yml`) runs a Python JSON
@@ -96,7 +97,7 @@ naruto-shinobi-chronicles/
 │   ├── units/  jutsu/  types/  status/  items/  progress/  maps/  visuals/
 ├── assets/                        # Wave-1 art (see §6); reference + live sprites
 ├── tests/
-│   ├── run_tests.gd               # 79 assertions, seeded RNG, exits 1 on failure
+│   ├── run_tests.gd               # 81 assertions, seeded RNG, exits 1 on failure
 │   └── smoke/SmokeRunner.tscn     # full loop incl. synthesized-input regression guard
 ├── docs/WAVE1_VISUALS_HANDOFF.md  # verbatim Wave-1 art review/integration doc
 └── scenes/ Title.tscn · Overworld.tscn · Battle.tscn  (thin shells; UI built in code)
@@ -129,7 +130,7 @@ exp `floor(BaseExp·Level/5)` to all alive members; level cap 50; jutsu slots
 | Nature mastery picks (Lv 10/20/30) | ⚠ Field exists on `UnitInstance`, no picker UI |
 | Enemy AI personality variance | ⚠ One generic scorer for all enemies |
 | Quest log UI | ⚠ `story_flags` exist; no player-facing journal |
-| Touch controls | ✅ Done — `TouchControls` autoload overlay (D-pad + A/B), auto-shown on touch devices |
+| Touch controls | ✅ Done — `TouchControls` autoload overlay (D-pad + A/B), auto-shown on touch devices; **F9** force-toggles for desktop testing |
 | Real audio | ❌ Synth blips only; `AudioDirector` ready for .ogg/.it drops |
 | Chunin Exam Stadium, Acts 4–6 | ❌ Not started |
 
@@ -160,7 +161,7 @@ exp `floor(BaseExp·Level/5)` to all alive members; level cap 50; jutsu slots
 
 ## 7. Verified state (current HEAD)
 
-- `godot --headless -s tests/run_tests.gd` → **79 passed, 0 failed**
+- `godot --headless -s tests/run_tests.gd` → **81 passed, 0 failed**
 - Smoke test → **SMOKE_OK** (input-event check included)
 - CI green on PR #3; data validation also re-run in pure Python in CI
 - Known cosmetic noise at headless exit: "ObjectDB instances leaked" warning —
@@ -205,7 +206,7 @@ Continue the Naruto: Shinobi Chronicles game in SchmeatMilk/MilksSchmeat.
 - Verify before and after changes (download Godot 4.3 headless if needed):
     cd naruto-shinobi-chronicles
     godot --headless --import
-    godot --headless -s tests/run_tests.gd            # expect 79+ passed, 0 failed
+    godot --headless -s tests/run_tests.gd            # expect 81+ passed, 0 failed
     godot --headless res://tests/smoke/SmokeRunner.tscn  # expect SMOKE_OK
 - Work the backlog in §8 order unless told otherwise. Commit + push after each
   item, keep CI green, add headless test coverage for anything testable, and

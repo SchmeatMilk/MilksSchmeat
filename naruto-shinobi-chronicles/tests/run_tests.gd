@@ -326,4 +326,12 @@ func test_touch_controls() -> void:
 	Input.flush_buffered_events()
 	check(not Input.is_action_pressed("ui_left"), "disabling overlay releases held actions")
 	check(tc._held.is_empty(), "disabling overlay clears held state")
+	# F9 force-toggles visibility for desktop preview/testing.
+	var f9 := InputEventKey.new()
+	f9.keycode = KEY_F9
+	f9.pressed = true
+	tc._input(f9)
+	check(tc.visible, "F9 shows the overlay when hidden")
+	tc._input(f9)
+	check(not tc.visible, "F9 hides the overlay when shown")
 	tc.queue_free()
