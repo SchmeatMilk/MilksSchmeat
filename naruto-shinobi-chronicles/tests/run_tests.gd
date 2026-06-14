@@ -36,6 +36,7 @@ func _initialize() -> void:
 	test_starter_scroll()
 	test_act_one()
 	test_act_two()
+	test_act_three()
 
 	print("\n========================================")
 	print("  %d passed, %d failed" % [passed, failed])
@@ -477,3 +478,21 @@ func test_act_two() -> void:
 			check(st.get("boss", {}).get("reward_items", {}).has("chunin_vest"), "final match rewards the Chunin Vest")
 	check(final_flag == "chunin_exam_cleared", "bracket final sets chunin_exam_cleared")
 	check(registry.items.has("chunin_vest"), "chunin_vest item exists")
+
+
+func test_act_three() -> void:
+	print("\n[act III — breaking of bonds]")
+	check(registry.units.has("itachi"), "itachi unit loads")
+	check(registry.units.has("kisame"), "kisame unit loads")
+	check(registry.jutsu_db.has("tsukuyomi"), "tsukuyomi jutsu defined")
+	check(registry.jutsu_db.has("water_dome"), "water_dome jutsu defined")
+	var s := _state([_mk("kisame", 20)], [_mk("naruto", 20)], 7)
+	s.field["water_dome"] = 3
+	check(BattleEngine._field_multiplier(s, registry.jutsu("water_shark_bullet")) > 1.0, "water_dome boosts water jutsu")
+	check(BattleEngine._field_multiplier(s, registry.jutsu("fire_fireball")) < 1.0, "water_dome suppresses fire jutsu")
+	check(registry.cutscene("defection").get("on_finish", {}).get("release", []).has("sasuke"), "defection releases Sasuke")
+	var msf: Dictionary = registry.cutscene("myoboku_sage").get("on_finish", {})
+	check(msf.get("set_flags", []).has("sage_mode_unlocked"), "myoboku unlocks Sage Mode")
+	check(msf.get("grant_items", {}).has("forbidden_scroll"), "myoboku grants the Forbidden Scroll")
+	check(int(registry.item("forbidden_scroll").get("price", 0)) <= 0, "Forbidden Scroll is not purchasable (Sage Mode story-gated)")
+	check(registry.maps.has("myoboku") and registry.maps.has("akatsuki_road"), "Act III maps load")

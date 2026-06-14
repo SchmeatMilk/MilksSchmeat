@@ -1,0 +1,25 @@
+{
+  "id": "akatsuki_itachi",
+  "title": "Crimson Eyes",
+  "music": "battle_boss",
+  "steps": [
+    {"speaker": "", "text": "Two figures in black, red-clouded cloaks step onto the road. One has the spinning red Sharingan."},
+    {"speaker": "Itachi", "text": "We have no quarrel with your squad, Commander. Step aside. We are here for the Nine-Tails."},
+    {"speaker": "Naruto", "text": "Over my dead body, Akatsuki! You're not taking anyone!"},
+    {"speaker": "Itachi", "text": "...Foolish. Then know despair. Look into my eyes — Tsukuyomi."},
+    {"speaker": "Kakashi", "text": "Don't meet his gaze! Watch the feet, command your squad by instinct. Go!"}
+  ],
+  "on_finish": {
+    "start_battle": {
+      "party": [["itachi", 22]],
+      "music": "battle_boss",
+      "boss_npc_id": "itachi",
+      "boss": {
+        "flag": "itachi_repelled",
+        "reward_items": {"vitality_pill": 2, "tonic": 1},
+        "reward_ryo": 1600,
+        "victory_text": "Itachi lowers his eyes, almost approving. 'You're stronger than he was. Good.' He steps back into the mist."
+      }
+    }
+  }
+}

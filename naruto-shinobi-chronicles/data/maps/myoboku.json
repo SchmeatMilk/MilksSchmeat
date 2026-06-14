@@ -1,0 +1,31 @@
+{
+  "id": "myoboku",
+  "name": "Mount Myoboku",
+  "music": "route_theme",
+  "palette": {"floor": "#6f7e4a", "wall": "#36481f", "grass": "#5a8a36", "water": "#3a6f74"},
+  "grid": [
+    "###############",
+    "#,,,,,,,,,,,,,#",
+    "#,##,##,##,##,#",
+    "#,,,,,,,,,,,,,#",
+    "..,,,,,,,,,,,.#",
+    "#,,,,,,,,,,,,,#",
+    "#,##,##,##,##,#",
+    "#,,,,,,,,,,,,,#",
+    "#,,,,,,,,,,,,,#",
+    "######.########"
+  ],
+  "on_enter": [
+    {"cutscene": "myoboku_sage", "unless_flags": ["sage_mode_unlocked"]}
+  ],
+  "npcs": [
+    {"id": "jiraiya", "name": "Jiraiya", "cell": [7, 3], "color": "#d8d0b0",
+     "dialogue": ["The toads took a liking to you, kid. Don't let it go to your head.", "Sage Mode draws on the world around you — but it leaves you wide open while you gather it. Use your squad to buy the time."],
+     "action": ""}
+  ],
+  "warps": [
+    {"cell": [0, 4], "to_map": "akatsuki_road", "to_cell": [1, 4], "label": "The Road Home"},
+    {"cell": [6, 9], "to_map": "konoha", "to_cell": [1, 5], "label": "Konoha"}
+  ],
+  "encounters": {"rate": 0.0, "table": []}
+}

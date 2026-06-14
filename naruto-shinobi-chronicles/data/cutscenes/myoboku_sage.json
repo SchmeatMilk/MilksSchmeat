@@ -1,0 +1,16 @@
+{
+  "id": "myoboku_sage",
+  "title": "Mount Myoboku",
+  "background": "res://assets/cutscenes/reference/hokage_rock_establishing_shot.png",
+  "music": "route_theme",
+  "steps": [
+    {"speaker": "Jiraiya", "text": "So the brat wants to chase Sasuke down. Guts alone won't cut it. Welcome to Mount Myoboku, kid."},
+    {"speaker": "", "text": "For weeks you balance, you fail, you balance again — learning to draw in the natural energy of the mountain itself."},
+    {"speaker": "Naruto", "text": "I can feel it... the whole mountain breathing with me. This is it — SAGE MODE!"},
+    {"speaker": "Jiraiya", "text": "Heh. Faster than I ever did. Take this Forbidden Scroll — when Naruto reaches his prime, it'll seal the form for good. Now go get your friend back."}
+  ],
+  "on_finish": {
+    "set_flags": ["sage_mode_unlocked"],
+    "grant_items": {"forbidden_scroll": 1}
+  }
+}

@@ -373,6 +373,11 @@ static func _field_multiplier(state: BattleState, j: JutsuData) -> float:
 		mult *= 1.3
 	if state.has_field("thundercloud") and j.nature == "lightning":
 		mult *= 1.2
+	if state.has_field("water_dome"):
+		if j.nature == "water":
+			mult *= 1.3
+		elif j.nature == "fire":
+			mult *= 0.7
 	return mult
 
 

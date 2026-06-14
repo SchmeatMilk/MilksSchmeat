@@ -1,0 +1,20 @@
+{
+  "id": "defection",
+  "title": "The Village Gates — Night",
+  "background": "res://assets/cutscenes/reference/village_gate_establishing_shot.jpg",
+  "music": "town_theme",
+  "steps": [
+    {"speaker": "", "text": "Rain hammers the village gates. A figure with a travel pack walks toward the dark. Naruto blocks the path."},
+    {"speaker": "Naruto", "text": "Where are you going?! You can't just leave! We're a team — we're brothers!"},
+    {"speaker": "Sasuke", "text": "\"Brothers\"? Don't make me laugh. This village has nothing left to give me. I'm taking the power Orochimaru offered."},
+    {"speaker": "Sakura", "text": "Sasuke-kun, please — don't do this!"},
+    {"speaker": "Sasuke", "text": "...Thank you. For everything. But my path is vengeance now."},
+    {"speaker": "Naruto", "text": "Then I'll bring you back! I'll hunt you down, beat you, and drag you home if I have to. That's my ninja way!"},
+    {"speaker": "Sasuke", "text": "Then try, Naruto. But next time we meet... I won't be holding back."},
+    {"speaker": "", "text": "Sasuke vanishes into the rain. He has left your squad."}
+  ],
+  "on_finish": {
+    "set_flags": ["sasuke_defected"],
+    "release": ["sasuke", "sasuke_cm2"]
+  }
+}

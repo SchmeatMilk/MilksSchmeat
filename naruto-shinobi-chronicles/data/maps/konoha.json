@@ -16,7 +16,8 @@
     "######.########"
   ],
   "on_enter": [
-    {"cutscene": "graduation", "unless_flags": ["seen_graduation"]}
+    {"cutscene": "graduation", "unless_flags": ["seen_graduation"]},
+    {"cutscene": "defection", "require_flags": ["chunin_exam_cleared"], "unless_flags": ["sasuke_defected"]}
   ],
   "npcs": [
     {"id": "hokage", "name": "Third Hokage", "cell": [3, 1], "color": "#e8e0d0",
@@ -50,7 +51,10 @@
      "locked_text": "The Chunin Exams haven't opened yet. Finish the Land of Waves mission first."},
     {"cell": [13, 5], "to_map": "chunin_stadium", "to_cell": [6, 8], "label": "Exam Stadium",
      "require_flags": ["forest_of_death_cleared"],
-     "locked_text": "The Stadium finals open once you've survived the Forest of Death."}
+     "locked_text": "The Stadium finals open once you've survived the Forest of Death."},
+    {"cell": [1, 5], "to_map": "myoboku", "to_cell": [1, 4], "label": "Mount Myoboku",
+     "require_flags": ["sasuke_defected"],
+     "locked_text": "There's no reason to leave the village... yet."}
   ],
   "encounters": {"rate": 0.0, "table": []}
 }
