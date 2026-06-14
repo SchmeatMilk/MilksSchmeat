@@ -1,0 +1,24 @@
+{
+  "id": "graduation",
+  "title": "Graduation Day",
+  "background": "res://assets/cutscenes/reference/hokage_rock_establishing_shot.png",
+  "music": "town_theme",
+  "steps": [
+    {"speaker": "Iruka", "text": "To be a shinobi is to carry the weight of the village on your shoulders — not just the jutsu you know, but the scrolls you command and the bonds you forge."},
+    {"speaker": "Iruka", "text": "Today you choose your foundation: the Taijutsu, Ninjutsu, or Genjutsu Scroll. Choose wisely. Your journey begins now."},
+    {"speaker": "", "text": "You take up your scroll and step forward. The instructors read out the squads... you are assigned to Team 7."},
+    {"speaker": "Naruto", "text": "This is it! No more Academy games. I'm gonna be the best Tactician this village has ever seen — believe it!"},
+    {"speaker": "Sasuke", "text": "Hn. Just don't slow me down."},
+    {"speaker": "Sakura", "text": "Cha! Try to keep up, Naruto. Sasuke-kun, look — my first contract seal!"},
+    {"speaker": "Kakashi", "text": "Yo. I'm your sensei, Kakashi Hatake. ...Sorry I'm late. Meet me at the Training Grounds when you're ready — there's a little bell test first."}
+  ],
+  "on_finish": {
+    "set_flags": ["seen_graduation"],
+    "recruit": [
+      {"unit": "sasuke", "level": 5},
+      {"unit": "sakura", "level": 5}
+    ],
+    "recruit_scroll": true,
+    "scroll_level": 5
+  }
+}

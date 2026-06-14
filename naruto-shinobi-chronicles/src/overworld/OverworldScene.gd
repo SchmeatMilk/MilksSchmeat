@@ -33,7 +33,11 @@ var moving := false
 var dialogue: DialogueBox
 var menu: MenuSystem
 var shop: ShopUI
+var cutscene: CutscenePlayer
 var _pending_npc: Dictionary = {}
+var _pending_finish: Dictionary = {}   # cutscene on_finish to apply when it ends
+var _active_cutscene_id := ""
+var _check_enter_after_dialogue := false
 var ui_layer: CanvasLayer
 var map_label: Label
 
@@ -62,7 +66,10 @@ func _ready() -> void:
 	_build_player(gs.player_cell, reg)
 	_build_camera()
 	_build_ui()
-	_handle_battle_return()
+	# Battle-return dialogue (if any) plays first; on_enter cutscenes fire either
+	# immediately on a fresh entry or after that dialogue closes (finale phase chain).
+	if not _handle_battle_return():
+		_check_on_enter()
 
 
 # --- Tileset ----------------------------------------------------------------
@@ -252,8 +259,8 @@ func _set_char_frame(s: Sprite2D, d: Vector2i, col: int) -> void:
 func _build_npcs(reg) -> void:
 	var gs := get_node("/root/GameState")
 	for npc in map.get("npcs", []):
-		var boss: Dictionary = npc.get("boss", {})
-		if not boss.is_empty() and gs.has_flag(boss.get("flag", "")):
+		# Defeated bosses / flag-gated story NPCs stay hidden.
+		if not StoryTriggers.npc_visible(npc, gs.story_flags):
 			continue
 		var cell := Vector2i(int(npc["cell"][0]), int(npc["cell"][1]))
 		var key: String = npc.get("sprite", npc.get("id", "leaf_genin"))
@@ -346,21 +353,30 @@ func _build_ui() -> void:
 	shop.visible = false
 	ui_layer.add_child(shop)
 
+	cutscene = CutscenePlayer.new()
+	cutscene.position = Vector2(0, 0)
+	cutscene.finished.connect(_on_cutscene_finished)
+	ui_layer.add_child(cutscene)
+
 
 # --- Battle return (unchanged behaviour) ------------------------------------
 
-func _handle_battle_return() -> void:
+## Returns true if a battle-return dialogue was opened (caller then defers the
+## on_enter cutscene check until that dialogue closes).
+func _handle_battle_return() -> bool:
 	var router := get_node("/root/SceneRouter")
 	var result: Dictionary = router.battle_result
 	router.battle_result = {}
 	if result.is_empty():
-		return
+		return false
 	var gs := get_node("/root/GameState")
 	match result.get("outcome", ""):
 		"defeat":
 			gs.heal_party()
 			gs.ryo = gs.ryo / 2
 			dialogue.open("", ["You blacked out and were carried back to the village...", "Half your ryo went to the medics."])
+			_check_enter_after_dialogue = true
+			return true
 		"victory":
 			var boss: Dictionary = result.get("boss", {})
 			if not boss.is_empty():
@@ -368,18 +384,30 @@ func _handle_battle_return() -> void:
 				for item_id in boss.get("reward_items", {}):
 					gs.grant_item(item_id, int(boss["reward_items"][item_id]))
 				gs.ryo += int(boss.get("reward_ryo", 0))
-				gs.commander_level += 1
-				gs.tactical_slots = mini(6, gs.tactical_slots + 1)
-				gs.authority += 10
-				gs.chakra_reserve += 20
-				dialogue.open("", [boss.get("victory_text", "Victory!"), "Commander rank up! Authority, chakra reserve and tactical slots increased."])
+				if not boss.get("no_rank_up", false):
+					gs.commander_level += 1
+					gs.tactical_slots = mini(6, gs.tactical_slots + 1)
+					gs.authority += 10
+					gs.chakra_reserve += 20
+				var lines: Array = [boss.get("victory_text", "Victory!")]
+				if not boss.get("no_rank_up", false):
+					lines.append("Commander rank up! Authority, chakra reserve and tactical slots increased.")
+				dialogue.open("", lines)
+				_check_enter_after_dialogue = true
+				return true
 		"caught":
 			dialogue.open("", ["%s joined your forces!" % result.get("caught_name", "A new ally")])
+			_check_enter_after_dialogue = true
+			return true
+	return false
 
 
 # --- Input / movement -------------------------------------------------------
 
 func _unhandled_input(event: InputEvent) -> void:
+	if cutscene.visible:
+		cutscene.handle_input(event)
+		return
 	if dialogue.visible:
 		dialogue.handle_input(event)
 		return
@@ -419,6 +447,9 @@ func _try_move(dir: Vector2i) -> void:
 	for warp in map.get("warps", []):
 		var cell: Array = warp["cell"]
 		if dest == Vector2i(int(cell[0]), int(cell[1])):
+			if StoryTriggers.warp_locked(warp, gs.story_flags):
+				dialogue.open("", [warp.get("locked_text", "The way ahead is blocked for now.")])
+				return
 			get_node("/root/SceneRouter").go_to_map(warp["to_map"], Vector2i(int(warp["to_cell"][0]), int(warp["to_cell"][1])))
 			return
 
@@ -428,6 +459,13 @@ func _try_move(dir: Vector2i) -> void:
 		return
 	gs.player_cell = dest
 	_animate_step(dest)
+
+	# Scripted tile events (cutscenes) take priority over wild encounters.
+	var ev := StoryTriggers.tile_event(map, dest, gs.story_flags, gs.seen_cutscenes)
+	if not ev.is_empty():
+		_play_cutscene(ev.get("cutscene", ""))
+		return
+
 	if _tile_name(_tile_at(dest)) in ["tallgrass"]:
 		_roll_encounter()
 
@@ -481,33 +519,115 @@ func _interact() -> void:
 		return
 	_pending_npc = npc
 	get_node("/root/AudioDirector").sfx_confirm()
-	dialogue.open(npc.get("name", "???"), npc.get("dialogue", ["..."]))
+	# Conditional dialogue: first matching state's lines, else the base lines.
+	var view := StoryTriggers.resolve_npc(npc, gs.story_flags)
+	dialogue.open(npc.get("name", "???"), view.get("dialogue", npc.get("dialogue", ["..."])))
 
 
 func _on_dialogue_finished() -> void:
 	var npc := _pending_npc
 	_pending_npc = {}
-	if npc.is_empty():
+	if not npc.is_empty():
+		_resolve_npc_action(npc)
 		return
+	# Battle-return informational dialogue just closed: now run on_enter triggers
+	# (enables the finale's phase-2 cutscene to follow a boss-victory message).
+	if _check_enter_after_dialogue:
+		_check_enter_after_dialogue = false
+		_check_on_enter()
+
+
+func _resolve_npc_action(npc: Dictionary) -> void:
 	var gs := get_node("/root/GameState")
-	match npc.get("action", ""):
+	var view := StoryTriggers.resolve_npc(npc, gs.story_flags)
+	_apply_effects(view)
+	match view.get("action", ""):
 		"heal_party":
 			gs.heal_party()
 			get_node("/root/AudioDirector").sfx_heal()
 		"open_shop":
 			shop.open()
 		"boss_battle":
-			_start_boss_battle(npc)
+			_start_boss_battle(npc, view)
+		"start_cutscene":
+			_play_cutscene(view.get("cutscene", ""))
 
 
-func _start_boss_battle(npc: Dictionary) -> void:
+## Shared effect application for NPC states and cutscene on_finish blocks.
+func _apply_effects(eff: Dictionary) -> void:
+	var gs := get_node("/root/GameState")
+	for f in eff.get("set_flags", []):
+		gs.set_flag(f)
+	for item_id in eff.get("grant_items", {}):
+		gs.grant_item(item_id, int(eff["grant_items"][item_id]))
+	for r in eff.get("recruit", []):
+		gs.recruit(r.get("unit", ""), int(r.get("level", 5)))
+	if eff.get("recruit_scroll", false):
+		var su: String = gs.scroll_starter_unit()
+		if su != "":
+			gs.recruit(su, int(eff.get("scroll_level", 5)))
+	for unit_id in eff.get("release", []):
+		gs.remove_from_party(unit_id)
+	if eff.get("heal", false):
+		gs.heal_party()
+
+
+func _check_on_enter() -> void:
+	var gs := get_node("/root/GameState")
+	var cid := StoryTriggers.on_enter_cutscene(map, gs.story_flags, gs.seen_cutscenes)
+	if cid != "":
+		_play_cutscene(cid)
+
+
+func _play_cutscene(cid: String) -> void:
+	if cid == "":
+		return
+	var cs: Dictionary = get_node("/root/DataRegistry").cutscene(cid)
+	if cs.is_empty():
+		return
+	_active_cutscene_id = cid
+	_pending_finish = cs.get("on_finish", {})
+	cutscene.play(cs)
+
+
+func _on_cutscene_finished() -> void:
+	var fin := _pending_finish
+	_pending_finish = {}
+	# Only a completed scene counts as seen (an interrupted intro should replay).
+	if _active_cutscene_id != "":
+		get_node("/root/GameState").mark_cutscene_seen(_active_cutscene_id)
+		_active_cutscene_id = ""
+	_apply_effects(fin)
+	if fin.has("start_battle"):
+		_start_cutscene_battle(fin["start_battle"])
+		return
+	if fin.has("goto_map"):
+		var gm: Dictionary = fin["goto_map"]
+		get_node("/root/SceneRouter").go_to_map(gm.get("map", ""), Vector2i(int(gm["cell"][0]), int(gm["cell"][1])))
+		return
+	# Chain into any further eligible on_enter scene (multi-beat sequences).
+	_check_on_enter()
+
+
+func _start_boss_battle(npc: Dictionary, view: Dictionary = {}) -> void:
 	var reg := get_node("/root/DataRegistry")
-	var boss: Dictionary = npc.get("boss", {})
+	var boss: Dictionary = view.get("boss", npc.get("boss", {}))
 	var enemy_party: Array = []
 	for entry in boss.get("party", []):
 		enemy_party.append(UnitInstance.create(reg, entry[0], int(entry[1])))
 	get_node("/root/SceneRouter").go_to_battle(enemy_party, {
 		"is_wild": false, "boss": boss, "boss_npc_id": npc.get("id", ""), "music": "battle_boss",
+	})
+
+
+func _start_cutscene_battle(sb: Dictionary) -> void:
+	var reg := get_node("/root/DataRegistry")
+	var enemy_party: Array = []
+	for entry in sb.get("party", []):
+		enemy_party.append(UnitInstance.create(reg, entry[0], int(entry[1])))
+	get_node("/root/SceneRouter").go_to_battle(enemy_party, {
+		"is_wild": false, "boss": sb.get("boss", {}), "boss_npc_id": sb.get("boss_npc_id", ""),
+		"music": sb.get("music", "battle_boss"),
 	})
 
 

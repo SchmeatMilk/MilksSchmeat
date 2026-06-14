@@ -304,9 +304,60 @@
    "dialogue": [
     "Welcome back, Commander.",
     "Your squad is fully rested.",
-    "The Chunin Exams await in the Forest of Death \u2014 to the east."
+    "The Chunin Exams await in the Forest of Death — to the east."
    ],
-   "action": "heal_party"
+   "action": "heal_party",
+   "states": [
+    {
+     "require_flags": [
+      "seen_graduation"
+     ],
+     "unless_flags": [
+      "bell_test_passed"
+     ],
+     "action": "heal_party",
+     "dialogue": [
+      "So — Team 7 at last.",
+      "Kakashi is waiting at the Training Grounds. Pass his bell test and your duties begin."
+     ]
+    },
+    {
+     "require_flags": [
+      "bell_test_passed"
+     ],
+     "unless_flags": [
+      "land_of_waves_cleared"
+     ],
+     "action": "heal_party",
+     "dialogue": [
+      "A C-rank request came from the Land of Waves.",
+      "Cross the Great Naruto Bridge — but be ready. Not every shinobi out there is a friend."
+     ]
+    },
+    {
+     "require_flags": [
+      "chunin_exam_cleared"
+     ],
+     "unless_flags": [
+      "sasuke_defected"
+     ],
+     "action": "heal_party",
+     "dialogue": [
+      "You fought well in the exams, Commander.",
+      "But keep an eye on Sasuke. Power like his can curdle into something darker."
+     ]
+    },
+    {
+     "require_flags": [
+      "credits_seen"
+     ],
+     "action": "heal_party",
+     "dialogue": [
+      "You brought him to a standstill — and brought yourself back too.",
+      "The Will of Fire burns brightest in you, Commander."
+     ]
+    }
+   ]
   },
   {
    "id": "teuchi",
@@ -347,7 +398,7 @@
    ],
    "facing": "down",
    "dialogue": [
-    "Tags, pills, and steel \u2014 everything a Commander needs."
+    "Tags, pills, and steel — everything a Commander needs."
    ],
    "action": "open_shop"
   },
@@ -391,7 +442,7 @@
    ],
    "facing": "down",
    "dialogue": [
-    "The hospital can mend any wound \u2014 but rest is the best medicine."
+    "The hospital can mend any wound — but rest is the best medicine."
    ],
    "action": ""
   },
@@ -433,11 +484,96 @@
     1,
     5
    ],
-   "label": "Forest of Death"
+   "label": "Forest of Death",
+   "require_flags": [
+    "land_of_waves_cleared"
+   ],
+   "locked_text": "The Chunin Exams haven't opened yet. Finish the Land of Waves mission first."
+  },
+  {
+   "cell": [
+    1,
+    7
+   ],
+   "to_map": "wave_bridge",
+   "to_cell": [
+    2,
+    5
+   ],
+   "label": "Land of Waves",
+   "require_flags": [
+    "bell_test_passed"
+   ],
+   "locked_text": "Kakashi: pass the bell test at the Training Grounds first."
+  },
+  {
+   "cell": [
+    1,
+    9
+   ],
+   "to_map": "chunin_stadium",
+   "to_cell": [
+    10,
+    11
+   ],
+   "label": "Exam Stadium",
+   "require_flags": [
+    "forest_of_death_cleared"
+   ],
+   "locked_text": "The Stadium finals open once you've survived the Forest of Death."
+  },
+  {
+   "cell": [
+    1,
+    11
+   ],
+   "to_map": "myoboku",
+   "to_cell": [
+    9,
+    9
+   ],
+   "label": "Mount Myoboku",
+   "require_flags": [
+    "sasuke_defected"
+   ],
+   "locked_text": "There's no reason to leave the village... yet."
+  },
+  {
+   "cell": [
+    1,
+    13
+   ],
+   "to_map": "valley_of_the_end",
+   "to_cell": [
+    10,
+    11
+   ],
+   "label": "Valley of the End",
+   "require_flags": [
+    "akatsuki_repelled"
+   ],
+   "locked_text": "Sasuke is past the Valley of the End — but the road there isn't open yet."
   }
  ],
  "encounters": {
   "rate": 0.0,
   "table": []
- }
+ },
+ "on_enter": [
+  {
+   "cutscene": "graduation",
+   "unless_flags": [
+    "seen_graduation"
+   ]
+  },
+  {
+   "cutscene": "defection",
+   "require_flags": [
+    "chunin_exam_cleared"
+   ],
+   "unless_flags": [
+    "sasuke_defected"
+   ]
+  }
+ ]
 }

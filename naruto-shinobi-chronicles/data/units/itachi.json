@@ -1,0 +1,24 @@
+{
+  "id": "itachi",
+  "name": "Itachi Uchiha",
+  "growth_curve": "fast",
+  "nature": "clever",
+  "affinities": ["fire", "yin"],
+  "trait": "sharingan",
+  "learnset": [
+    {"level": 1, "jutsu": "kunai_throw"},
+    {"level": 1, "jutsu": "fire_fireball"},
+    {"level": 1, "jutsu": "yin_sharingan_gaze"},
+    {"level": 1, "jutsu": "tsukuyomi"},
+    {"level": 1, "jutsu": "fire_dragon_flame"}
+  ],
+  "promotion": {},
+  "rarity": "legendary",
+  "catch_rate": 0,
+  "base_exp": 130,
+  "village": "akatsuki",
+  "threat_level": "S",
+  "bingo_entry": "Uchiha prodigy turned Akatsuki. His genjutsu can break a mind in an instant — never meet his eyes.",
+  "palette": {"primary": "#1c1c2e", "secondary": "#7a1a1a", "accent": "#d04040"},
+  "base_stats": {"hp": 78, "str": 65, "nin": 92, "def": 62, "res": 78, "spd": 90}
+}

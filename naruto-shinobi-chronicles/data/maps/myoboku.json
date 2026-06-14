@@ -1,0 +1,34 @@
+{
+  "id": "myoboku",
+  "name": "Mount Myoboku",
+  "music": "route_theme",
+  "size": [18, 12],
+  "spawn": [9, 9],
+  "grid": [
+    "CCCCCCCCCCCCCCCCCC",
+    "C................C",
+    "C..TT......TT....C",
+    "C................C",
+    "C....::....::....C",
+    "C................C",
+    "C................C",
+    "C..TT......TT....C",
+    "C................C",
+    "C................C",
+    "C................C",
+    "CCCCCCCCCCCCCCCCCC"
+  ],
+  "on_enter": [
+    {"cutscene": "myoboku_sage", "unless_flags": ["sage_mode_unlocked"]}
+  ],
+  "npcs": [
+    {"id": "jiraiya", "sprite": "jiraiya", "name": "Jiraiya", "cell": [9, 4], "facing": "down",
+     "dialogue": ["The toads took a liking to you, kid. Don't let it go to your head.", "Sage Mode draws on the world around you — but it leaves you open while you gather it. Let your squad buy the time."],
+     "action": ""}
+  ],
+  "warps": [
+    {"cell": [0, 9], "to_map": "akatsuki_road", "to_cell": [2, 5], "label": "The Road Home"},
+    {"cell": [17, 9], "to_map": "konoha", "to_cell": [2, 11], "label": "Konoha"}
+  ],
+  "encounters": {"rate": 0.0, "table": []}
+}

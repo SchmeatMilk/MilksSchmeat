@@ -90,11 +90,13 @@ func _show_root() -> void:
 
 
 func _show_starters() -> void:
+	# You always play as Naruto; the chosen scroll grants a themed fourth squad
+	# member at graduation (Taijutsu->Rock Lee, Ninjutsu->Tenten, Genjutsu->Shino).
 	_page = "starter"
 	_menu.set_items([
-		{"label": "Will of Fire — Naruto", "meta": "naruto"},
-		{"label": "Prodigy's Path — Sasuke", "meta": "sasuke"},
-		{"label": "Perfect Control — Sakura", "meta": "sakura"},
+		{"label": "Taijutsu Scroll", "meta": "taijutsu"},
+		{"label": "Ninjutsu Scroll", "meta": "ninjutsu"},
+		{"label": "Genjutsu Scroll", "meta": "genjutsu"},
 		{"label": "Custom Shinobi...", "meta": "custom"},
 		{"label": "Back", "meta": null},
 	])
@@ -129,7 +131,7 @@ func _on_select(meta) -> void:
 				_menu.visible = false
 				_builder.open()
 			else:
-				get_node("/root/GameState").new_game(meta)
+				get_node("/root/GameState").new_game("naruto", meta)
 				get_tree().change_scene_to_file("res://scenes/Overworld.tscn")
 		"slots":
 			if meta == null:

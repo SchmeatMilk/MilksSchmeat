@@ -1,0 +1,33 @@
+{
+  "id": "valley_of_the_end",
+  "name": "Valley of the End",
+  "music": "battle_boss",
+  "size": [20, 14],
+  "spawn": [10, 11],
+  "grid": [
+    "CCCCCCCCCCCCCCCCCCCC",
+    "C..................C",
+    "C....WWWWWWWWWW....C",
+    "C....WWWWWWWWWW....C",
+    "C..................C",
+    "C....##########....C",
+    "C....##########....C",
+    "C....##########....C",
+    "C....##########....C",
+    "C..................C",
+    "C....WWWWWWWWWW....C",
+    "C..................C",
+    "C........PP........C",
+    "CCCCCCCCCCCCCCCCCCCC"
+  ],
+  "on_enter": [
+    {"cutscene": "valley_finale", "unless_flags": ["valley_phase1_done"]},
+    {"cutscene": "valley_duel", "require_flags": ["valley_phase1_done"], "unless_flags": ["game_complete"]},
+    {"cutscene": "valley_ending", "require_flags": ["game_complete"], "unless_flags": ["credits_seen"]}
+  ],
+  "npcs": [],
+  "warps": [
+    {"cell": [9, 13], "to_map": "konoha", "to_cell": [2, 13], "label": "Konoha"}
+  ],
+  "encounters": {"rate": 0.0, "table": []}
+}

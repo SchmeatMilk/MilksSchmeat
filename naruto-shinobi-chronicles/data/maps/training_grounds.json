@@ -108,7 +108,7 @@
    "facing": "down",
    "dialogue": [
     "YOUTH! Train in the tall grass and wild challengers will find you!",
-    "Defeat them for experience \u2014 or weaken them and SEAL A CONTRACT!"
+    "Defeat them for experience — or weaken them and SEAL A CONTRACT!"
    ],
    "action": ""
   }
@@ -161,5 +161,16 @@
     "max_level": 8
    }
   ]
- }
+ },
+ "on_enter": [
+  {
+   "cutscene": "bell_test",
+   "require_flags": [
+    "seen_graduation"
+   ],
+   "unless_flags": [
+    "bell_test_passed"
+   ]
+  }
+ ]
 }

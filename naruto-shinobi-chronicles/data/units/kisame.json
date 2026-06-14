@@ -1,0 +1,24 @@
+{
+  "id": "kisame",
+  "name": "Kisame Hoshigaki",
+  "growth_curve": "slow",
+  "nature": "brave",
+  "affinities": ["water"],
+  "trait": "mist_veil",
+  "learnset": [
+    {"level": 1, "jutsu": "water_dome"},
+    {"level": 1, "jutsu": "water_shark_bullet"},
+    {"level": 1, "jutsu": "water_dragon"},
+    {"level": 1, "jutsu": "samehada_drain"},
+    {"level": 1, "jutsu": "water_prison"}
+  ],
+  "promotion": {},
+  "rarity": "legendary",
+  "catch_rate": 0,
+  "base_exp": 125,
+  "village": "akatsuki",
+  "threat_level": "S",
+  "bingo_entry": "The Monster of the Hidden Mist. His sword Samehada devours chakra; under his water dome, no flame survives.",
+  "palette": {"primary": "#2a5a8a", "secondary": "#163a58", "accent": "#8ac4e4"},
+  "base_stats": {"hp": 105, "str": 92, "nin": 80, "def": 70, "res": 60, "spd": 56}
+}

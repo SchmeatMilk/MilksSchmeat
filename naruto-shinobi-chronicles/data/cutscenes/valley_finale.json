@@ -1,0 +1,24 @@
+{
+  "id": "valley_finale",
+  "title": "The Valley of the End",
+  "background": "res://assets/cutscenes/reference/hokage_rock_establishing_shot.png",
+  "music": "battle_boss",
+  "steps": [
+    {"speaker": "", "text": "Two colossal statues face each other across a roaring waterfall. On the far cliff stands Sasuke — and a guard of borrowed shinobi."},
+    {"speaker": "Sasuke", "text": "So you actually came. You always were stubborn."},
+    {"speaker": "Naruto", "text": "I made a promise. I'm dragging you home, Sasuke — that's my ninja way!"},
+    {"speaker": "Sasuke", "text": "Then come. Get through my squad first — if your bonds are really worth anything."}
+  ],
+  "on_finish": {
+    "start_battle": {
+      "party": [["sound_genin", 24], ["sasuke_cm2", 26]],
+      "music": "battle_boss",
+      "boss": {
+        "flag": "valley_phase1_done",
+        "no_rank_up": true,
+        "reward_ryo": 0,
+        "victory_text": "Sasuke's borrowed shinobi scatter into smoke. He rises, the cursed mark crawling across his skin. 'Fine. No more games.'"
+      }
+    }
+  }
+}

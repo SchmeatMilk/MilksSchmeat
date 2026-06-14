@@ -22,28 +22,40 @@ var inventory: Dictionary = {"sealing_tag": 5, "blood_pill": 3, "chakra_pill": 2
 var ryo: int = 500
 var story_flags: Dictionary = {}      # {flag_name: true}
 var bingo_book: Dictionary = {}       # unit_id -> "seen"|"contracted"
+var seen_cutscenes: Dictionary = {}   # cutscene_id -> true (one-shot scenes don't replay)
 
 var current_map: String = "konoha"
 var player_cell: Vector2i = Vector2i(7, 7)
+
+# Scroll archetype -> the themed starter unit it grants at graduation.
+const SCROLL_UNITS := {"taijutsu": "rock_lee", "ninjutsu": "tenten", "genjutsu": "shino"}
 
 
 func registry() -> Node:
 	return get_node("/root/DataRegistry")
 
 
-func new_game(starter_id: String) -> void:
+## Start a new run. The player is always Naruto (lead_id); the graduation cutscene
+## recruits the rest of Team 7 plus the themed unit for the chosen scroll. Keeping
+## the starting party to the single lead keeps new_game("naruto") smoke-test-stable.
+func new_game(lead_id: String = "naruto", scroll_id: String = "") -> void:
+	commander_name = "Naruto"
 	commander_level = 1
 	authority = 20
 	chakra_reserve = 100
 	tactical_slots = 3
-	party = [UnitInstance.create(registry(), starter_id, 5)]
+	party = [UnitInstance.create(registry(), lead_id, 5)]
 	archive = []
 	inventory = {"sealing_tag": 5, "blood_pill": 3, "chakra_pill": 2}
 	ryo = 500
 	story_flags = {}
-	bingo_book = {starter_id: "contracted"}
+	seen_cutscenes = {}
+	bingo_book = {lead_id: "contracted"}
+	if scroll_id != "" and SCROLL_UNITS.has(scroll_id):
+		story_flags["chose_" + scroll_id] = true
 	current_map = "konoha"
-	player_cell = Vector2i(7, 7)
+	var sp: Array = registry().map_def("konoha").get("spawn", [7, 7])
+	player_cell = Vector2i(int(sp[0]), int(sp[1]))
 	party_changed.emit()
 
 
@@ -85,6 +97,38 @@ func has_flag(flag: String) -> bool:
 	return story_flags.get(flag, false)
 
 
+# --- Story / cutscenes -----------------------------------------------------
+
+func mark_cutscene_seen(id: String) -> void:
+	seen_cutscenes[id] = true
+
+
+func has_seen_cutscene(id: String) -> bool:
+	return seen_cutscenes.get(id, false)
+
+
+## Add a story ally to the squad (graduation Team 7, Haku, etc.). No-op if already held.
+func recruit(unit_id: String, level: int = 5) -> void:
+	if bingo_book.get(unit_id, "") == "contracted":
+		return
+	add_unit(UnitInstance.create(registry(), unit_id, level))
+
+
+## Remove a unit from the active squad and the archive (e.g. Sasuke's defection).
+func remove_from_party(unit_id: String) -> void:
+	party = party.filter(func(u): return u.unit_id != unit_id)
+	archive = archive.filter(func(u): return u.unit_id != unit_id)
+	party_changed.emit()
+
+
+## The themed starter unit for whichever scroll was chosen at the title, or "".
+func scroll_starter_unit() -> String:
+	for scroll in SCROLL_UNITS:
+		if has_flag("chose_" + scroll):
+			return SCROLL_UNITS[scroll]
+	return ""
+
+
 func party_alive() -> bool:
 	for u in party:
 		if not u.is_fainted():
@@ -115,6 +159,7 @@ func to_dict() -> Dictionary:
 		"ryo": ryo,
 		"story_flags": story_flags,
 		"bingo_book": bingo_book,
+		"seen_cutscenes": seen_cutscenes,
 		"current_map": current_map,
 		"player_cell": [player_cell.x, player_cell.y],
 	}
@@ -136,6 +181,7 @@ func from_dict(d: Dictionary) -> void:
 	ryo = int(d.get("ryo", 0))
 	story_flags = d.get("story_flags", {})
 	bingo_book = d.get("bingo_book", {})
+	seen_cutscenes = d.get("seen_cutscenes", {})
 	current_map = d.get("current_map", "konoha")
 	var cell: Array = d.get("player_cell", [7, 7])
 	player_cell = Vector2i(int(cell[0]), int(cell[1]))

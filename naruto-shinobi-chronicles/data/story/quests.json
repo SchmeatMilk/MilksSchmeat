@@ -1,0 +1,12 @@
+{
+  "quests": [
+    {"id": "graduation",     "name": "Genin Graduation",   "flag": "seen_graduation",       "desc": "Graduate the Academy and form Team 7."},
+    {"id": "bell_test",      "name": "The Bell Test",       "flag": "bell_test_passed",      "desc": "Pass Kakashi's teamwork trial at the Training Grounds."},
+    {"id": "land_of_waves",  "name": "Land of Waves",       "flag": "land_of_waves_cleared", "desc": "Cross the Great Naruto Bridge and stop Zabuza and Haku."},
+    {"id": "chunin_exams",   "name": "The Chunin Exams",    "flag": "chunin_exam_cleared",   "desc": "Survive the Forest of Death, then win the Stadium tournament."},
+    {"id": "defection",      "name": "Breaking of Bonds",   "flag": "sasuke_defected",       "desc": "Confront Sasuke at the village gates."},
+    {"id": "sage_mode",      "name": "Mount Myoboku",       "flag": "sage_mode_unlocked",    "desc": "Train with the toads and awaken Sage Mode."},
+    {"id": "akatsuki",       "name": "The Akatsuki Shadow", "flag": "akatsuki_repelled",     "desc": "Drive off the Akatsuki hunters on the road."},
+    {"id": "valley",         "name": "Valley of the End",   "flag": "game_complete",         "desc": "Bring Sasuke home — whatever it takes."}
+  ]
+}

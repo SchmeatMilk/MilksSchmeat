@@ -1,0 +1,52 @@
+{
+  "id": "chunin_stadium",
+  "name": "Chunin Exam Stadium",
+  "music": "battle_boss",
+  "size": [20, 14],
+  "spawn": [10, 11],
+  "grid": [
+    "TTTTTTTTTTTTTTTTTTTT",
+    "T##################T",
+    "T##################T",
+    "T##################T",
+    "T##################T",
+    "T##################T",
+    "T##################T",
+    "T##################T",
+    "T##################T",
+    "T##################T",
+    "T##################T",
+    "T##################T",
+    "T########PP########T",
+    "TTTTTTTTTTPTTTTTTTTT"
+  ],
+  "on_enter": [],
+  "npcs": [
+    {"id": "proctor", "sprite": "iruka", "name": "Exam Proctor", "cell": [10, 4], "facing": "down",
+     "dialogue": ["The finals are a tournament. Win every match to be named Chunin.", "Step into the arena when you're ready."],
+     "action": "",
+     "states": [
+       {"unless_flags": ["chunin_beat_neji"], "action": "boss_battle",
+        "dialogue": ["FIRST MATCH: Neji Hyuga of the Hyuga clan.", "His Gentle Fist seals chakra points. Show me the spirit of a true warrior!"],
+        "boss": {"party": [["neji", 16]], "flag": "chunin_beat_neji", "keep_npc": true, "no_rank_up": true,
+                 "reward_ryo": 400, "victory_text": "Neji concedes. 'Perhaps fate is not so fixed after all.'"}},
+       {"require_flags": ["chunin_beat_neji"], "unless_flags": ["chunin_beat_kankuro"], "action": "boss_battle",
+        "dialogue": ["SECOND MATCH: Kankuro of the Sand, the puppet master."],
+        "boss": {"party": [["kankuro", 17]], "flag": "chunin_beat_kankuro", "keep_npc": true, "no_rank_up": true,
+                 "reward_ryo": 500, "victory_text": "Kankuro's puppet clatters to the ground in pieces."}},
+       {"require_flags": ["chunin_beat_kankuro"], "unless_flags": ["chunin_beat_temari"], "action": "boss_battle",
+        "dialogue": ["THIRD MATCH: Temari of the Sand, mistress of the wind fan."],
+        "boss": {"party": [["temari", 17]], "flag": "chunin_beat_temari", "keep_npc": true, "no_rank_up": true,
+                 "reward_ryo": 600, "victory_text": "Temari folds her fan with a smirk. 'Not bad, Leaf.'"}},
+       {"require_flags": ["chunin_beat_temari"], "unless_flags": ["chunin_exam_cleared"], "action": "boss_battle",
+        "dialogue": ["FINAL MATCH: Gaara of the Desert. His sand has never let an enemy touch him.", "Win this, and you are Chunin."],
+        "boss": {"party": [["gaara", 19]], "flag": "chunin_exam_cleared", "keep_npc": true,
+                 "reward_items": {"chunin_vest": 1}, "reward_ryo": 2500,
+                 "victory_text": "Gaara's sand shield shatters at last. He stares at you, something almost human in his eyes. CHAMPION!"}}
+     ]}
+  ],
+  "warps": [
+    {"cell": [10, 13], "to_map": "konoha", "to_cell": [2, 9], "label": "Konoha"}
+  ],
+  "encounters": {"rate": 0.0, "table": []}
+}

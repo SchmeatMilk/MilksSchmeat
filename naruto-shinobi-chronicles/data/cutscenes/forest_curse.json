@@ -1,0 +1,17 @@
+{
+  "id": "forest_curse",
+  "title": "The Cursed Seal",
+  "music": "dungeon_theme",
+  "steps": [
+    {"speaker": "Orochimaru", "text": "Before I go... a parting gift. Something to make you crave power, Sasuke-kun."},
+    {"speaker": "", "text": "His neck elongates. Fangs sink into Sasuke's shoulder. A black, three-tomoe mark spreads across the skin."},
+    {"speaker": "Sasuke", "text": "Aagh—! What... what did you do to me...?"},
+    {"speaker": "Orochimaru", "text": "I've given you a reason to come find me. When the village can no longer satisfy your hunger... you'll know where to look. Kukuku..."},
+    {"speaker": "Sakura", "text": "Sasuke-kun! Hang on — Kakashi-sensei, the mark, it's spreading!"},
+    {"speaker": "Kakashi", "text": "I've sealed it for now. But a Cursed Seal feeds on a darkness already inside. Keep him close, Commander. The real exams — the Stadium finals — are next."}
+  ],
+  "on_finish": {
+    "set_flags": ["sasuke_cursed"],
+    "goto_map": {"map": "konoha", "cell": [7, 7]}
+  }
+}

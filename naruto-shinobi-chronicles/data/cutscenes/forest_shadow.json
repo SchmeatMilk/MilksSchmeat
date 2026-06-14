@@ -1,0 +1,25 @@
+{
+  "id": "forest_shadow",
+  "title": "The Shadow Falls",
+  "music": "battle_boss",
+  "steps": [
+    {"speaker": "", "text": "The light turns a sickly purple. A tall, pale figure unfolds from the trees. The forest goes silent."},
+    {"speaker": "Orochimaru", "text": "Kukuku... such lovely eyes, Uchiha. A lineage of perfection — wasted on a mere child."},
+    {"speaker": "Sasuke", "text": "...Get away from me."},
+    {"speaker": "Orochimaru", "text": "Why settle for the crumbs the village offers, when I can give you the entire feast of power? But first — show me your bonds are worth anything at all."},
+    {"speaker": "Naruto", "text": "Stay back, snake! Team 7 — together, now!"}
+  ],
+  "on_finish": {
+    "start_battle": {
+      "party": [["forest_snake", 9], ["sound_genin", 10], ["orochimaru", 14]],
+      "music": "battle_boss",
+      "boss_npc_id": "orochimaru_boss",
+      "boss": {
+        "flag": "forest_of_death_cleared",
+        "reward_items": {"scroll_of_heaven": 1, "scroll_of_earth": 1},
+        "reward_ryo": 1500,
+        "victory_text": "The genin dissolves into mud and snakes. You hold both scrolls — the prelims are passed."
+      }
+    }
+  }
+}

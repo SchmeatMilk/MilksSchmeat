@@ -8,5 +8,6 @@
   "fear":         {"name": "Fear",         "duration": [2, 2], "hp_tick_fraction": 0.0,    "note": "SPD +1 stage (panic), flee attempts fail 30%."},
   "confusion":    {"name": "Confusion",    "duration": [2, 4], "hp_tick_fraction": 0.0,    "note": "33% chance to strike self (40 pow typeless)."},
   "sleep":        {"name": "Sleep",        "duration": [2, 3], "hp_tick_fraction": 0.0,    "note": "Skip turns; wakes when struck."},
-  "chakra_drain": {"name": "Chakra Drain", "duration": [3, 3], "hp_tick_fraction": 0.0,    "note": "Team loses 1/10 max CP per turn; attacker gains it."}
+  "chakra_drain": {"name": "Chakra Drain", "duration": [3, 3], "hp_tick_fraction": 0.0,    "note": "Team loses 1/10 max CP per turn; attacker gains it."},
+  "cursed_seal":  {"name": "Cursed Seal",  "duration": [3, 4], "hp_tick_fraction": 0.08,   "note": "Forbidden power: STR/NIN x1.3 but the body is drained each turn."}
 }

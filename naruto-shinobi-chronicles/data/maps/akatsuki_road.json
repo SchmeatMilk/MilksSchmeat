@@ -1,0 +1,38 @@
+{
+  "id": "akatsuki_road",
+  "name": "The Long Road",
+  "music": "dungeon_theme",
+  "size": [22, 11],
+  "spawn": [2, 5],
+  "grid": [
+    "TTTTTTTTTTTTTTTTTTTTTT",
+    "T....................T",
+    "T....................T",
+    "T....................T",
+    "PPPPPPPPPPPPPPPPPPPPPP",
+    "PPPPPPPPPPPPPPPPPPPPPP",
+    "PPPPPPPPPPPPPPPPPPPPPP",
+    "T....................T",
+    "T....................T",
+    "T....................T",
+    "TTTTTTTTTTTTTTTTTTTTTT"
+  ],
+  "on_enter": [
+    {"cutscene": "akatsuki_aftermath", "require_flags": ["akatsuki_repelled"]}
+  ],
+  "npcs": [
+    {"id": "itachi", "sprite": "itachi", "name": "Itachi Uchiha", "cell": [10, 5], "facing": "left",
+     "hide_if_flags": ["itachi_repelled"],
+     "dialogue": ["Two cloaked figures bar the road. The taller one's eyes spin crimson..."],
+     "action": "start_cutscene", "cutscene": "akatsuki_itachi"},
+    {"id": "kisame", "sprite": "kisame", "name": "Kisame Hoshigaki", "cell": [12, 5], "facing": "left",
+     "show_if_flags": ["itachi_repelled"], "hide_if_flags": ["akatsuki_repelled"],
+     "dialogue": ["The shark-man hefts a bandaged blade and grins, all teeth..."],
+     "action": "start_cutscene", "cutscene": "akatsuki_kisame"}
+  ],
+  "warps": [
+    {"cell": [0, 5], "to_map": "myoboku", "to_cell": [16, 9], "label": "Mount Myoboku"},
+    {"cell": [21, 5], "to_map": "konoha", "to_cell": [2, 11], "label": "Konoha"}
+  ],
+  "encounters": {"rate": 0.0, "table": []}
+}

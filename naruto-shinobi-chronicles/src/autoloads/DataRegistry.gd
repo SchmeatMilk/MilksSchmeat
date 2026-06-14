@@ -16,6 +16,8 @@ var maps: Dictionary = {}         # id -> Dictionary (overworld map definitions)
 var unit_visuals: Dictionary = {} # id -> {overworld, battle}
 var tiles_visual: Dictionary = {} # atlas/index/legend/solid/encounter/anim
 var building_visuals: Dictionary = {}  # type -> {sprite, w, h, tw, th}
+var cutscenes: Dictionary = {}    # id -> Dictionary (scripted scenes, data/cutscenes/*.json)
+var quests: Array = []            # ordered story objectives (data/story/quests.json)
 var validation_errors: Array = []
 
 
@@ -59,6 +61,16 @@ func load_all(base: String) -> bool:
 	unit_visuals = _read_json_opt(base + "/visuals/units.json")
 	tiles_visual = _read_json_opt(base + "/visuals/tiles.json")
 	building_visuals = _read_json_opt(base + "/visuals/buildings.json")
+
+	# Story Mode: scripted cutscenes + quest/objective list (both optional).
+	cutscenes.clear()
+	for file in _list_files(base + "/cutscenes", ".json"):
+		var cd: Dictionary = _read_json(base + "/cutscenes/" + file)
+		if not cd.is_empty():
+			cutscenes[cd.get("id", file.get_basename())] = cd
+	quests = []
+	if FileAccess.file_exists(base + "/story/quests.json"):
+		quests = _read_json(base + "/story/quests.json").get("quests", [])
 
 	_validate()
 	return validation_errors.is_empty()
@@ -105,6 +117,10 @@ func map_def(id: String) -> Dictionary:
 	return maps.get(id, {})
 
 
+func cutscene(id: String) -> Dictionary:
+	return cutscenes.get(id, {})
+
+
 ## Total exp required to BE at `level` (cubic curve scaled per growth group).
 func exp_for_level(curve: String, level: int) -> int:
 	var coeff := float(growth_coefficients.get(curve, 1.0))
@@ -148,6 +164,30 @@ func _validate() -> void:
 		for key in ["jutsu_a", "jutsu_b"]:
 			if not jutsu_db.has(combo.get(key, "")):
 				validation_errors.append("Combo '%s' references missing jutsu '%s'" % [combo.get("id", "?"), combo.get(key, "")])
+	# Cutscene on_finish references (recruits, warp targets, battle units) resolve.
+	for cid in cutscenes:
+		var cs: Dictionary = cutscenes[cid]
+		var fin: Dictionary = cs.get("on_finish", {})
+		for r in fin.get("recruit", []):
+			if not units.has(r.get("unit", "")):
+				validation_errors.append("Cutscene '%s' recruits unknown unit '%s'" % [cid, r.get("unit", "")])
+		var gm: Dictionary = fin.get("goto_map", {})
+		if not gm.is_empty() and not maps.has(gm.get("map", "")):
+			validation_errors.append("Cutscene '%s' goto_map references unknown map '%s'" % [cid, gm.get("map", "")])
+		var sb: Dictionary = fin.get("start_battle", {})
+		for entry in sb.get("party", []):
+			if not units.has(entry[0]):
+				validation_errors.append("Cutscene '%s' start_battle references unknown unit '%s'" % [cid, entry[0]])
+	# Map story triggers reference cutscenes that exist.
+	for mid in maps:
+		var m: Dictionary = maps[mid]
+		for trig in m.get("on_enter", []) + m.get("events", []):
+			var tc: String = trig.get("cutscene", "")
+			if tc != "" and not cutscenes.has(tc):
+				validation_errors.append("Map '%s' trigger references unknown cutscene '%s'" % [mid, tc])
+	for q in quests:
+		if q.get("flag", "") == "":
+			validation_errors.append("Quest '%s' has no completion flag" % q.get("id", "?"))
 
 
 # --- IO helpers ------------------------------------------------------------

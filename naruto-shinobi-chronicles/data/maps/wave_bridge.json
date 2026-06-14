@@ -1,0 +1,33 @@
+{
+  "id": "wave_bridge",
+  "name": "Great Naruto Bridge",
+  "music": "dungeon_theme",
+  "size": [20, 11],
+  "spawn": [2, 5],
+  "grid": [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWW",
+    "BBBBBBBBBBBBBBBBBBBB",
+    "BBBBBBBBBBBBBBBBBBBB",
+    "BBBBBBBBBBBBBBBBBBBB",
+    "WWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  "on_enter": [
+    {"cutscene": "wave_aftermath", "require_flags": ["land_of_waves_cleared"], "unless_flags": ["wave_haku_joined"]}
+  ],
+  "npcs": [
+    {"id": "zabuza", "sprite": "zabuza", "name": "Zabuza Momochi", "cell": [16, 5], "facing": "left",
+     "hide_if_flags": ["land_of_waves_cleared"],
+     "dialogue": ["A shape looms in the mist — a giant cleaver across its back. A masked figure stands beside it."],
+     "action": "start_cutscene", "cutscene": "wave_zabuza"}
+  ],
+  "warps": [
+    {"cell": [0, 5], "to_map": "konoha", "to_cell": [2, 7], "label": "Konoha"}
+  ],
+  "encounters": {"rate": 0.0, "table": []}
+}

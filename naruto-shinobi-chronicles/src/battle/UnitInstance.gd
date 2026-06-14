@@ -80,6 +80,9 @@ func effective_stat(stat_name: String) -> int:
 		value *= 0.5
 	if status == "burn" and stat_name == "str":
 		value *= 0.7
+	# Cursed Seal: forbidden power — STR/NIN surge while it drains HP each turn.
+	if status == "cursed_seal" and stat_name in ["str", "nin"]:
+		value *= 1.3
 	return maxi(1, int(value))
 
 

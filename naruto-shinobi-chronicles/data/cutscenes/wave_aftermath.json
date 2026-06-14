@@ -1,0 +1,17 @@
+{
+  "id": "wave_aftermath",
+  "title": "A New Path",
+  "background": "res://assets/cutscenes/reference/village_gate_establishing_shot.jpg",
+  "music": "town_theme",
+  "steps": [
+    {"speaker": "Haku", "text": "...You spared me. My master is gone. A tool with no purpose should simply break..."},
+    {"speaker": "Naruto", "text": "You're not a tool! Come with us. Find something — someone — worth protecting. For real this time."},
+    {"speaker": "Haku", "text": "...Then I will walk your path, Commander. My ice is yours."},
+    {"speaker": "Kakashi", "text": "Yo. Good work, all of you. Let's head home — the Chunin Exams are coming, and Team 7 is ready for them now."}
+  ],
+  "on_finish": {
+    "set_flags": ["wave_haku_joined"],
+    "recruit": [{"unit": "haku", "level": 12}],
+    "goto_map": {"map": "konoha", "cell": [7, 7]}
+  }
+}
