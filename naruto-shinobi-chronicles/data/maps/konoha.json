@@ -29,7 +29,9 @@
        {"require_flags": ["bell_test_passed"], "unless_flags": ["land_of_waves_cleared"], "action": "heal_party",
         "dialogue": ["A C-rank request came from the Land of Waves.", "Cross the Great Naruto Bridge — but be ready. Not every shinobi out there is a friend."]},
        {"require_flags": ["chunin_exam_cleared"], "unless_flags": ["sasuke_defected"], "action": "heal_party",
-        "dialogue": ["You fought well in the exams, Commander.", "But keep an eye on Sasuke. Formidable power can curdle into something darker."]}
+        "dialogue": ["You fought well in the exams, Commander.", "But keep an eye on Sasuke. Formidable power can curdle into something darker."]},
+       {"require_flags": ["credits_seen"], "action": "heal_party",
+        "dialogue": ["You brought him to a standstill — and brought yourself back too.", "The Will of Fire burns brightest in you, Commander. One day, that hat may be yours."]}
      ]},
     {"id": "shopkeep", "name": "Tool Shop Keeper", "cell": [11, 1], "color": "#d0a060",
      "dialogue": ["Tags, pills, and steel — everything a Commander needs."],
@@ -54,7 +56,10 @@
      "locked_text": "The Stadium finals open once you've survived the Forest of Death."},
     {"cell": [1, 5], "to_map": "myoboku", "to_cell": [1, 4], "label": "Mount Myoboku",
      "require_flags": ["sasuke_defected"],
-     "locked_text": "There's no reason to leave the village... yet."}
+     "locked_text": "There's no reason to leave the village... yet."},
+    {"cell": [13, 7], "to_map": "valley_of_the_end", "to_cell": [6, 8], "label": "Valley of the End",
+     "require_flags": ["akatsuki_repelled"],
+     "locked_text": "Sasuke is somewhere past the Valley of the End — but the road there isn't open yet."}
   ],
   "encounters": {"rate": 0.0, "table": []}
 }

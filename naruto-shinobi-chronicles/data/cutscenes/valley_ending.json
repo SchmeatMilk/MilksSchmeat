@@ -1,0 +1,19 @@
+{
+  "id": "valley_ending",
+  "title": "The End — and the Beginning",
+  "background": "res://assets/cutscenes/reference/hokage_rock_establishing_shot.png",
+  "music": "title_theme",
+  "steps": [
+    {"speaker": "", "text": "The light fades. Both of them lie in the shallows, spent, neither able to rise. A stalemate."},
+    {"speaker": "Naruto", "text": "I told you... I'd never give up on you. Even if I have to chase you to the ends of the earth."},
+    {"speaker": "Sasuke", "text": "...Heh. You really are an idiot. ...Maybe that's why you'll be Hokage one day."},
+    {"speaker": "", "text": "\"The cycle of hatred is not broken by a single battle — but by the choice to reach out a hand when the world demands a fist.\""},
+    {"speaker": "", "text": "Naruto looks up at the Hokage Rock as the sun rises over the Leaf. The journey to truly protect this world has only just begun."},
+    {"speaker": "", "text": "— THANK YOU FOR PLAYING —  Naruto: Shinobi Chronicles  |  [ A teaser stirs for the next generation... ]"}
+  ],
+  "on_finish": {
+    "set_flags": ["credits_seen"],
+    "heal": true,
+    "goto_map": {"map": "konoha", "cell": [7, 7]}
+  }
+}

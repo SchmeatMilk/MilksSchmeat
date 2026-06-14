@@ -1,0 +1,24 @@
+{
+  "id": "valley_duel",
+  "title": "The Ultimate Duel",
+  "background": "res://assets/cutscenes/reference/hokage_rock_establishing_shot.png",
+  "music": "battle_boss",
+  "steps": [
+    {"speaker": "", "text": "The summoned shinobi are gone. Naruto draws on the mountain's natural energy — Sage Mode. Sasuke's cursed chakra coils into wings of shadow."},
+    {"speaker": "Sasuke", "text": "This ends here. The world is broken, Naruto. I'll burn the old ways down and build something stronger."},
+    {"speaker": "Naruto", "text": "You're not building anything. You're just destroying the only thing that ever mattered. You're alone — and I won't let you stay that way!"},
+    {"speaker": "Sasuke", "text": "Then stop me. RASENGAN against CHIDORI — let's see whose resolve is real."}
+  ],
+  "on_finish": {
+    "start_battle": {
+      "party": [["sasuke_cm2", 32]],
+      "music": "battle_boss",
+      "boss": {
+        "flag": "game_complete",
+        "no_rank_up": true,
+        "reward_ryo": 0,
+        "victory_text": "Rasengan and Chidori collide. The valley goes white..."
+      }
+    }
+  }
+}

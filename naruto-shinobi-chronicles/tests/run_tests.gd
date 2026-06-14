@@ -37,6 +37,7 @@ func _initialize() -> void:
 	test_act_one()
 	test_act_two()
 	test_act_three()
+	test_act_four()
 
 	print("\n========================================")
 	print("  %d passed, %d failed" % [passed, failed])
@@ -496,3 +497,25 @@ func test_act_three() -> void:
 	check(msf.get("grant_items", {}).has("forbidden_scroll"), "myoboku grants the Forbidden Scroll")
 	check(int(registry.item("forbidden_scroll").get("price", 0)) <= 0, "Forbidden Scroll is not purchasable (Sage Mode story-gated)")
 	check(registry.maps.has("myoboku") and registry.maps.has("akatsuki_road"), "Act III maps load")
+
+
+func test_act_four() -> void:
+	print("\n[act IV — valley of the end]")
+	check(registry.maps.has("valley_of_the_end"), "valley map loads")
+	for cid in ["valley_finale", "valley_duel", "valley_ending"]:
+		check(registry.cutscenes.has(cid), "%s cutscene loads" % cid)
+	check(registry.cutscene("valley_finale").get("on_finish", {}).get("start_battle", {}).get("boss", {}).get("flag", "") == "valley_phase1_done", "phase 1 sets valley_phase1_done")
+	check(registry.cutscene("valley_duel").get("on_finish", {}).get("start_battle", {}).get("boss", {}).get("flag", "") == "game_complete", "phase 2 sets game_complete (ending trigger)")
+	var cm2: UnitData = registry.unit("sasuke_cm2")
+	var has_curse := false
+	for e in cm2.learnset:
+		if e.get("jutsu", "") == "cursed_seal_form":
+			has_curse = true
+	check(has_curse, "final Sasuke knows cursed_seal_form")
+	var oe: Array = registry.map_def("valley_of_the_end").get("on_enter", [])
+	check(oe.size() == 3, "valley on_enter has the 3-phase chain (%d)" % oe.size())
+	var has_valley_warp := false
+	for w in registry.map_def("konoha").get("warps", []):
+		if w.get("to_map", "") == "valley_of_the_end" and w.get("require_flags", []).has("akatsuki_repelled"):
+			has_valley_warp = true
+	check(has_valley_warp, "konoha Valley warp gated on akatsuki_repelled")
