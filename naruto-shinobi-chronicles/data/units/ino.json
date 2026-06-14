@@ -1,0 +1,56 @@
+{
+  "id": "ino",
+  "name": "Ino Yamanaka",
+  "growth_curve": "medium",
+  "nature": "clever",
+  "affinities": [
+    "yin"
+  ],
+  "trait": "sensor",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "substitution"
+    },
+    {
+      "level": 6,
+      "jutsu": "yin_mind_transfer"
+    },
+    {
+      "level": 12,
+      "jutsu": "yin_hell_viewing"
+    },
+    {
+      "level": 20,
+      "jutsu": "poison_mist"
+    },
+    {
+      "level": 28,
+      "jutsu": "yin_chakra_leech"
+    }
+  ],
+  "promotion": {},
+  "rarity": "uncommon",
+  "catch_rate": 60,
+  "base_exp": 70,
+  "village": "leaf",
+  "threat_level": "C",
+  "bingo_entry": "Yamanaka mind arts. Your body may briefly not be yours.",
+  "palette": {
+    "primary": "#b89be0",
+    "secondary": "#4a3a6a",
+    "accent": "#f0e8ff"
+  },
+  "base_stats": {
+    "hp": 60,
+    "str": 45,
+    "nin": 70,
+    "def": 45,
+    "res": 65,
+    "spd": 70
+  }
+}

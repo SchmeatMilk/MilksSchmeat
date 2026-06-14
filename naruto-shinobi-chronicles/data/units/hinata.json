@@ -1,0 +1,52 @@
+{
+  "id": "hinata",
+  "name": "Hinata Hyuga",
+  "growth_curve": "medium",
+  "nature": "patient",
+  "affinities": [
+    "yang"
+  ],
+  "trait": "byakugan",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "yang_gentle_fist"
+    },
+    {
+      "level": 1,
+      "jutsu": "substitution"
+    },
+    {
+      "level": 8,
+      "jutsu": "yang_chakra_scalpel"
+    },
+    {
+      "level": 16,
+      "jutsu": "yang_twin_lion_fists"
+    },
+    {
+      "level": 24,
+      "jutsu": "yang_eight_trigrams"
+    }
+  ],
+  "promotion": {},
+  "rarity": "rare",
+  "catch_rate": 45,
+  "base_exp": 75,
+  "village": "leaf",
+  "threat_level": "C",
+  "bingo_entry": "Hyuga main branch. The gentle fist is anything but.",
+  "palette": {
+    "primary": "#7a8ad0",
+    "secondary": "#2a3260",
+    "accent": "#f0f0ff"
+  },
+  "base_stats": {
+    "hp": 70,
+    "str": 60,
+    "nin": 60,
+    "def": 55,
+    "res": 70,
+    "spd": 65
+  }
+}

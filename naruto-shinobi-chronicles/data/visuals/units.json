@@ -1,0 +1,120 @@
+{
+ "naruto": {
+  "overworld": "res://assets/sprites/units/overworld/naruto.png"
+ },
+ "naruto_sage": {
+  "overworld": "res://assets/sprites/units/overworld/naruto_sage.png"
+ },
+ "sasuke": {
+  "overworld": "res://assets/sprites/units/overworld/sasuke.png"
+ },
+ "sasuke_cm2": {
+  "overworld": "res://assets/sprites/units/overworld/sasuke_cm2.png"
+ },
+ "sakura": {
+  "overworld": "res://assets/sprites/units/overworld/sakura.png"
+ },
+ "sakura_apprentice": {
+  "overworld": "res://assets/sprites/units/overworld/sakura_apprentice.png"
+ },
+ "kakashi": {
+  "overworld": "res://assets/sprites/units/overworld/kakashi.png"
+ },
+ "rock_lee": {
+  "overworld": "res://assets/sprites/units/overworld/rock_lee.png"
+ },
+ "gaara": {
+  "overworld": "res://assets/sprites/units/overworld/gaara.png"
+ },
+ "gaara_kazekage": {
+  "overworld": "res://assets/sprites/units/overworld/gaara_kazekage.png"
+ },
+ "temari": {
+  "overworld": "res://assets/sprites/units/overworld/temari.png"
+ },
+ "kankuro": {
+  "overworld": "res://assets/sprites/units/overworld/kankuro.png"
+ },
+ "shikamaru": {
+  "overworld": "res://assets/sprites/units/overworld/shikamaru.png"
+ },
+ "choji": {
+  "overworld": "res://assets/sprites/units/overworld/choji.png"
+ },
+ "ino": {
+  "overworld": "res://assets/sprites/units/overworld/ino.png"
+ },
+ "kiba": {
+  "overworld": "res://assets/sprites/units/overworld/kiba.png"
+ },
+ "shino": {
+  "overworld": "res://assets/sprites/units/overworld/shino.png"
+ },
+ "hinata": {
+  "overworld": "res://assets/sprites/units/overworld/hinata.png"
+ },
+ "neji": {
+  "overworld": "res://assets/sprites/units/overworld/neji.png"
+ },
+ "tenten": {
+  "overworld": "res://assets/sprites/units/overworld/tenten.png"
+ },
+ "jiraiya": {
+  "overworld": "res://assets/sprites/units/overworld/jiraiya.png"
+ },
+ "tsunade": {
+  "overworld": "res://assets/sprites/units/overworld/tsunade.png"
+ },
+ "orochimaru": {
+  "overworld": "res://assets/sprites/units/overworld/orochimaru.png"
+ },
+ "zabuza": {
+  "overworld": "res://assets/sprites/units/overworld/zabuza.png"
+ },
+ "haku": {
+  "overworld": "res://assets/sprites/units/overworld/haku.png"
+ },
+ "leaf_genin": {
+  "overworld": "res://assets/sprites/units/overworld/leaf_genin.png"
+ },
+ "sound_genin": {
+  "overworld": "res://assets/sprites/units/overworld/sound_genin.png"
+ },
+ "mist_swordsman": {
+  "overworld": "res://assets/sprites/units/overworld/mist_swordsman.png"
+ },
+ "custom_template": {
+  "overworld": "res://assets/sprites/units/overworld/custom_template.png",
+  "battle": "res://assets/sprites/units/battle/custom_template.png"
+ },
+ "hokage": {
+  "overworld": "res://assets/sprites/units/overworld/hokage.png"
+ },
+ "iruka": {
+  "overworld": "res://assets/sprites/units/overworld/iruka.png"
+ },
+ "ichiraku": {
+  "overworld": "res://assets/sprites/units/overworld/ichiraku.png"
+ },
+ "teuchi": {
+  "overworld": "res://assets/sprites/units/overworld/teuchi.png"
+ },
+ "shopkeep": {
+  "overworld": "res://assets/sprites/units/overworld/shopkeep.png"
+ },
+ "konohamaru": {
+  "overworld": "res://assets/sprites/units/overworld/konohamaru.png"
+ },
+ "villager_m": {
+  "overworld": "res://assets/sprites/units/overworld/villager_m.png"
+ },
+ "villager_f": {
+  "overworld": "res://assets/sprites/units/overworld/villager_f.png"
+ },
+ "forest_snake": {
+  "battle": "res://assets/sprites/units/battle/forest_snake.png"
+ },
+ "giant_centipede": {
+  "battle": "res://assets/sprites/units/battle/giant_centipede.png"
+ }
+}

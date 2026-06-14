@@ -1,0 +1,52 @@
+{
+  "id": "sound_genin",
+  "name": "Sound Ninja",
+  "growth_curve": "medium",
+  "nature": "fierce",
+  "affinities": [
+    "yin"
+  ],
+  "trait": "sensor",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 5,
+      "jutsu": "yin_hell_viewing"
+    },
+    {
+      "level": 11,
+      "jutsu": "explosive_tag"
+    },
+    {
+      "level": 18,
+      "jutsu": "yin_chakra_leech"
+    },
+    {
+      "level": 26,
+      "jutsu": "poison_mist"
+    }
+  ],
+  "promotion": {},
+  "rarity": "common",
+  "catch_rate": 150,
+  "base_exp": 50,
+  "village": "rogue",
+  "threat_level": "C",
+  "bingo_entry": "Orochimaru's foot soldiers. Sound-based genjutsu; plug your ears.",
+  "palette": {
+    "primary": "#7a7a9a",
+    "secondary": "#2a2a3a",
+    "accent": "#d0c8a0"
+  },
+  "base_stats": {
+    "hp": 55,
+    "str": 55,
+    "nin": 55,
+    "def": 40,
+    "res": 45,
+    "spd": 55
+  }
+}

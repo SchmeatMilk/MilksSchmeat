@@ -1,0 +1,13 @@
+{
+  "brave":    {"name": "Brave",    "up": "str", "down": "res"},
+  "calm":     {"name": "Calm",     "up": "res", "down": "str"},
+  "clever":   {"name": "Clever",   "up": "nin", "down": "def"},
+  "sturdy":   {"name": "Sturdy",   "up": "def", "down": "nin"},
+  "swift":    {"name": "Swift",    "up": "spd", "down": "def"},
+  "patient":  {"name": "Patient",  "up": "def", "down": "spd"},
+  "fierce":   {"name": "Fierce",   "up": "str", "down": "nin"},
+  "wise":     {"name": "Wise",     "up": "nin", "down": "str"},
+  "lucky":    {"name": "Lucky",    "up": "spd", "down": "res"},
+  "stoic":    {"name": "Stoic",    "up": "res", "down": "spd"},
+  "balanced": {"name": "Balanced", "up": "",    "down": ""}
+}

@@ -1,0 +1,48 @@
+{
+  "id": "custom_shinobi",
+  "name": "Custom Shinobi",
+  "growth_curve": "medium",
+  "nature": "balanced",
+  "affinities": [
+    "none"
+  ],
+  "trait": "substitution_master",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "substitution"
+    },
+    {
+      "level": 10,
+      "jutsu": "shuriken_barrage"
+    },
+    {
+      "level": 20,
+      "jutsu": "explosive_tag"
+    }
+  ],
+  "promotion": {},
+  "rarity": "rare",
+  "catch_rate": 0,
+  "base_exp": 70,
+  "village": "leaf",
+  "threat_level": "C",
+  "bingo_entry": "An unregistered shinobi. The Bingo Book has no entry... yet.",
+  "palette": {
+    "primary": "#888888",
+    "secondary": "#333333",
+    "accent": "#dddddd"
+  },
+  "base_stats": {
+    "hp": 70,
+    "str": 60,
+    "nin": 60,
+    "def": 55,
+    "res": 55,
+    "spd": 60
+  }
+}

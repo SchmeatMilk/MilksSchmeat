@@ -1,0 +1,61 @@
+{
+  "id": "orochimaru",
+  "name": "Orochimaru",
+  "growth_curve": "slow",
+  "nature": "wise",
+  "affinities": [
+    "yin",
+    "earth"
+  ],
+  "trait": "legendary_sannin",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "striking_shadow_snake"
+    },
+    {
+      "level": 1,
+      "jutsu": "substitution"
+    },
+    {
+      "level": 8,
+      "jutsu": "poison_mist"
+    },
+    {
+      "level": 15,
+      "jutsu": "yin_binding"
+    },
+    {
+      "level": 22,
+      "jutsu": "summoning_rashomon"
+    },
+    {
+      "level": 32,
+      "jutsu": "earth_swamp"
+    },
+    {
+      "level": 40,
+      "jutsu": "soul_severing"
+    }
+  ],
+  "promotion": {},
+  "rarity": "mythic",
+  "catch_rate": 0,
+  "base_exp": 180,
+  "village": "rogue",
+  "threat_level": "S",
+  "bingo_entry": "S-rank missing-nin. Sannin. If you see the snake, the experiment already began.",
+  "palette": {
+    "primary": "#d8d8e8",
+    "secondary": "#2a1a3a",
+    "accent": "#b8a000"
+  },
+  "base_stats": {
+    "hp": 95,
+    "str": 70,
+    "nin": 110,
+    "def": 70,
+    "res": 90,
+    "spd": 75
+  }
+}

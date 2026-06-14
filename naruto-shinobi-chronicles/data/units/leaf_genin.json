@@ -1,0 +1,52 @@
+{
+  "id": "leaf_genin",
+  "name": "Leaf Genin",
+  "growth_curve": "medium",
+  "nature": "balanced",
+  "affinities": [
+    "none"
+  ],
+  "trait": "substitution_master",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 4,
+      "jutsu": "substitution"
+    },
+    {
+      "level": 9,
+      "jutsu": "shuriken_barrage"
+    },
+    {
+      "level": 15,
+      "jutsu": "yang_leaf_hurricane"
+    },
+    {
+      "level": 22,
+      "jutsu": "explosive_tag"
+    }
+  ],
+  "promotion": {},
+  "rarity": "common",
+  "catch_rate": 180,
+  "base_exp": 45,
+  "village": "leaf",
+  "threat_level": "D",
+  "bingo_entry": "A fresh graduate of the Academy. Everyone starts somewhere.",
+  "palette": {
+    "primary": "#4a7a4a",
+    "secondary": "#1f3320",
+    "accent": "#c8d8c0"
+  },
+  "base_stats": {
+    "hp": 55,
+    "str": 50,
+    "nin": 45,
+    "def": 45,
+    "res": 45,
+    "spd": 50
+  }
+}

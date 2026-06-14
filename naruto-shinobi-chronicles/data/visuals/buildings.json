@@ -1,0 +1,128 @@
+{
+ "ramen": {
+  "sprite": "res://assets/buildings/ramen.png",
+  "w": 64,
+  "h": 48,
+  "tw": 4,
+  "th": 3
+ },
+ "hokage_tower": {
+  "sprite": "res://assets/buildings/hokage_tower.png",
+  "w": 80,
+  "h": 80,
+  "tw": 5,
+  "th": 5
+ },
+ "academy": {
+  "sprite": "res://assets/buildings/academy.png",
+  "w": 64,
+  "h": 48,
+  "tw": 4,
+  "th": 3
+ },
+ "hospital": {
+  "sprite": "res://assets/buildings/hospital.png",
+  "w": 48,
+  "h": 48,
+  "tw": 3,
+  "th": 3
+ },
+ "shop": {
+  "sprite": "res://assets/buildings/shop.png",
+  "w": 48,
+  "h": 36,
+  "tw": 3,
+  "th": 3
+ },
+ "gate": {
+  "sprite": "res://assets/buildings/gate.png",
+  "w": 96,
+  "h": 48,
+  "tw": 6,
+  "th": 3
+ },
+ "house0": {
+  "sprite": "res://assets/buildings/house0.png",
+  "w": 32,
+  "h": 32,
+  "tw": 2,
+  "th": 2
+ },
+ "house1": {
+  "sprite": "res://assets/buildings/house1.png",
+  "w": 32,
+  "h": 32,
+  "tw": 2,
+  "th": 2
+ },
+ "house2": {
+  "sprite": "res://assets/buildings/house2.png",
+  "w": 32,
+  "h": 32,
+  "tw": 2,
+  "th": 2
+ },
+ "house3": {
+  "sprite": "res://assets/buildings/house3.png",
+  "w": 32,
+  "h": 32,
+  "tw": 2,
+  "th": 2
+ },
+ "tree": {
+  "sprite": "res://assets/buildings/tree.png",
+  "w": 16,
+  "h": 24,
+  "tw": 1,
+  "th": 2
+ },
+ "lamp": {
+  "sprite": "res://assets/buildings/lamp.png",
+  "w": 16,
+  "h": 24,
+  "tw": 1,
+  "th": 2
+ },
+ "post": {
+  "sprite": "res://assets/buildings/post.png",
+  "w": 16,
+  "h": 24,
+  "tw": 1,
+  "th": 2
+ },
+ "darktree": {
+  "sprite": "res://assets/buildings/darktree.png",
+  "w": 16,
+  "h": 28,
+  "tw": 1,
+  "th": 2
+ },
+ "hokage_faces": {
+  "sprite": "res://assets/buildings/hokage_faces.png",
+  "w": 128,
+  "h": 44,
+  "tw": 8,
+  "th": 3
+ },
+ "memorial_stone": {
+  "sprite": "res://assets/buildings/memorial_stone.png",
+  "w": 16,
+  "h": 28,
+  "tw": 1,
+  "th": 2
+ },
+ "forest_tower": {
+  "sprite": "res://assets/buildings/forest_tower.png",
+  "w": 48,
+  "h": 64,
+  "tw": 3,
+  "th": 4
+ },
+ "chainlink_gate": {
+  "sprite": "res://assets/buildings/chainlink_gate.png",
+  "w": 32,
+  "h": 48,
+  "tw": 2,
+  "th": 3
+ }
+}

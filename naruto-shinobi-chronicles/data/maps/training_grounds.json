@@ -1,0 +1,165 @@
+{
+ "id": "training_grounds",
+ "name": "Training Grounds",
+ "music": "route_theme",
+ "size": [
+  24,
+  18
+ ],
+ "spawn": [
+  11,
+  2
+ ],
+ "grid": [
+  "TTTTTTTTTTTPTTTTTTTTTTTT",
+  "T..........PP..........T",
+  "T..........PP..........T",
+  "T.,,,,,,...PP...,,,,,,.T",
+  "T.,,,,,,...PP...,,,,,,.T",
+  "T.,,,,,,...PP...,,,,,,.T",
+  "T.,,,,,,ssssssss,,,,,,.T",
+  "T.,,,,,,ssssssss,,,,,,.T",
+  "T.,,,,,,ssssssss,,,,,,.T",
+  "T.......ssssssss.......T",
+  "T..WWWW.ssssssss.......T",
+  "T.,WWWW,,,sssss,,,,,,,.T",
+  "T.,WWWW,,,.....,,,,,,,.T",
+  "T.,WWWW,,,.....,,,,,,,.T",
+  "T.,,,,,,,,.....,,,,,,,.T",
+  "T.,,,,,,,,.....,,,,,,,.T",
+  "T......................T",
+  "TTTTTTTTTTTTTTTTTTTTTTTT"
+ ],
+ "props": [
+  {
+   "type": "post",
+   "cell": [
+    9,
+    8
+   ]
+  },
+  {
+   "type": "post",
+   "cell": [
+    11,
+    8
+   ]
+  },
+  {
+   "type": "post",
+   "cell": [
+    13,
+    8
+   ]
+  },
+  {
+   "type": "memorial_stone",
+   "cell": [
+    15,
+    9
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    2,
+    2
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    21,
+    2
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    2,
+    16
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    21,
+    16
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    12,
+    14
+   ]
+  }
+ ],
+ "buildings": [],
+ "npcs": [
+  {
+   "id": "guy",
+   "sprite": "rock_lee",
+   "name": "Might Guy",
+   "cell": [
+    12,
+    11
+   ],
+   "facing": "down",
+   "dialogue": [
+    "YOUTH! Train in the tall grass and wild challengers will find you!",
+    "Defeat them for experience \u2014 or weaken them and SEAL A CONTRACT!"
+   ],
+   "action": ""
+  }
+ ],
+ "warps": [
+  {
+   "cell": [
+    11,
+    0
+   ],
+   "to_map": "konoha",
+   "to_cell": [
+    20,
+    29
+   ],
+   "label": "Konoha"
+  }
+ ],
+ "encounters": {
+  "rate": 0.18,
+  "table": [
+   {
+    "unit": "leaf_genin",
+    "weight": 50,
+    "min_level": 3,
+    "max_level": 6
+   },
+   {
+    "unit": "forest_snake",
+    "weight": 25,
+    "min_level": 3,
+    "max_level": 5
+   },
+   {
+    "unit": "giant_centipede",
+    "weight": 20,
+    "min_level": 3,
+    "max_level": 5
+   },
+   {
+    "unit": "shikamaru",
+    "weight": 3,
+    "min_level": 6,
+    "max_level": 8
+   },
+   {
+    "unit": "kiba",
+    "weight": 2,
+    "min_level": 6,
+    "max_level": 8
+   }
+  ]
+ }
+}

@@ -1,0 +1,53 @@
+{
+  "id": "haku",
+  "name": "Haku",
+  "growth_curve": "fast",
+  "nature": "swift",
+  "affinities": [
+    "water",
+    "wind"
+  ],
+  "trait": "mist_veil",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "hidden_mist"
+    },
+    {
+      "level": 8,
+      "jutsu": "water_prison"
+    },
+    {
+      "level": 15,
+      "jutsu": "ice_mirrors"
+    },
+    {
+      "level": 24,
+      "jutsu": "water_dragon"
+    }
+  ],
+  "promotion": {},
+  "rarity": "legendary",
+  "catch_rate": 15,
+  "base_exp": 95,
+  "village": "mist",
+  "threat_level": "B",
+  "bingo_entry": "Ice-style kekkei genkai. Faster than the eye between the mirrors.",
+  "palette": {
+    "primary": "#a8d8e8",
+    "secondary": "#3a5a6a",
+    "accent": "#f8f8ff"
+  },
+  "base_stats": {
+    "hp": 65,
+    "str": 55,
+    "nin": 85,
+    "def": 50,
+    "res": 65,
+    "spd": 95
+  }
+}

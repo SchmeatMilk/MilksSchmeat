@@ -1,0 +1,143 @@
+{
+ "atlas": "res://assets/tiles/konoha_tiles.png",
+ "tile_size": 16,
+ "cols": 8,
+ "rows": 4,
+ "index": {
+  "grass": [
+   0,
+   0
+  ],
+  "grass2": [
+   1,
+   0
+  ],
+  "flower": [
+   2,
+   0
+  ],
+  "path": [
+   3,
+   0
+  ],
+  "path_n": [
+   4,
+   0
+  ],
+  "path_s": [
+   5,
+   0
+  ],
+  "path_w": [
+   6,
+   0
+  ],
+  "path_e": [
+   7,
+   0
+  ],
+  "water": [
+   0,
+   1
+  ],
+  "water2": [
+   1,
+   1
+  ],
+  "shore_n": [
+   2,
+   1
+  ],
+  "shore_s": [
+   3,
+   1
+  ],
+  "shore_w": [
+   4,
+   1
+  ],
+  "shore_e": [
+   5,
+   1
+  ],
+  "forest": [
+   6,
+   1
+  ],
+  "forest2": [
+   7,
+   1
+  ],
+  "fence": [
+   0,
+   2
+  ],
+  "plaza": [
+   1,
+   2
+  ],
+  "bridge_h": [
+   2,
+   2
+  ],
+  "bridge_v": [
+   3,
+   2
+  ],
+  "cliff": [
+   4,
+   2
+  ],
+  "cliff_top": [
+   5,
+   2
+  ],
+  "sand": [
+   6,
+   2
+  ],
+  "stairs": [
+   7,
+   2
+  ],
+  "darkgrass": [
+   0,
+   3
+  ],
+  "tallgrass": [
+   1,
+   3
+  ]
+ },
+ "legend": {
+  ".": "grass",
+  ",": "tallgrass",
+  ":": "flower",
+  "g": "grass2",
+  "P": "path",
+  "W": "water",
+  "B": "bridge_h",
+  "b": "bridge_v",
+  "C": "cliff",
+  "^": "cliff_top",
+  "S": "stairs",
+  "#": "plaza",
+  "D": "darkgrass",
+  "T": "forest",
+  "s": "sand"
+ },
+ "solid": [
+  "W",
+  "C",
+  "T"
+ ],
+ "encounter": [
+  ","
+ ],
+ "anim": {
+  "water": [
+   "water",
+   "water2"
+  ]
+ }
+}

@@ -1,0 +1,39 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Naruto: Shinobi Chronicles"
+config/description="Turn-based tactical RPG / ninja collector. GBA FireRed-style demake."
+run/main_scene="res://scenes/Title.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[autoload]
+
+DataRegistry="*res://src/autoloads/DataRegistry.gd"
+GameState="*res://src/autoloads/GameState.gd"
+SaveManager="*res://src/autoloads/SaveManager.gd"
+SceneRouter="*res://src/autoloads/SceneRouter.gd"
+AudioDirector="*res://src/autoloads/AudioDirector.gd"
+
+[display]
+
+window/size/viewport_width=256
+window/size/viewport_height=192
+window/size/window_width_override=1024
+window/size/window_height_override=768
+window/stretch/mode="viewport"
+window/stretch/scale_mode="integer"
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+renderer/rendering_method="mobile"

@@ -1,0 +1,52 @@
+{
+  "id": "kiba",
+  "name": "Kiba Inuzuka",
+  "growth_curve": "fast",
+  "nature": "fierce",
+  "affinities": [
+    "yang"
+  ],
+  "trait": "beast_mimicry",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "yang_leaf_hurricane"
+    },
+    {
+      "level": 7,
+      "jutsu": "yang_fang_over_fang"
+    },
+    {
+      "level": 15,
+      "jutsu": "shuriken_barrage"
+    },
+    {
+      "level": 24,
+      "jutsu": "yang_primary_lotus"
+    }
+  ],
+  "promotion": {},
+  "rarity": "uncommon",
+  "catch_rate": 60,
+  "base_exp": 70,
+  "village": "leaf",
+  "threat_level": "C",
+  "bingo_entry": "Inuzuka style: two fangs, one target. Akamaru counts as armed.",
+  "palette": {
+    "primary": "#9a6a4a",
+    "secondary": "#3d2516",
+    "accent": "#e8e8e8"
+  },
+  "base_stats": {
+    "hp": 75,
+    "str": 75,
+    "nin": 40,
+    "def": 55,
+    "res": 45,
+    "spd": 75
+  }
+}

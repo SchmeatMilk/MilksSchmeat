@@ -1,0 +1,15 @@
+# Godot 4
+.godot/
+*.import
+export/
+*.apk
+*.aab
+*.pck
+*.zip
+.DS_Store
+
+# dev artifacts
+__pycache__/
+tools/art/_*
+data/maps/_legacy/
+_shot_*.png

@@ -1,0 +1,443 @@
+{
+ "id": "konoha",
+ "name": "Konohagakure",
+ "music": "town_theme",
+ "size": [
+  44,
+  32
+ ],
+ "spawn": [
+  21,
+  24
+ ],
+ "grid": [
+  "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+  "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+  "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+  "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+  "TT^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^TT",
+  "TT................................WWW.....TT",
+  "TT................................WWW.....TT",
+  "TT................................WWW.....TT",
+  "TT................................WWW.....TT",
+  "TT...................PP...........WWW.....TT",
+  "TT....PPPPPPPPPPPPPPPPPPPPPPPPPPPPWWW.....TT",
+  "TT.....P.............PP........P..WWW.....TT",
+  "TT.....P.............PP........P.WWWWW....TT",
+  "TT.....P.............PP........P.WBBBW....TT",
+  "TT.....P.......######PP#####...P.WWWWW....TT",
+  "TT.....P.......#:####PP###:#...P.WWWWW....TT",
+  "TT.....P.......######PP#####P..P.WWWWW....TT",
+  "TT.....P.......######PP#####P..P.WWWWW....TT",
+  "TT..PPPPPPPPPPPP:PPPPPPPPP:PPPPPPPWWW.....TT",
+  "TT..PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPWWW...P.TT",
+  "TT.......P...........PP........P..WWW...P.TT",
+  "TT.......P...........PP........P..WWW...P.TT",
+  "TT.......P...........PP........P..WWW...P.TT",
+  "TT.......P...........PP........P..WWW...P.TT",
+  "TT.......P...........PP...........WWW,,,P,TT",
+  "TT.......P...........PP...........WWW,,,,,TT",
+  "TT...................PP...........WWW,,,,,TT",
+  "TT...................PP...........WWW,,,,,TT",
+  "TT..................PPP...........WWW,,,,,TT",
+  "TT..................PPP...........WWW,,,,,TT",
+  "TTTTTTTTTTTTTTTTTTTTPPTTTTTTTTTTTTTTTTTTTTTT",
+  "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+ ],
+ "buildings": [
+  {
+   "type": "hokage_faces",
+   "cell": [
+    14,
+    0
+   ],
+   "name": "Hokage Rock"
+  },
+  {
+   "type": "hokage_tower",
+   "cell": [
+    18,
+    5
+   ],
+   "name": "Hokage Tower"
+  },
+  {
+   "type": "academy",
+   "cell": [
+    28,
+    6
+   ],
+   "name": "Ninja Academy"
+  },
+  {
+   "type": "hospital",
+   "cell": [
+    29,
+    20
+   ],
+   "name": "Konoha Hospital"
+  },
+  {
+   "type": "shop",
+   "cell": [
+    5,
+    11
+   ],
+   "name": "Tool Shop"
+  },
+  {
+   "type": "ramen",
+   "cell": [
+    24,
+    11
+   ],
+   "name": "Ichiraku Ramen"
+  },
+  {
+   "type": "ramen",
+   "cell": [
+    6,
+    21
+   ],
+   "name": "Ichiraku Ramen (West)"
+  },
+  {
+   "type": "house0",
+   "cell": [
+    4,
+    24
+   ]
+  },
+  {
+   "type": "house1",
+   "cell": [
+    11,
+    24
+   ]
+  },
+  {
+   "type": "house2",
+   "cell": [
+    14,
+    7
+   ]
+  },
+  {
+   "type": "house3",
+   "cell": [
+    11,
+    11
+   ]
+  },
+  {
+   "type": "gate",
+   "cell": [
+    18,
+    28
+   ],
+   "name": "Konoha Main Gate",
+   "door": [
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     0
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     2
+    ]
+   ]
+  }
+ ],
+ "props": [
+  {
+   "type": "tree",
+   "cell": [
+    3,
+    8
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    4,
+    18
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    13,
+    19
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    27,
+    25
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    32,
+    26
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    16,
+    11
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    3,
+    21
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    33,
+    8
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    26,
+    24
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    12,
+    19
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    38,
+    6
+   ]
+  },
+  {
+   "type": "tree",
+   "cell": [
+    40,
+    12
+   ]
+  },
+  {
+   "type": "lamp",
+   "cell": [
+    20,
+    9
+   ]
+  },
+  {
+   "type": "lamp",
+   "cell": [
+    23,
+    9
+   ]
+  },
+  {
+   "type": "lamp",
+   "cell": [
+    20,
+    27
+   ]
+  },
+  {
+   "type": "lamp",
+   "cell": [
+    23,
+    27
+   ]
+  },
+  {
+   "type": "lamp",
+   "cell": [
+    19,
+    16
+   ]
+  },
+  {
+   "type": "lamp",
+   "cell": [
+    24,
+    16
+   ]
+  }
+ ],
+ "npcs": [
+  {
+   "id": "hokage",
+   "name": "Third Hokage",
+   "cell": [
+    20,
+    10
+   ],
+   "facing": "down",
+   "dialogue": [
+    "Welcome back, Commander.",
+    "Your squad is fully rested.",
+    "The Chunin Exams await in the Forest of Death \u2014 to the east."
+   ],
+   "action": "heal_party"
+  },
+  {
+   "id": "teuchi",
+   "sprite": "teuchi",
+   "name": "Teuchi",
+   "cell": [
+    26,
+    15
+   ],
+   "facing": "down",
+   "dialogue": [
+    "One bowl of the usual? On the house, Commander!",
+    "Your whole squad looks livelier already!"
+   ],
+   "action": "heal_party"
+  },
+  {
+   "id": "ayame",
+   "sprite": "ichiraku",
+   "name": "Ichiraku Cook",
+   "cell": [
+    8,
+    25
+   ],
+   "facing": "up",
+   "dialogue": [
+    "Ramen heals all wounds. Slurp up!"
+   ],
+   "action": "heal_party"
+  },
+  {
+   "id": "shopkeep",
+   "sprite": "shopkeep",
+   "name": "Tool Shop Keeper",
+   "cell": [
+    6,
+    15
+   ],
+   "facing": "down",
+   "dialogue": [
+    "Tags, pills, and steel \u2014 everything a Commander needs."
+   ],
+   "action": "open_shop"
+  },
+  {
+   "id": "iruka",
+   "sprite": "iruka",
+   "name": "Iruka Sensei",
+   "cell": [
+    30,
+    10
+   ],
+   "facing": "down",
+   "dialogue": [
+    "Type advantage wins fights.",
+    "Fire burns Wind. Wind cuts Lightning. Lightning splits Earth.",
+    "Earth dams Water. Water douses Fire. Yin breaks Yang, Yang shatters Yin."
+   ],
+   "action": ""
+  },
+  {
+   "id": "konohamaru",
+   "sprite": "konohamaru",
+   "name": "Konohamaru",
+   "cell": [
+    24,
+    20
+   ],
+   "facing": "left",
+   "dialogue": [
+    "One day I'll be Hokage, boss! Believe it!"
+   ],
+   "action": ""
+  },
+  {
+   "id": "medic",
+   "sprite": "villager_f",
+   "name": "Medic-nin",
+   "cell": [
+    30,
+    23
+   ],
+   "facing": "down",
+   "dialogue": [
+    "The hospital can mend any wound \u2014 but rest is the best medicine."
+   ],
+   "action": ""
+  },
+  {
+   "id": "villager1",
+   "sprite": "villager_m",
+   "name": "Villager",
+   "cell": [
+    12,
+    17
+   ],
+   "facing": "down",
+   "dialogue": [
+    "The Will of Fire burns bright in Konoha."
+   ],
+   "action": ""
+  }
+ ],
+ "warps": [
+  {
+   "cell": [
+    20,
+    30
+   ],
+   "to_map": "training_grounds",
+   "to_cell": [
+    7,
+    1
+   ],
+   "label": "Training Grounds"
+  },
+  {
+   "cell": [
+    40,
+    29
+   ],
+   "to_map": "forest_of_death",
+   "to_cell": [
+    1,
+    5
+   ],
+   "label": "Forest of Death"
+  }
+ ],
+ "encounters": {
+  "rate": 0.0,
+  "table": []
+ }
+}

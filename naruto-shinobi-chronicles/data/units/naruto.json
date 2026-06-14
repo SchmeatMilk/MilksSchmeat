@@ -1,0 +1,68 @@
+{
+  "id": "naruto",
+  "name": "Naruto Uzumaki",
+  "growth_curve": "erratic",
+  "nature": "brave",
+  "affinities": [
+    "wind"
+  ],
+  "trait": "jinchuriki",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "yang_leaf_hurricane"
+    },
+    {
+      "level": 5,
+      "jutsu": "shadow_clone"
+    },
+    {
+      "level": 9,
+      "jutsu": "substitution"
+    },
+    {
+      "level": 14,
+      "jutsu": "wind_great_breakthrough"
+    },
+    {
+      "level": 18,
+      "jutsu": "rasengan"
+    },
+    {
+      "level": 24,
+      "jutsu": "wind_pressure_damage"
+    },
+    {
+      "level": 32,
+      "jutsu": "wind_rasenshuriken"
+    }
+  ],
+  "promotion": {
+    "level": 20,
+    "item": "forbidden_scroll",
+    "target_id": "naruto_sage"
+  },
+  "rarity": "legendary",
+  "catch_rate": 0,
+  "base_exp": 90,
+  "village": "leaf",
+  "threat_level": "C",
+  "bingo_entry": "Jinchuriki of the Nine-Tails. Underestimate him at your peril \u2014 he does not stay down.",
+  "palette": {
+    "primary": "#ff7b1c",
+    "secondary": "#1b2a4a",
+    "accent": "#ffd9a0"
+  },
+  "base_stats": {
+    "hp": 85,
+    "str": 70,
+    "nin": 60,
+    "def": 55,
+    "res": 50,
+    "spd": 60
+  }
+}

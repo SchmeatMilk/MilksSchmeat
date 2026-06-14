@@ -1,0 +1,12 @@
+{
+  "burn":         {"name": "Burn",         "duration": [3, 5], "hp_tick_fraction": 0.0625, "note": "ATK x0.7 while active. Fire affinity immune."},
+  "poison":       {"name": "Poison",       "duration": [4, 6], "hp_tick_fraction": 0.125,  "note": "No HP regen while active."},
+  "paralysis":    {"name": "Paralysis",    "duration": [2, 4], "hp_tick_fraction": 0.0,    "note": "25% skip turn, SPD x0.5. Lightning affinity immune."},
+  "stun":         {"name": "Stun",         "duration": [1, 1], "hp_tick_fraction": 0.0,    "note": "Skip one turn."},
+  "seal":         {"name": "Seal",         "duration": [2, 3], "hp_tick_fraction": 0.0,    "note": "Cannot use jutsu; taijutsu/items only. Yin affinity immune."},
+  "bleed":        {"name": "Bleed",        "duration": [3, 3], "hp_tick_fraction": 0.1,    "note": "Physical damage taken x1.2."},
+  "fear":         {"name": "Fear",         "duration": [2, 2], "hp_tick_fraction": 0.0,    "note": "SPD +1 stage (panic), flee attempts fail 30%."},
+  "confusion":    {"name": "Confusion",    "duration": [2, 4], "hp_tick_fraction": 0.0,    "note": "33% chance to strike self (40 pow typeless)."},
+  "sleep":        {"name": "Sleep",        "duration": [2, 3], "hp_tick_fraction": 0.0,    "note": "Skip turns; wakes when struck."},
+  "chakra_drain": {"name": "Chakra Drain", "duration": [3, 3], "hp_tick_fraction": 0.0,    "note": "Team loses 1/10 max CP per turn; attacker gains it."}
+}

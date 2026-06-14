@@ -1,0 +1,52 @@
+{
+  "id": "choji",
+  "name": "Choji Akimichi",
+  "growth_curve": "medium",
+  "nature": "sturdy",
+  "affinities": [
+    "yang"
+  ],
+  "trait": "iron_wall",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "yang_leaf_hurricane"
+    },
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 7,
+      "jutsu": "human_boulder"
+    },
+    {
+      "level": 14,
+      "jutsu": "earth_mud_wall"
+    },
+    {
+      "level": 22,
+      "jutsu": "yang_primary_lotus"
+    }
+  ],
+  "promotion": {},
+  "rarity": "uncommon",
+  "catch_rate": 60,
+  "base_exp": 70,
+  "village": "leaf",
+  "threat_level": "C",
+  "bingo_entry": "Akimichi clan tank. Do NOT call him the b-word.",
+  "palette": {
+    "primary": "#c8682a",
+    "secondary": "#5a2d10",
+    "accent": "#f2d0a0"
+  },
+  "base_stats": {
+    "hp": 95,
+    "str": 80,
+    "nin": 40,
+    "def": 80,
+    "res": 55,
+    "spd": 30
+  }
+}

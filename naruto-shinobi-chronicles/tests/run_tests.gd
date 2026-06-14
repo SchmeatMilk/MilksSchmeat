@@ -1,0 +1,300 @@
+extends SceneTree
+## Headless test suite for the pure battle engine + data integrity.
+## Run from the project directory:
+##   godot --headless -s tests/run_tests.gd
+## Exits 0 on success, 1 on any failure.
+
+var passed := 0
+var failed := 0
+var registry
+
+
+func _initialize() -> void:
+	registry = load("res://src/autoloads/DataRegistry.gd").new()
+	var ok: bool = registry.load_all("res://data")
+
+	test_data_integrity(ok)
+	test_type_chart()
+	test_stat_calculation()
+	test_progression()
+	test_promotion()
+	test_cp_and_jutsu()
+	test_hsc_charging()
+	test_status_effects()
+	test_status_immunity()
+	test_priority_order()
+	test_hardened_body_no_crit()
+	test_catching()
+	test_serialization_roundtrip()
+	test_full_battle_terminates()
+	test_combo_rules()
+
+	print("\n========================================")
+	print("  %d passed, %d failed" % [passed, failed])
+	print("========================================")
+	quit(0 if failed == 0 else 1)
+
+
+func check(cond: bool, name: String) -> void:
+	if cond:
+		passed += 1
+		print("  PASS  " + name)
+	else:
+		failed += 1
+		printerr("  FAIL  " + name)
+
+
+func _mk(id: String, level: int) -> UnitInstance:
+	return UnitInstance.create(registry, id, level)
+
+
+func _state(player: Array, enemy: Array, seed_val: int = 1234) -> BattleState:
+	return BattleState.create(registry, player, enemy, 100, seed_val)
+
+
+# --- Tests -------------------------------------------------------------------
+
+func test_data_integrity(load_ok: bool) -> void:
+	print("\n[data integrity]")
+	for err in registry.validation_errors:
+		printerr("    " + str(err))
+	check(load_ok, "all data files load with zero validation errors")
+	check(registry.units.size() >= 30, "30+ units loaded (%d)" % registry.units.size())
+	check(registry.jutsu_db.size() >= 55, "55+ jutsu loaded (%d)" % registry.jutsu_db.size())
+	check(registry.combos.size() == 8, "8 combination jutsu loaded")
+	check(registry.status_defs.size() == 10, "10 status conditions defined")
+	check(registry.maps.size() >= 3, "3+ maps loaded")
+
+
+func test_type_chart() -> void:
+	print("\n[type chart]")
+	var c: TypeChart = registry.type_chart
+	check(c.multiplier("water", ["fire"]) == 2.0, "water beats fire (2.0x)")
+	check(c.multiplier("fire", ["water"]) == 0.5, "fire resisted by water (0.5x)")
+	check(c.multiplier("water", ["fire", "earth"]) == 4.0, "dual weakness multiplies (4.0x)")
+	check(c.multiplier("yin", ["yang"]) == 2.0, "genjutsu beats taijutsu")
+	check(c.multiplier("yang", ["yin"]) == 2.0, "taijutsu beats genjutsu")
+	check(c.multiplier("none", ["fire"]) == 1.0, "neutral is always 1.0x")
+	check(c.multiplier("wind", ["lightning"]) == 2.0, "wind beats lightning")
+	check(c.multiplier("lightning", ["earth"]) == 2.0, "lightning beats earth")
+	check(c.multiplier("earth", ["wind"]) == 2.0, "earth beats wind (per locked chart)")
+
+
+func test_stat_calculation() -> void:
+	print("\n[stats]")
+	var naruto := _mk("naruto", 10)
+	# HP = floor(2*85*10/100) + 10 + 10 = 17 + 20 = 37
+	check(naruto.max_hp() == 37, "HP formula exact at Lv10 (got %d)" % naruto.max_hp())
+	# STR base 70: floor(2*70*10/100)+5 = 19, brave: up=str -> 19*1.1 = 20
+	check(naruto.stat("str") == 20, "nature-boosted STR exact (got %d)" % naruto.stat("str"))
+	# RES base 50: floor(2*50*10/100)+5 = 15, brave: down=res -> 13
+	check(naruto.stat("res") == 13, "nature-cut RES exact (got %d)" % naruto.stat("res"))
+	check(UnitInstance.stage_multiplier(0) == 1.0, "stage 0 = 1.0x")
+	check(UnitInstance.stage_multiplier(2) == 2.0, "stage +2 = 2.0x")
+	check(UnitInstance.stage_multiplier(-2) == 0.5, "stage -2 = 0.5x")
+
+
+func test_progression() -> void:
+	print("\n[progression]")
+	var u := _mk("leaf_genin", 3)
+	var target_exp: int = registry.exp_for_level("medium", 4)
+	var learned: Array = u.gain_exp(target_exp - u.exp)
+	check(u.level == 4, "exp gain levels up (Lv%d)" % u.level)
+	check(learned.has("substitution"), "learnset unlocks on level-up")
+	check(u.jutsu_slot_count() == 3, "3 jutsu slots at low level")
+	var high := _mk("kakashi", 26)
+	check(high.jutsu_slot_count() == 8, "8 slots at Lv26+")
+	var capped := _mk("leaf_genin", 50)
+	capped.gain_exp(999999)
+	check(capped.level == 50, "level cap 50 enforced")
+
+
+func test_promotion() -> void:
+	print("\n[promotion]")
+	var naruto := _mk("naruto", 20)
+	check(not naruto.can_promote({}, {}), "promotion blocked without item")
+	check(naruto.can_promote({"forbidden_scroll": 1}, {}), "promotion allowed with scroll at Lv20")
+	naruto.promote()
+	check(naruto.unit_id == "naruto_sage", "promotes to Sage Mode")
+	check(naruto.level == 1, "promotion resets level to 1")
+	check(naruto.max_hp() > 0 and naruto.current_hp == naruto.max_hp(), "promoted unit healthy")
+	var gaara := _mk("gaara", 25)
+	check(not gaara.can_promote({}, {}), "story-flag promotion blocked without flag")
+	check(gaara.can_promote({}, {"konoha_crush_resolved": true}), "story-flag promotion works")
+
+
+func test_cp_and_jutsu() -> void:
+	print("\n[chakra pool]")
+	var s := _state([_mk("sasuke", 15)], [_mk("forest_snake", 10)])
+	var cp_before := s.player_cp
+	BattleEngine.run_round(s, {"type": "jutsu", "jutsu": "kunai_throw"}, {"type": "taijutsu"})
+	# kunai costs 5, end-of-turn regen +5: net 0 (unless battle ended early)
+	check(s.player_cp == cp_before, "CP spend + regen nets to expected value")
+	s.player_cp = 2
+	var log_len := s.log.size()
+	BattleEngine.run_round(s, {"type": "jutsu", "jutsu": "fire_fireball"}, {"type": "taijutsu"})
+	var blocked := false
+	for i in range(log_len, s.log.size()):
+		if "enough chakra" in s.log[i]:
+			blocked = true
+	check(blocked, "insufficient CP blocks the jutsu")
+
+
+func test_hsc_charging() -> void:
+	print("\n[hand seal charging]")
+	var sasuke := _mk("sasuke", 20)
+	sasuke.equipped_jutsu = ["lightning_chidori"]
+	var snake := _mk("forest_snake", 8)
+	var s := _state([sasuke], [snake], 77)
+	var hp_before := snake.current_hp
+	BattleEngine.run_round(s, {"type": "jutsu", "jutsu": "lightning_chidori"}, {"type": "none"})
+	check(not sasuke.charging.is_empty(), "HSC 1 jutsu enters charging state")
+	check(snake.current_hp == hp_before, "no damage on the charge turn")
+	BattleEngine.run_round(s, {"type": "jutsu", "jutsu": "lightning_chidori"}, {"type": "none"})
+	check(sasuke.charging.is_empty(), "charge releases on the NEXT turn (QA rule)")
+	check(snake.current_hp < hp_before, "damage lands after charge")
+
+
+func test_status_effects() -> void:
+	print("\n[status effects]")
+	var s := _state([_mk("naruto", 15)], [_mk("forest_snake", 10)], 42)
+	var snake: UnitInstance = s.active("enemy")
+	var ok := BattleEngine.try_inflict_status(s, snake, "burn")
+	check(ok, "burn lands on a clean target")
+	check(snake.status == "burn", "status recorded")
+	var str_burned := snake.effective_stat("str")
+	snake.status = ""
+	var str_clean := snake.effective_stat("str")
+	check(str_burned < str_clean, "burn cuts STR (x0.7)")
+	snake.status = "paralysis"
+	check(snake.effective_stat("spd") == maxi(1, int(snake.stat("spd") * 0.5)), "paralysis halves SPD")
+	snake.status = "burn"
+	check(not BattleEngine.try_inflict_status(s, snake, "poison"), "cannot stack a second major status")
+
+
+func test_status_immunity() -> void:
+	print("\n[status immunity — QA checklist]")
+	var s := _state([_mk("naruto", 15)], [_mk("sasuke_cm2", 15)], 42)
+	var sasuke: UnitInstance = s.active("enemy")  # fire/lightning affinities
+	check(not BattleEngine.try_inflict_status(s, sasuke, "burn"), "fire affinity cannot be burned")
+	check(not BattleEngine.try_inflict_status(s, sasuke, "paralysis"), "lightning affinity cannot be paralyzed")
+	var shika := _mk("shikamaru", 15)
+	check(not BattleEngine.try_inflict_status(s, shika, "seal"), "yin affinity cannot be sealed")
+	check(BattleEngine.try_inflict_status(s, sasuke, "poison"), "non-immune status still lands")
+
+
+func test_priority_order() -> void:
+	print("\n[priority & speed order]")
+	var slow := _mk("choji", 10)       # SPD base 30
+	slow.equipped_jutsu = ["substitution"]
+	var fast := _mk("rock_lee", 10)    # SPD base 90
+	var s := _state([slow], [fast], 9)
+	BattleEngine.run_round(s, {"type": "jutsu", "jutsu": "substitution"}, {"type": "taijutsu"})
+	var sub_line := -1
+	var tai_line := -1
+	for i in s.log.size():
+		if "Substitution" in s.log[i] and sub_line < 0:
+			sub_line = i
+		if "taijutsu" in s.log[i] and tai_line < 0:
+			tai_line = i
+	check(sub_line >= 0 and tai_line >= 0 and sub_line < tai_line, "+3 priority substitution acts before a faster foe")
+
+
+func test_hardened_body_no_crit() -> void:
+	print("\n[hardened body trait]")
+	var lee := _mk("rock_lee", 20)  # hardened_body
+	var crits := 0
+	for trial in 80:
+		var s := _state([_mk("sasuke", 20)], [lee], 1000 + trial)
+		BattleEngine.run_round(s, {"type": "jutsu", "jutsu": "kunai_throw"}, {"type": "none"})
+		for line in s.log:
+			if "critical" in line:
+				crits += 1
+		lee.current_hp = lee.max_hp()
+	check(crits == 0, "high-crit kunai never crits a Hardened Body target (80 trials)")
+
+
+func test_catching() -> void:
+	print("\n[sealing / catching]")
+	var snake := _mk("forest_snake", 5)  # catch_rate 200
+	snake.current_hp = 1
+	var s := _state([_mk("naruto", 10)], [snake], 5)
+	s.is_wild = true
+	BattleEngine.run_round(s, {"type": "catch", "tag": "sealing_tag"}, {"type": "taijutsu"})
+	check(s.caught_unit == snake, "weakened common unit is caught (rate math > 255)")
+	var naruto_enemy := _mk("naruto", 10)  # catch_rate 0 (story-only)
+	var s2 := _state([_mk("sasuke", 10)], [naruto_enemy], 5)
+	s2.is_wild = true
+	BattleEngine.run_round(s2, {"type": "catch", "tag": "sealing_tag"}, {"type": "none"})
+	check(s2.caught_unit == null, "catch_rate 0 units can never be sealed")
+	var s3 := _state([_mk("sasuke", 10)], [_mk("forest_snake", 5)], 5)
+	s3.is_wild = false
+	BattleEngine.run_round(s3, {"type": "catch", "tag": "sealing_tag"}, {"type": "none"})
+	check(s3.caught_unit == null, "cannot seal in trainer battles")
+
+
+func test_serialization_roundtrip() -> void:
+	print("\n[serialization]")
+	var u := _mk("kakashi", 23)
+	u.nickname = "Sensei"
+	u.current_hp = 17
+	u.status = "poison"
+	u.status_turns = 3
+	var restored := UnitInstance.from_dict(registry, u.to_dict())
+	check(restored.unit_id == "kakashi" and restored.level == 23 and restored.nickname == "Sensei"
+		and restored.current_hp == 17 and restored.status == "poison"
+		and restored.equipped_jutsu == u.equipped_jutsu, "UnitInstance survives to_dict/from_dict")
+	var blob: PackedByteArray = var_to_bytes(u.to_dict())
+	check(blob.size() < 1024, "one unit serializes well under 1KB (32KB budget holds)")
+	var back = bytes_to_var(blob)
+	check(back is Dictionary and back.get("unit_id") == "kakashi", "binary blob roundtrip intact")
+
+
+func test_full_battle_terminates() -> void:
+	print("\n[full battle simulation]")
+	var s := _state([_mk("naruto", 12), _mk("sakura", 11)], [_mk("sound_genin", 9), _mk("mist_swordsman", 10)], 31337)
+	var rounds := 0
+	var battle_on := true
+	while battle_on and rounds < 200:
+		rounds += 1
+		battle_on = BattleEngine.run_round(s, _greedy_player(s), BattleAI.choose_action(s))
+	check(rounds < 200, "seeded AI-vs-AI battle terminates (%d rounds)" % rounds)
+	check(s.side_defeated("player") or s.side_defeated("enemy"), "one side is actually defeated")
+	var reward := BattleEngine.exp_reward(_mk("sound_genin", 9))
+	check(reward == int(50 * 9 / 5.0), "exp reward formula exact (got %d)" % reward)
+
+
+func _greedy_player(s: BattleState) -> Dictionary:
+	# Reuse the enemy AI brain for the player side by flipping perspectives is
+	# overkill here; just throw kunai or taijutsu.
+	var u: UnitInstance = s.active("player")
+	if not u.charging.is_empty():
+		return {"type": "jutsu", "jutsu": u.charging["jutsu"]}
+	if u.equipped_jutsu.has("kunai_throw") and s.player_cp >= 5:
+		return {"type": "jutsu", "jutsu": "kunai_throw"}
+	return {"type": "taijutsu"}
+
+
+func test_combo_rules() -> void:
+	print("\n[combination jutsu — QA checklist]")
+	var naruto := _mk("naruto", 32)   # learns wind_rasenshuriken at 32
+	var sasuke := _mk("sasuke", 20)
+	sasuke.equipped_jutsu = ["fire_dragon_flame"]
+	var s := _state([naruto, sasuke], [_mk("orochimaru", 20)], 7)
+	var combos := ComboSystem.available_combos(s)
+	var found := false
+	for entry in combos:
+		if entry["combo"]["id"] == "combo_incinerating_flare":
+			found = true
+	check(found, "combo offered when both units alive with both component jutsu")
+	if found:
+		var hp_before: int = s.active("enemy").current_hp
+		for entry in combos:
+			if entry["combo"]["id"] == "combo_incinerating_flare":
+				ComboSystem.execute(s, entry["combo"])
+		check(s.active("enemy").current_hp < hp_before, "combo deals damage")
+		check(ComboSystem.available_combos(s).filter(func(e): return e["combo"]["id"] == "combo_incinerating_flare").is_empty(),
+			"one combo per pair per battle enforced")
+	sasuke.current_hp = 0
+	check(ComboSystem.available_combos(s).filter(func(e): return e["combo"]["id"] == "combo_incinerating_flare").is_empty(),
+		"combo unavailable when a participant is down")
