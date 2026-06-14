@@ -1,6 +1,14 @@
 # COMPLETE PROJECT HANDOFF — Naruto: Shinobi Chronicles
-*State as of 2026-06-13, commit `cda80bd`. This is the single authoritative
-handoff: a new coder/session should be able to work from this document alone.*
+*State as of 2026-06-14. This is the single authoritative handoff: a new
+coder/session should be able to work from this document alone.*
+
+> **Latest milestone — Story Mode (Academy → Valley of the End).** A full,
+> data-driven narrative now ships: a cutscene system, flag-gated story triggers,
+> conditional NPC dialogue, a quest/Missions log, and Commander battle skills,
+> plus four acts of content (Bell Test, Land of Waves, Chunin Exams, Sasuke's
+> defection, Sage Mode, Akatsuki, and the two-phase Valley of the End finale).
+> 170 headless tests pass; the smoke test now drives the graduation cutscene and
+> a multi-unit save/load. See §5–§8.
 
 ---
 
@@ -38,7 +46,7 @@ appear automatically on touch devices via the `TouchControls` autoload
 ```bash
 cd naruto-shinobi-chronicles
 godot --headless --import                          # build .godot cache (first time / after asset changes)
-godot --headless -s tests/run_tests.gd             # expect: 81 passed, 0 failed
+godot --headless -s tests/run_tests.gd             # expect: 170 passed, 0 failed
 godot --headless res://tests/smoke/SmokeRunner.tscn  # expect: SMOKE_OK
 ```
 CI (`.github/workflows/shinobi-chronicles-ci.yml`) runs a Python JSON
@@ -55,7 +63,13 @@ cross-reference check (no Godot needed) plus both suites on Godot 4.3-stable.
 2. **JSON under `data/` is the single source of truth.**
    `DataRegistry.load_all()` parses everything into typed Resources and fails
    validation on broken cross-references (learnset jutsu ids, promotion
-   targets, affinities, traits, combo components, visual asset paths).
+   targets, affinities, traits, combo components, visual asset paths, **cutscene
+   recruit/warp/battle refs, map-trigger cutscene ids, quest flags**).
+6. **Story is data too.** Cutscenes (`data/cutscenes/*.json`), map `on_enter` /
+   tile `events`, flag-gated warps, and conditional NPC `states` are all JSON;
+   gating is resolved by the pure `StoryTriggers` helper. New story beats need
+   zero GDScript. Only Commander skills and the Cursed Seal status touch the
+   battle engine, and both are pure `BattleState` operations.
 3. **Everything in `GameState` must round-trip `to_dict()/from_dict()`** —
    that dict becomes the checksummed binary save blob (`SaveManager`).
 4. **Maps are data.** A map = char grid (`#` wall, `,` grass/encounter,
@@ -88,17 +102,20 @@ naruto-shinobi-chronicles/
 │   │   ├── BattleAI.gd            # PURE: greedy one-ply scorer w/ CP awareness
 │   │   ├── UnitInstance.gd        # PURE: runtime unit (stats, exp, promote, serialize)
 │   │   └── BattleController.gd    # SCENE: renders state, routes input, rewards, exits
-│   ├── overworld/OverworldScene.gd  # map render, grid movement, encounters, NPCs, warps
-│   ├── ui/                        # TitleScreen, MenuSystem (pause), ShopUI,
-│   │                              # CustomBuilderUI, ListMenu + DialogueBox widgets
+│   ├── overworld/OverworldScene.gd  # map render, movement, encounters, NPCs, warps,
+│   │                              # cutscene playback, on_enter/tile triggers, recruits
+│   ├── story/StoryTriggers.gd     # PURE: cutscene/tile/warp gating + NPC state resolution
+│   ├── ui/                        # TitleScreen, MenuSystem (pause + Missions), ShopUI,
+│   │                              # CustomBuilderUI, ListMenu, DialogueBox, CutscenePlayer
 │   └── resources/                 # UnitData, JutsuData, TypeChart (from_dict loaders)
-├── data/                          # 31 units · 59 jutsu · 8 combos · 10 statuses ·
-│   │                              # 15 traits · 17 items · 3 maps · 11 visual entries
-│   ├── units/  jutsu/  types/  status/  items/  progress/  maps/  visuals/
+├── data/                          # 33 units · 63 jutsu · 8 combos · 11 statuses · 15 traits
+│   │                              # 19 items · 8 maps · 14 cutscenes · 8 quests · 11 visuals
+│   ├── units/ jutsu/ types/ status/ items/ progress/ maps/ visuals/ cutscenes/ story/
 ├── assets/                        # Wave-1 art (see §6); reference + live sprites
 ├── tests/
-│   ├── run_tests.gd               # 81 assertions, seeded RNG, exits 1 on failure
-│   └── smoke/SmokeRunner.tscn     # full loop incl. synthesized-input regression guard
+│   ├── run_tests.gd               # 170 assertions, seeded RNG, exits 1 on failure
+│   └── smoke/SmokeRunner.tscn     # new game → graduation cutscene recruits Team 7 →
+│                                  # wild battle (input regression guard) → multi-unit save
 ├── docs/WAVE1_VISUALS_HANDOFF.md  # verbatim Wave-1 art review/integration doc
 └── scenes/ Title.tscn · Overworld.tscn · Battle.tscn  (thin shells; UI built in code)
 ```
@@ -120,24 +137,45 @@ exp `floor(BaseExp·Level/5)` to all alive members; level cap 50; jutsu slots
 |---|---|
 | Battle engine, statuses, traits, fields, combos, catching | ✅ Done, tested |
 | Progression: exp/level/learnsets/promotion | ✅ Done, tested |
-| Overworld: maps, encounters, NPCs, warps, bosses | ✅ Done (3 maps) |
+| Overworld: maps, encounters, NPCs, warps, bosses | ✅ Done (8 maps) |
 | Party/bag/shop/Bingo Book/save UI | ✅ Done |
 | Custom Shinobi builder | ✅ Done (village/affinities/trait) |
-| Texture pipeline + Wave-1 art | ✅ Done — 11/31 units have live art |
+| Texture pipeline + Wave-1 art | ✅ Done — 11/33 units have live art |
 | Battle input | ✅ Fixed (`6a73ee3`) + regression guard in smoke test |
-| Commander skills (Analyze/Tactical Order/Chakra Infusion/Sealing Tag) | ⚠ Modeled in `GameState` + `BattleState.commander_used` but **not surfaced in battle menu** |
+| **Cutscene system + story triggers** | ✅ Done — `CutscenePlayer`, `data/cutscenes/*`, pure `StoryTriggers` (on_enter / tile events / gated warps / conditional NPC states) |
+| **Story Mode (Academy → Valley of the End)** | ✅ Done — 14 cutscenes across 4 acts; recruits, defection, Sage Mode gate, 2-phase finale + ending |
+| **Commander skills (Analyze/Tactical Order/Chakra Infusion/Sealing Tag)** | ✅ Done — Commander submenu in `BattleController`; once-per-battle flags enforced in `BattleEngine` |
+| **Quest log UI** | ✅ Done — pause-menu "Missions" page (checklist) from `data/story/quests.json` |
+| **Cursed Seal status** | ✅ Done — STR/NIN x1.3 + HP drain; `cursed_seal_form` jutsu; final Sasuke uses it |
+| **Chunin Exam Stadium** | ✅ Done — Neji→Kankuro→Temari→Gaara bracket (one proctor, flag-gated states) |
+| Starter choice (three scrolls) | ✅ Done — Naruto + themed scroll unit recruited at graduation |
 | Jutsu learning with 8/8 slots full | ⚠ **Silently skipped** — needs replace-a-move UI |
 | Nature mastery picks (Lv 10/20/30) | ⚠ Field exists on `UnitInstance`, no picker UI |
 | Enemy AI personality variance | ⚠ One generic scorer for all enemies |
-| Quest log UI | ⚠ `story_flags` exist; no player-facing journal |
 | Touch controls | ✅ Done — `TouchControls` autoload overlay (D-pad + A/B), auto-shown on touch devices; **F9** force-toggles for desktop testing |
 | Real audio | ❌ Synth blips only; `AudioDirector` ready for .ogg/.it drops |
-| Chunin Exam Stadium, Acts 4–6 | ❌ Not started |
+| Acts 5–6 (sequel: KCM/Six Paths, post-game) | ❌ Not started |
 
 ---
 
 ## 6. History: fixes & recorded decisions
 
+- **Story Mode build (2026-06-14)** — translated the narrative team's notes into
+  the data-driven engine. Decisions made (creative latitude was delegated):
+  - *Framing:* player is the Commander **named Naruto**; Team 7 are units you
+    command. The three "scrolls" at the title pick a themed 4th starter
+    (Taijutsu→Rock Lee, Ninjutsu→Tenten, Genjutsu→Shino); Sasuke/Sakura + the
+    scroll unit are recruited by the **graduation cutscene**, NOT `new_game`
+    (keeps `new_game("naruto")` a single-unit, smoke-stable start).
+  - *Simplified to fit the GBA/pure-engine model:* Itachi's "invert controls" →
+    a strong genjutsu (Tsukuyomi: sleep + accuracy down); Kisame's "underwater"
+    → a real `water_dome` field effect (water ×1.3 / fire ×0.7); the final
+    "QTE duel" → a scripted **2-phase turn battle** chained by flags +
+    cutscenes; Sage Mode → existing promotion gated by the (unpurchasable)
+    Forbidden Scroll granted at Myoboku; Akatsuki "open world" → a focused
+    two-boss road.
+  - *Deferred (sequel/Phase 3):* Camera2D scrolling, full Akatsuki roster, real
+    audio, summon roster, literal control inversion, KCM/Six-Paths forms.
 - **Battle input freeze** — root cause: `BattleController` had no input
   handler, menu rendered but never received events. Fix: `_unhandled_input` →
   `menu.handle_input()` guarded by `_busy`. The smoke test now drives the menu
@@ -161,34 +199,40 @@ exp `floor(BaseExp·Level/5)` to all alive members; level cap 50; jutsu slots
 
 ## 7. Verified state (current HEAD)
 
-- `godot --headless -s tests/run_tests.gd` → **81 passed, 0 failed**
-- Smoke test → **SMOKE_OK** (input-event check included)
+- `godot --headless -s tests/run_tests.gd` → **170 passed, 0 failed**
+- Smoke test → **SMOKE_OK** — now drives the graduation cutscene to completion
+  (asserts Team 7 recruited), the wild-battle input-regression guard, and a
+  multi-unit save/load roundtrip.
 - CI green on PR #3; data validation also re-run in pure Python in CI
-- Known cosmetic noise at headless exit: "ObjectDB instances leaked" warning —
-  harmless, from quit-without-teardown in the test runner.
+- Known cosmetic noise at headless exit: "ObjectDB instances leaked" warning and
+  two `set_input_as_handled` null errors from the touch-controls unit test —
+  both harmless (no live viewport in `-s` mode); suites still report 0 failed.
 
 ---
 
 ## 8. Prioritized backlog
 
-1. **Commander skills in battle UI** — surface the four skills in
-   `BattleController`'s root menu; state/once-per-battle flags already exist.
-2. **Chunin Exam Stadium** — new map JSON + tournament bracket (Neji → Gaara →
-   Temari → Kankuro scripted 1v1s); reward Chunin Vest (+1 tactical slot) +
-   story flag (promotion gate already reads flags).
-3. **Jutsu slot-replacement UI** when learning with 8/8 slots full.
-4. **Art pipeline follow-ups** — slice Neji from the roster sheet; 16-color
+*Story Mode, Commander skills, the Chunin Stadium, the quest log, and the Land of
+Waves arc are now DONE (see §5/§6). Remaining:*
+
+1. **Jutsu slot-replacement UI** when learning with 8/8 slots full (still silently
+   skipped in `UnitInstance.gain_exp`).
+2. **AI personality variance** — per-archetype weights in `BattleAI._score_jutsu`
+   (glass cannons favor damage, supports favor status/heal). Would make the new
+   boss fights (Itachi/Kisame/Gaara) feel distinct.
+3. **Art pipeline follow-ups** — slice Neji from the roster sheet; 16-color
    indexed-PNG re-exports; Batch 2 art (Kakashi, Gaara, Jiraiya, Tsunade,
-   Orochimaru); resolve `sasuke_cm2` + `naruto_sage` promoted sprites.
-5. **AI personality variance** — per-archetype weights in `BattleAI._score_jutsu`
-   (glass cannons favor damage, supports favor status/heal).
-6. **Quest log UI** — MenuSystem page rendering active/completed `story_flags`.
-7. **Nature mastery picker** at Lv 10/20/30.
-8. **Land of Waves arc** — map + Zabuza/Haku boss chain, Haku join reward.
-9. **Audio pass** — tracker/.ogg BGM into `assets/audio/music/`
-    (`AudioDirector.play_bgm` already no-ops gracefully).
-10. **Phase 3 (engine):** Camera2D scrolling for large maps; Acts 5–6 →
-    Valley of the End finale + ending-choice flag for the sequel import.
+   Orochimaru, Itachi, Kisame); resolve `sasuke_cm2` + `naruto_sage` promoted
+   sprites. Cutscene backgrounds reuse the two establishing-shot references; new
+   per-scene art would lift the story beats.
+4. **Nature mastery picker** at Lv 10/20/30.
+5. **Audio pass** — tracker/.ogg BGM into `assets/audio/music/`
+   (`AudioDirector.play_bgm` already no-ops gracefully). Story beats key BGM by
+   name (`battle_boss`, `town_theme`, etc.) — just drop files in.
+6. **Narrative polish** — branching cutscene choices (a `choice` step kind),
+   per-character battle intro barks, and a New Game+ that keeps the squad.
+7. **Phase 3 (engine):** Camera2D scrolling for large maps; Acts 5–6 (KCM /
+   Six-Paths forms, post-game) for the sequel import.
 
 ---
 
@@ -206,7 +250,7 @@ Continue the Naruto: Shinobi Chronicles game in SchmeatMilk/MilksSchmeat.
 - Verify before and after changes (download Godot 4.3 headless if needed):
     cd naruto-shinobi-chronicles
     godot --headless --import
-    godot --headless -s tests/run_tests.gd            # expect 81+ passed, 0 failed
+    godot --headless -s tests/run_tests.gd            # expect 170+ passed, 0 failed
     godot --headless res://tests/smoke/SmokeRunner.tscn  # expect SMOKE_OK
 - Work the backlog in §8 order unless told otherwise. Commit + push after each
   item, keep CI green, add headless test coverage for anything testable, and

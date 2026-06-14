@@ -36,8 +36,32 @@ func _smoke() -> void:
 	await get_tree().create_timer(0.5).timeout
 	if not get_tree().current_scene.scene_file_path.ends_with("Overworld.tscn"):
 		return _fail("overworld did not load")
-	print("[smoke] overworld up. starting wild battle...")
+	var ow = get_tree().current_scene
 
+	# The graduation cutscene auto-plays on first Konoha entry. Drive it to the end
+	# and confirm it recruits the rest of Team 7 (the cutscene -> on_finish path).
+	print("[smoke] driving graduation cutscene...")
+	var wait_cs := 0
+	while not ow.cutscene.visible and wait_cs < 20:
+		await get_tree().create_timer(0.1).timeout
+		wait_cs += 1
+	if not ow.cutscene.visible:
+		return _fail("graduation cutscene did not open on first entry")
+	var adv := 0
+	while ow.cutscene.visible and adv < 40:
+		_press("ui_accept")
+		await get_tree().process_frame
+		await get_tree().process_frame
+		adv += 1
+	if ow.cutscene.visible:
+		return _fail("graduation cutscene never finished")
+	if not gs.has_seen_cutscene("graduation"):
+		return _fail("graduation not marked seen on finish")
+	if gs.party.size() < 3:
+		return _fail("graduation did not recruit Team 7 (party=%d)" % gs.party.size())
+	print("[smoke] Team 7 recruited via cutscene (party=%d)." % gs.party.size())
+
+	print("[smoke] starting wild battle...")
 	var wild = UnitInstance.create(reg, "forest_snake", 3)
 	router.go_to_battle([wild], {"is_wild": true})
 	await get_tree().create_timer(1.0).timeout
@@ -80,16 +104,18 @@ func _smoke() -> void:
 		return _fail("did not return to overworld after battle")
 	print("[smoke] battle resolved, back in overworld.")
 
+	# Save / load a multi-unit squad (recruited Team 7 + earned EXP).
 	var sm := get_node("/root/SaveManager")
 	if not sm.save_slot(0):
 		return _fail("save failed")
+	var size_before: int = gs.party.size()
 	var exp_before: int = gs.party[0].exp
 	gs.party = []
 	if not sm.load_slot(0):
 		return _fail("load failed")
-	if gs.party.size() != 1 or gs.party[0].exp != exp_before:
+	if gs.party.size() != size_before or gs.party[0].exp != exp_before:
 		return _fail("save/load roundtrip mismatch")
-	print("[smoke] save/load roundtrip verified.")
+	print("[smoke] save/load roundtrip verified (party=%d)." % gs.party.size())
 
 	print("SMOKE_OK")
 	get_tree().quit(0)
