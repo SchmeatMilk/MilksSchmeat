@@ -42,7 +42,12 @@
   ],
   "warps": [
     {"cell": [6, 9], "to_map": "training_grounds", "to_cell": [7, 1], "label": "Training Grounds"},
-    {"cell": [13, 3], "to_map": "forest_of_death", "to_cell": [1, 5], "label": "Forest of Death"}
+    {"cell": [1, 3], "to_map": "wave_bridge", "to_cell": [1, 4], "label": "Land of Waves",
+     "require_flags": ["bell_test_passed"],
+     "locked_text": "Kakashi: Pass the bell test at the Training Grounds before you take a real mission."},
+    {"cell": [13, 3], "to_map": "forest_of_death", "to_cell": [1, 5], "label": "Forest of Death",
+     "require_flags": ["land_of_waves_cleared"],
+     "locked_text": "The Chunin Exams haven't opened yet. Finish the Land of Waves mission first."}
   ],
   "encounters": {"rate": 0.0, "table": []}
 }

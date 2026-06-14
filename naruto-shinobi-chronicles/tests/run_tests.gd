@@ -34,6 +34,7 @@ func _initialize() -> void:
 	test_commander_skills()
 	test_cursed_seal()
 	test_starter_scroll()
+	test_act_one()
 
 	print("\n========================================")
 	print("  %d passed, %d failed" % [passed, failed])
@@ -430,3 +431,23 @@ func test_starter_scroll() -> void:
 	gs.seen_cutscenes = {"graduation": true}
 	check(gs.to_dict().get("seen_cutscenes", {}).has("graduation"), "seen_cutscenes serializes")
 	gs.free()
+
+
+func test_act_one() -> void:
+	print("\n[act I — land of waves]")
+	check(registry.maps.has("wave_bridge"), "wave_bridge map loads")
+	check(registry.cutscenes.has("bell_test"), "bell_test cutscene loads")
+	check(registry.cutscenes.has("wave_zabuza"), "wave_zabuza cutscene loads")
+	check(registry.cutscenes.has("wave_aftermath"), "wave_aftermath cutscene loads")
+	var sb: Dictionary = registry.cutscene("wave_zabuza").get("on_finish", {}).get("start_battle", {})
+	check(sb.get("boss", {}).get("flag", "") == "land_of_waves_cleared", "wave boss sets land_of_waves_cleared")
+	for entry in sb.get("party", []):
+		check(registry.units.has(entry[0]), "wave boss unit '%s' exists" % entry[0])
+	check(registry.cutscene("wave_aftermath").get("on_finish", {}).get("recruit", []).size() > 0, "aftermath recruits an ally")
+	var konoha: Dictionary = registry.map_def("konoha")
+	var gated := 0
+	for w in konoha.get("warps", []):
+		if not w.get("require_flags", []).is_empty():
+			gated += 1
+	check(gated >= 2, "konoha mission warps are flag-gated (%d)" % gated)
+	check(registry.items.has("soothing_balm"), "paralysis cure item exists")

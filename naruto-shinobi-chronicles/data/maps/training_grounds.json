@@ -15,6 +15,9 @@
     "#,,,....,,,,,.#",
     "###############"
   ],
+  "on_enter": [
+    {"cutscene": "bell_test", "require_flags": ["seen_graduation"], "unless_flags": ["bell_test_passed"]}
+  ],
   "npcs": [
     {"id": "guy", "name": "Might Guy", "cell": [7, 6], "color": "#3a8a3a",
      "dialogue": ["YOUTH! Train in the tall grass and wild challengers will find you!", "Defeat them for experience — or weaken them and SEAL A CONTRACT!"],

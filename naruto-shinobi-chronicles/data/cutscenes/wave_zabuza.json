@@ -1,0 +1,25 @@
+{
+  "id": "wave_zabuza",
+  "title": "The Demon of the Hidden Mist",
+  "music": "battle_boss",
+  "steps": [
+    {"speaker": "", "text": "A cold mist rolls across the Great Naruto Bridge. Two figures wait at the far end — one massive, one slight."},
+    {"speaker": "Zabuza", "text": "You children play at war. But this? This is the reality of the shinobi world. Cold. Merciless."},
+    {"speaker": "Haku", "text": "I'm sorry. I won't let you pass. For my master, I will become a true weapon."},
+    {"speaker": "Sakura", "text": "Naruto, Sasuke — look out, he's fast!"},
+    {"speaker": "Naruto", "text": "I don't care how strong you are! I'm not letting anyone else get hurt — even if I have to break every scroll I own!"}
+  ],
+  "on_finish": {
+    "start_battle": {
+      "party": [["haku", 12], ["zabuza", 14]],
+      "music": "battle_boss",
+      "boss_npc_id": "zabuza",
+      "boss": {
+        "flag": "land_of_waves_cleared",
+        "reward_items": {"vitality_pill": 2, "cursed_seal_tag": 1},
+        "reward_ryo": 1200,
+        "victory_text": "Haku falls shielding his master; Zabuza falls at his side. They were people — not tools. The mist clears."
+      }
+    }
+  }
+}

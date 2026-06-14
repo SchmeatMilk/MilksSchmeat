@@ -1,0 +1,19 @@
+{
+  "id": "bell_test",
+  "title": "The Bell Test",
+  "background": "res://assets/cutscenes/reference/village_gate_establishing_shot.jpg",
+  "music": "route_theme",
+  "steps": [
+    {"speaker": "Kakashi", "text": "Yo. Two bells, three of you. Come at me like you mean it — or you all go back to the Academy."},
+    {"speaker": "Sakura", "text": "Two bells? So one of us gets left behind?!"},
+    {"speaker": "Sasuke", "text": "Hn. Then I'll just take one for myself."},
+    {"speaker": "Naruto", "text": "Wait — if we split up he picks us off one by one! We do this together. Believe it!"},
+    {"speaker": "Kakashi", "text": "...Heh. Took you long enough. In the shinobi world, those who break the rules are trash. But those who abandon their comrades are worse than trash."},
+    {"speaker": "Kakashi", "text": "That's the real test, Commander. Move your squad as one. You pass — Team 7 is official."},
+    {"speaker": "", "text": "TIP: In battle, the Commander menu lets you Analyze a foe, give a Tactical Order (STR/SPD up), or use Chakra Infusion to restore your squad's chakra."}
+  ],
+  "on_finish": {
+    "set_flags": ["bell_test_passed"],
+    "grant_items": {"soldier_pill": 1}
+  }
+}
