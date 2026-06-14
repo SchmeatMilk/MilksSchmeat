@@ -116,5 +116,11 @@
  },
  "giant_centipede": {
   "battle": "res://assets/sprites/units/battle/giant_centipede.png"
+ },
+ "itachi": {
+  "overworld": "res://assets/sprites/units/overworld/itachi.png"
+ },
+ "kisame": {
+  "overworld": "res://assets/sprites/units/overworld/kisame.png"
  }
 }

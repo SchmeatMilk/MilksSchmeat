@@ -76,6 +76,13 @@ OVER = {
                 marks=['bandage'], extras=['sword']),
  'haku': dict(skin=PALE, hair=hx('#2a2a34'), top=hx('#9ac6d6'), pants=hx('#5a7a86'),
                 trim=hx('#f4f8ff'), eyes=hx('#5a4a3a'), hair_style='long'),
+ # Akatsuki (black cloak + red-cloud accent via trim, slashed bands)
+ 'itachi': dict(skin=SK2, hair=hx('#1b1b22'), top=hx('#15151c'), pants=hx('#15151c'),
+                trim=hx('#9a2a2a'), band=hx('#3a3f4a'), band_style='slant',
+                eyes=hx('#c83a3a'), hair_style='long', marks=['facelines']),
+ 'kisame': dict(skin=hx('#6aa6c0'), hair=hx('#2a4a6a'), top=hx('#15151c'), pants=hx('#15151c'),
+                trim=hx('#9a2a2a'), band=hx('#46566a'), band_style='slant',
+                eyes=hx('#dfe8ee'), hair_style='spiky', marks=['fang'], extras=['sword']),
  # generic wilds (ninja kind)
  'leaf_genin': dict(skin=SK, hair=hx('#5a3a24'), top=hx('#4a7a4a'), pants=hx('#2f4a2f'),
                 trim=hx('#1f3320'), band=LEAF, eyes=hx('#3a3a44'), hair_style='short'),
@@ -112,6 +119,6 @@ CREATURES = ['forest_snake', 'giant_centipede']
 ORDER = ['naruto', 'sasuke', 'sakura', 'kakashi', 'rock_lee', 'neji', 'tenten',
          'shikamaru', 'choji', 'ino', 'kiba', 'shino', 'hinata',
          'gaara', 'temari', 'kankuro', 'jiraiya', 'tsunade', 'orochimaru',
-         'zabuza', 'haku', 'naruto_sage', 'sasuke_cm2', 'gaara_kazekage',
+         'zabuza', 'haku', 'itachi', 'kisame', 'naruto_sage', 'sasuke_cm2', 'gaara_kazekage',
          'sakura_apprentice', 'leaf_genin', 'sound_genin', 'mist_swordsman',
          'hokage', 'iruka', 'ichiraku', 'konohamaru']
