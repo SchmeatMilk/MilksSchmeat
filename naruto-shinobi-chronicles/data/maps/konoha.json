@@ -15,10 +15,21 @@
     "#.............#",
     "######.########"
   ],
+  "on_enter": [
+    {"cutscene": "graduation", "unless_flags": ["seen_graduation"]}
+  ],
   "npcs": [
     {"id": "hokage", "name": "Third Hokage", "cell": [3, 1], "color": "#e8e0d0",
-     "dialogue": ["Welcome back, Commander.", "Your team has been fully healed.", "The Chunin Exams await in the Forest of Death — south gate, when you are ready."],
-     "action": "heal_party"},
+     "dialogue": ["Welcome back, Commander.", "Your team has been fully healed."],
+     "action": "heal_party",
+     "states": [
+       {"require_flags": ["seen_graduation"], "unless_flags": ["bell_test_passed"], "action": "heal_party",
+        "dialogue": ["So — Team 7 at last.", "Kakashi is waiting at the Training Grounds. Pass his bell test and your duties begin."]},
+       {"require_flags": ["bell_test_passed"], "unless_flags": ["land_of_waves_cleared"], "action": "heal_party",
+        "dialogue": ["A C-rank request came from the Land of Waves.", "Cross the Great Naruto Bridge — but be ready. Not every shinobi out there is a friend."]},
+       {"require_flags": ["chunin_exam_cleared"], "unless_flags": ["sasuke_defected"], "action": "heal_party",
+        "dialogue": ["You fought well in the exams, Commander.", "But keep an eye on Sasuke. Formidable power can curdle into something darker."]}
+     ]},
     {"id": "shopkeep", "name": "Tool Shop Keeper", "cell": [11, 1], "color": "#d0a060",
      "dialogue": ["Tags, pills, and steel — everything a Commander needs."],
      "action": "open_shop"},

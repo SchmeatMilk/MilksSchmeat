@@ -49,6 +49,7 @@ func _show_root() -> void:
 	_info.text = "Ryo: %d\nCommander Lv %d\nAuthority %d" % [_gs().ryo, _gs().commander_level, _gs().authority]
 	_menu.set_items([
 		{"label": "Party", "meta": "party"},
+		{"label": "Missions", "meta": "missions"},
 		{"label": "Bag", "meta": "bag"},
 		{"label": "Bingo Book", "meta": "bingo"},
 		{"label": "Save", "meta": "save"},
@@ -122,6 +123,26 @@ func _show_bingo() -> void:
 	_menu.set_items([{"label": "Back", "meta": null}])
 
 
+func _show_missions() -> void:
+	_page = "missions"
+	var quests: Array = _reg().quests
+	var flags: Dictionary = _gs().story_flags
+	var lines: Array = ["MISSIONS"]
+	var current_shown := false
+	for q in quests:
+		var done: bool = flags.get(q.get("flag", ""), false)
+		var box := "[x]" if done else "[ ]"
+		var marker := " "
+		if not done and not current_shown:
+			marker = ">"   # the current objective
+			current_shown = true
+		lines.append("%s%s %s" % [marker, box, q.get("name", "?")])
+	if not current_shown:
+		lines.append("All missions complete!")
+	_info.text = "\n".join(lines)
+	_menu.set_items([{"label": "Back", "meta": null}])
+
+
 func _show_save() -> void:
 	_page = "save"
 	var items: Array = []
@@ -142,6 +163,7 @@ func _on_select(meta) -> void:
 		"root":
 			match meta:
 				"party": _show_party()
+				"missions": _show_missions()
 				"bag": _show_bag()
 				"bingo": _show_bingo()
 				"save": _show_save()
@@ -171,6 +193,8 @@ func _on_select(meta) -> void:
 				_show_bag()
 			else:
 				_use_item_on(meta)
+		"missions":
+			_show_root()
 		"bingo":
 			_show_root()
 		"save":
@@ -207,6 +231,6 @@ func _use_item_on(u: UnitInstance) -> void:
 func _on_cancel() -> void:
 	match _page:
 		"root": visible = false
-		"party", "bag", "bingo", "save": _show_root()
+		"party", "missions", "bag", "bingo", "save": _show_root()
 		"unit": _show_party()
 		"bag_target": _show_bag()

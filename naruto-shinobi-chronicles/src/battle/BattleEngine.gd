@@ -153,8 +153,41 @@ static func _execute_action(state: BattleState, side: String, action: Dictionary
 			_use_item(state, side, action.get("item", ""))
 		"catch":
 			_attempt_catch(state, action.get("tag", "sealing_tag"))
+		"commander":
+			_perform_commander(state, side, action.get("skill", ""))
 		_:
 			pass
+
+
+# Commander (Tactician) skills — player-only, operate purely on BattleState.
+# Analyze is free/repeatable; the other two are once per battle via state.commander_used.
+static func _perform_commander(state: BattleState, side: String, skill: String) -> void:
+	if side != "player":
+		return
+	var unit: UnitInstance = state.active(side)
+	match skill:
+		"analyze":
+			var foe: UnitInstance = state.active("enemy")
+			var affs := ", ".join(PackedStringArray(foe.data().affinities))
+			state.emit("Analyze — %s [%s]: trait %s." % [foe.display_name(), affs, foe.data().trait_id])
+			state.emit("HP %d/%d  STR %d NIN %d DEF %d RES %d SPD %d" % [
+				foe.current_hp, foe.max_hp(), foe.effective_stat("str"), foe.effective_stat("nin"),
+				foe.effective_stat("def"), foe.effective_stat("res"), foe.effective_stat("spd")])
+		"tactical_order":
+			if state.commander_used.get("tactical_order", false):
+				state.emit("Tactical Order has already been given this battle!")
+				return
+			state.commander_used["tactical_order"] = true
+			unit.stat_stages["str"] = clampi(int(unit.stat_stages.get("str", 0)) + 1, -6, 6)
+			unit.stat_stages["spd"] = clampi(int(unit.stat_stages.get("spd", 0)) + 1, -6, 6)
+			state.emit("Commander's Tactical Order! %s's STR and SPD rose!" % unit.display_name())
+		"chakra_infusion":
+			if state.commander_used.get("chakra_infusion", false):
+				state.emit("Chakra Infusion has already been used this battle!")
+				return
+			state.commander_used["chakra_infusion"] = true
+			state.restore_cp(side, 50)
+			state.emit("Commander channels Chakra Infusion! The team's chakra surges back! (+50 CP)")
 
 
 static func _can_act(state: BattleState, side: String, unit: UnitInstance) -> bool:

@@ -29,6 +29,11 @@ func _initialize() -> void:
 	test_full_battle_terminates()
 	test_combo_rules()
 	test_touch_controls()
+	test_story_triggers()
+	test_cutscene_data()
+	test_commander_skills()
+	test_cursed_seal()
+	test_starter_scroll()
 
 	print("\n========================================")
 	print("  %d passed, %d failed" % [passed, failed])
@@ -63,7 +68,7 @@ func test_data_integrity(load_ok: bool) -> void:
 	check(registry.units.size() >= 30, "30+ units loaded (%d)" % registry.units.size())
 	check(registry.jutsu_db.size() >= 55, "55+ jutsu loaded (%d)" % registry.jutsu_db.size())
 	check(registry.combos.size() == 8, "8 combination jutsu loaded")
-	check(registry.status_defs.size() == 10, "10 status conditions defined")
+	check(registry.status_defs.size() >= 11, "11+ status conditions defined (with cursed_seal)")
 	check(registry.maps.size() >= 3, "3+ maps loaded")
 	check(registry.visuals.size() >= 11, "11+ unit visual entries loaded")
 	check(registry.unit_texture("naruto", "battle") != null, "naruto battle texture resolves")
@@ -335,3 +340,93 @@ func test_touch_controls() -> void:
 	tc._input(f9)
 	check(not tc.visible, "F9 hides the overlay when shown")
 	tc.queue_free()
+
+
+func test_story_triggers() -> void:
+	print("\n[story triggers — pure resolvers]")
+	var flags := {"a": true}
+	check(StoryTriggers.flags_ok({"require_flags": ["a"]}, flags), "require_flags met")
+	check(not StoryTriggers.flags_ok({"require_flags": ["b"]}, flags), "require_flags unmet blocks")
+	check(not StoryTriggers.flags_ok({"unless_flags": ["a"]}, flags), "unless_flags set blocks")
+	var map := {"on_enter": [{"cutscene": "intro", "unless_flags": ["seen_it"]}]}
+	check(StoryTriggers.on_enter_cutscene(map, {}, {}) == "intro", "on_enter fires when eligible")
+	check(StoryTriggers.on_enter_cutscene(map, {"seen_it": true}, {}) == "", "on_enter gated by flag")
+	check(StoryTriggers.on_enter_cutscene(map, {}, {"intro": true}) == "", "seen one-shot does not replay")
+	var bnpc := {"boss": {"flag": "boss_done"}}
+	check(StoryTriggers.npc_visible(bnpc, {}), "boss visible before defeat")
+	check(not StoryTriggers.npc_visible(bnpc, {"boss_done": true}), "boss hidden after its flag set")
+	var snpc := {"dialogue": ["base"], "states": [{"require_flags": ["x"], "dialogue": ["after"]}]}
+	check(StoryTriggers.resolve_npc(snpc, {}).get("dialogue")[0] == "base", "base NPC dialogue by default")
+	check(StoryTriggers.resolve_npc(snpc, {"x": true}).get("dialogue")[0] == "after", "state dialogue when flag set")
+	check(StoryTriggers.warp_locked({"require_flags": ["key"]}, {}), "warp locked without flag")
+	check(not StoryTriggers.warp_locked({"require_flags": ["key"]}, {"key": true}), "warp opens with flag")
+	var emap := {"events": [{"cell": [3, 4], "cutscene": "e1"}]}
+	check(StoryTriggers.tile_event(emap, Vector2i(3, 4), {}, {}).get("cutscene", "") == "e1", "tile event matches its cell")
+	check(StoryTriggers.tile_event(emap, Vector2i(0, 0), {}, {}).is_empty(), "no tile event off-cell")
+
+
+func test_cutscene_data() -> void:
+	print("\n[cutscene + quest data]")
+	check(registry.cutscenes.has("graduation"), "graduation cutscene loads")
+	var cs: Dictionary = registry.cutscene("graduation")
+	check(cs.get("steps", []).size() > 0, "graduation has scripted steps")
+	var fin: Dictionary = cs.get("on_finish", {})
+	check(fin.get("set_flags", []).has("seen_graduation"), "graduation sets seen_graduation")
+	for r in fin.get("recruit", []):
+		check(registry.units.has(r.get("unit", "")), "graduation recruit '%s' exists" % r.get("unit", ""))
+	check(registry.quests.size() >= 5, "quest log loaded (%d objectives)" % registry.quests.size())
+	for q in registry.quests:
+		check(q.get("flag", "") != "", "quest '%s' has a completion flag" % q.get("id", "?"))
+
+
+func test_commander_skills() -> void:
+	print("\n[commander skills]")
+	var s := _state([_mk("naruto", 20)], [_mk("forest_snake", 10)], 51)
+	s.player_cp = 10
+	BattleEngine.run_round(s, {"type": "commander", "skill": "chakra_infusion"}, {"type": "none"})
+	check(s.commander_used.get("chakra_infusion", false), "chakra_infusion marked used")
+	check(s.player_cp > 10, "chakra_infusion restored team CP")
+	var s2 := _state([_mk("naruto", 20)], [_mk("forest_snake", 10)], 52)
+	var before := int(s2.active("player").stat_stages.get("str", 0))
+	BattleEngine.run_round(s2, {"type": "commander", "skill": "tactical_order"}, {"type": "none"})
+	var after := int(s2.active("player").stat_stages.get("str", 0))
+	check(after > before, "tactical_order raised STR stage")
+	check(s2.commander_used.get("tactical_order", false), "tactical_order marked used")
+	BattleEngine.run_round(s2, {"type": "commander", "skill": "tactical_order"}, {"type": "none"})
+	check(int(s2.active("player").stat_stages.get("str", 0)) == after, "tactical_order is once per battle")
+
+
+func test_cursed_seal() -> void:
+	print("\n[cursed seal]")
+	check(registry.status_defs.has("cursed_seal"), "cursed_seal status defined")
+	check(registry.jutsu_db.has("cursed_seal_form"), "cursed_seal_form jutsu defined")
+	var u := _mk("sasuke", 20)
+	var clean := _mk("sasuke", 20)
+	u.status = "cursed_seal"
+	check(u.effective_stat("str") > clean.effective_stat("str"), "cursed seal boosts STR")
+	check(u.effective_stat("nin") > clean.effective_stat("nin"), "cursed seal boosts NIN")
+	var s := _state([u], [_mk("forest_snake", 5)], 99)
+	u.current_hp = u.max_hp()
+	u.status = "cursed_seal"
+	u.status_turns = 3
+	var hp_before := u.current_hp
+	BattleEngine._status_tick(s, "player")
+	check(u.current_hp < hp_before, "cursed seal drains HP each turn")
+
+
+func test_starter_scroll() -> void:
+	print("\n[starter scroll]")
+	var gs = load("res://src/autoloads/GameState.gd").new()
+	gs.story_flags = {"chose_taijutsu": true}
+	check(gs.scroll_starter_unit() == "rock_lee", "taijutsu scroll -> rock_lee")
+	gs.story_flags = {"chose_ninjutsu": true}
+	check(gs.scroll_starter_unit() == "tenten", "ninjutsu scroll -> tenten")
+	gs.story_flags = {"chose_genjutsu": true}
+	check(gs.scroll_starter_unit() == "shino", "genjutsu scroll -> shino")
+	gs.story_flags = {}
+	check(gs.scroll_starter_unit() == "", "no scroll chosen -> none")
+	for uid in ["rock_lee", "tenten", "shino"]:
+		check(registry.units.has(uid), "scroll unit '%s' exists in data" % uid)
+	gs.seen_cutscenes = {"graduation": true}
+	check(gs.to_dict().get("seen_cutscenes", {}).has("graduation"), "seen_cutscenes serializes")
+	gs.free()

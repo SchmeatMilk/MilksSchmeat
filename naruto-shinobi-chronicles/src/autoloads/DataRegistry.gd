@@ -14,6 +14,8 @@ var natures: Dictionary = {}      # id -> {up, down}
 var growth_coefficients: Dictionary = {}  # curve -> float multiplier on n^3
 var maps: Dictionary = {}         # id -> Dictionary (overworld map definitions)
 var visuals: Dictionary = {}      # unit_id -> {overworld_sprite, battle_sprite, ...}
+var cutscenes: Dictionary = {}    # id -> Dictionary (scripted scenes, data/cutscenes/*.json)
+var quests: Array = []            # ordered story objectives (data/story/quests.json)
 var validation_errors: Array = []
 
 
@@ -56,6 +58,16 @@ func load_all(base: String) -> bool:
 		if not d.is_empty():
 			maps[d.get("id", file.get_basename())] = d
 
+	cutscenes.clear()
+	for file in _list_files(base + "/cutscenes", ".json"):
+		var d: Dictionary = _read_json(base + "/cutscenes/" + file)
+		if not d.is_empty():
+			cutscenes[d.get("id", file.get_basename())] = d
+
+	quests = []
+	if FileAccess.file_exists(base + "/story/quests.json"):
+		quests = _read_json(base + "/story/quests.json").get("quests", [])
+
 	_validate()
 	return validation_errors.is_empty()
 
@@ -84,6 +96,10 @@ func nature_mods(id: String) -> Dictionary:
 
 func map_def(id: String) -> Dictionary:
 	return maps.get(id, {})
+
+
+func cutscene(id: String) -> Dictionary:
+	return cutscenes.get(id, {})
 
 
 ## Resolves a unit's texture for "battle" or "overworld" display.
@@ -152,6 +168,34 @@ func _validate() -> void:
 			var path: String = visuals[uid][key]
 			if not (FileAccess.file_exists(path) or ResourceLoader.exists(path)):
 				validation_errors.append("Visual asset missing for '%s': %s" % [uid, path])
+
+	# Cutscene on_finish references (recruits, warp targets, battle units) resolve.
+	for cid in cutscenes:
+		var cs: Dictionary = cutscenes[cid]
+		var fin: Dictionary = cs.get("on_finish", {})
+		for r in fin.get("recruit", []):
+			if not units.has(r.get("unit", "")):
+				validation_errors.append("Cutscene '%s' recruits unknown unit '%s'" % [cid, r.get("unit", "")])
+		var gm: Dictionary = fin.get("goto_map", {})
+		if not gm.is_empty() and not maps.has(gm.get("map", "")):
+			validation_errors.append("Cutscene '%s' goto_map references unknown map '%s'" % [cid, gm.get("map", "")])
+		var sb: Dictionary = fin.get("start_battle", {})
+		for entry in sb.get("party", []):
+			if not units.has(entry[0]):
+				validation_errors.append("Cutscene '%s' start_battle references unknown unit '%s'" % [cid, entry[0]])
+
+	# Map story triggers reference cutscenes that exist.
+	for mid in maps:
+		var m: Dictionary = maps[mid]
+		for trig in m.get("on_enter", []) + m.get("events", []):
+			var tc: String = trig.get("cutscene", "")
+			if tc != "" and not cutscenes.has(tc):
+				validation_errors.append("Map '%s' trigger references unknown cutscene '%s'" % [mid, tc])
+
+	# Quest objectives are well-formed.
+	for q in quests:
+		if q.get("flag", "") == "":
+			validation_errors.append("Quest '%s' has no completion flag" % q.get("id", "?"))
 
 
 # --- IO helpers ------------------------------------------------------------

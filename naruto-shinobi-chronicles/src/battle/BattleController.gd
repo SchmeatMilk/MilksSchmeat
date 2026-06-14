@@ -183,6 +183,7 @@ func _show_root_menu() -> void:
 	]
 	if not ComboSystem.available_combos(state).is_empty():
 		items.append({"label": "COMBO!", "meta": "combo"})
+	items.append({"label": "Commander", "meta": "commander"})
 	items.append({"label": "Item", "meta": "item"})
 	items.append({"label": "Switch", "meta": "switch"})
 	if state.is_wild:
@@ -190,6 +191,21 @@ func _show_root_menu() -> void:
 		items.append({"label": "Flee", "meta": "flee"})
 	menu.set_items(items)
 	menu.visible = true
+
+
+func _show_commander_menu() -> void:
+	# The four Tactician skills (spec section 2). Tactical Order / Chakra Infusion
+	# are once per battle; Sealing Tag is the wild-only contract attempt.
+	_page = "commander"
+	var used: Dictionary = state.commander_used
+	var items: Array = [
+		{"label": "Analyze", "meta": "analyze"},
+		{"label": "Tactical Order", "meta": "tactical_order", "disabled": used.get("tactical_order", false)},
+		{"label": "Chakra Infusion", "meta": "chakra_infusion", "disabled": used.get("chakra_infusion", false)},
+		{"label": "Sealing Tag", "meta": "seal", "disabled": not (state.is_wild and _has_any_tag())},
+		{"label": "Back", "meta": null},
+	]
+	menu.set_items(items)
 
 
 func _show_jutsu_menu() -> void:
@@ -263,11 +279,17 @@ func _on_menu_select(meta) -> void:
 			match meta:
 				"jutsu": _show_jutsu_menu()
 				"taijutsu": _commit_action({"type": "taijutsu"})
+				"commander": _show_commander_menu()
 				"item": _show_item_menu()
 				"switch": _show_switch_menu()
 				"seal": _show_seal_menu()
 				"combo": _show_combo_menu()
 				"flee": _commit_action({"type": "flee"})
+		"commander":
+			match meta:
+				null: _show_root_menu()
+				"seal": _show_seal_menu()
+				_: _commit_action({"type": "commander", "skill": meta})
 		"jutsu":
 			if meta == null: _show_root_menu()
 			else: _commit_action({"type": "jutsu", "jutsu": meta})
