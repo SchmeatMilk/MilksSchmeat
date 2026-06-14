@@ -15,19 +15,17 @@
     "#,##,#,#.#,##,#",
     "#,,,,,,#,,,,,B#"
   ],
+  "on_enter": [
+    {"cutscene": "forest_curse", "require_flags": ["forest_of_death_cleared"], "unless_flags": ["sasuke_cursed"]}
+  ],
   "npcs": [
     {"id": "anko", "name": "Anko Mitarashi", "cell": [2, 5], "color": "#9a7a9a",
      "dialogue": ["Exam rules: reach the far corner of the forest alive.", "Something in here is wearing a face that isn't theirs. Watch your back, Commander."],
      "action": ""},
     {"id": "orochimaru_boss", "name": "Disguised Genin", "cell": [13, 9], "color": "#d8d8e8",
-     "dialogue": ["Kukuku... such promising material walks into my forest.", "Show me what your contract bonds are worth!"],
-     "action": "boss_battle",
-     "boss": {"party": [["forest_snake", 9], ["sound_genin", 10], ["orochimaru", 12]],
-              "flag": "forest_of_death_cleared",
-              "reward_items": {"scroll_of_heaven": 1, "scroll_of_earth": 1},
-              "reward_ryo": 1500,
-              "victory_text": "The figure peels away into mud and snakes. You claim both scrolls — the exam is yours."}
-    }
+     "hide_if_flags": ["forest_of_death_cleared"],
+     "dialogue": ["A pale genin blocks the way, smiling far too widely..."],
+     "action": "start_cutscene", "cutscene": "forest_shadow"}
   ],
   "warps": [
     {"cell": [0, 5], "to_map": "konoha", "to_cell": [12, 3], "label": "Konoha Gate"}

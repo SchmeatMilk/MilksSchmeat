@@ -179,10 +179,12 @@ func _handle_battle_return() -> bool:
 				if not boss.get("no_rank_up", false):
 					lines.append("Commander rank up! Authority, chakra reserve and tactical slots increased.")
 				dialogue.open("", lines)
-				# Boss is gone — rebuild NPCs so the sprite disappears.
-				var node = npc_nodes.get(result.get("boss_npc_id", ""))
-				if node:
-					node.queue_free()
+				# Boss is gone — rebuild NPCs so the sprite disappears (unless it's a
+				# multi-fight NPC like the Chunin Exam proctor, flagged keep_npc).
+				if not boss.get("keep_npc", false):
+					var node = npc_nodes.get(result.get("boss_npc_id", ""))
+					if node:
+						node.queue_free()
 				_check_enter_after_dialogue = true
 				return true
 		"caught":

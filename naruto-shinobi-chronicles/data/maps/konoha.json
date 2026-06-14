@@ -47,7 +47,10 @@
      "locked_text": "Kakashi: Pass the bell test at the Training Grounds before you take a real mission."},
     {"cell": [13, 3], "to_map": "forest_of_death", "to_cell": [1, 5], "label": "Forest of Death",
      "require_flags": ["land_of_waves_cleared"],
-     "locked_text": "The Chunin Exams haven't opened yet. Finish the Land of Waves mission first."}
+     "locked_text": "The Chunin Exams haven't opened yet. Finish the Land of Waves mission first."},
+    {"cell": [13, 5], "to_map": "chunin_stadium", "to_cell": [6, 8], "label": "Exam Stadium",
+     "require_flags": ["forest_of_death_cleared"],
+     "locked_text": "The Stadium finals open once you've survived the Forest of Death."}
   ],
   "encounters": {"rate": 0.0, "table": []}
 }

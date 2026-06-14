@@ -16,5 +16,6 @@
   "forbidden_scroll": {"name": "Forbidden Scroll", "kind": "promotion",  "price": 0, "pocket": "scrolls", "description": "Unlocks legendary promotions."},
   "kunai_set":        {"name": "Kunai Set",        "kind": "tool",       "price": 250, "pocket": "tools", "description": "Held: physical jutsu +10% power."},
   "chakra_blade":     {"name": "Chakra Blade",     "kind": "tool",       "price": 700, "pocket": "tools", "description": "Held: special jutsu +10% power."},
-  "focus_band":       {"name": "Focus Band",       "kind": "tool",       "price": 800, "pocket": "tools", "description": "Held: prevents confusion self-hits."}
+  "focus_band":       {"name": "Focus Band",       "kind": "tool",       "price": 800, "pocket": "tools", "description": "Held: prevents confusion self-hits."},
+  "chunin_vest":      {"name": "Chunin Vest",      "kind": "key",        "price": 0,   "pocket": "key",     "description": "Proof of promotion to Chunin — the flak jacket of a true squad leader."}
 }

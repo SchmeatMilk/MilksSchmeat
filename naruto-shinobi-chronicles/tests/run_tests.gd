@@ -35,6 +35,7 @@ func _initialize() -> void:
 	test_cursed_seal()
 	test_starter_scroll()
 	test_act_one()
+	test_act_two()
 
 	print("\n========================================")
 	print("  %d passed, %d failed" % [passed, failed])
@@ -451,3 +452,28 @@ func test_act_one() -> void:
 			gated += 1
 	check(gated >= 2, "konoha mission warps are flag-gated (%d)" % gated)
 	check(registry.items.has("soothing_balm"), "paralysis cure item exists")
+
+
+func test_act_two() -> void:
+	print("\n[act II — chunin exams]")
+	check(registry.maps.has("chunin_stadium"), "chunin_stadium map loads")
+	check(registry.cutscenes.has("forest_shadow"), "forest_shadow cutscene loads")
+	check(registry.cutscenes.has("forest_curse"), "forest_curse cutscene loads")
+	check(registry.cutscene("forest_curse").get("on_finish", {}).get("set_flags", []).has("sasuke_cursed"), "forest_curse marks Sasuke")
+	# Stadium proctor runs a 4-match bracket ending in chunin_exam_cleared.
+	var proctor: Dictionary = {}
+	for npc in registry.map_def("chunin_stadium").get("npcs", []):
+		if npc.get("id", "") == "proctor":
+			proctor = npc
+	check(not proctor.is_empty(), "stadium has a proctor")
+	var bracket: Array = proctor.get("states", [])
+	check(bracket.size() == 4, "bracket has 4 matches (%d)" % bracket.size())
+	var final_flag := ""
+	for st in bracket:
+		for entry in st.get("boss", {}).get("party", []):
+			check(registry.units.has(entry[0]), "bracket foe '%s' exists" % entry[0])
+		if st.get("boss", {}).get("flag", "") == "chunin_exam_cleared":
+			final_flag = "chunin_exam_cleared"
+			check(st.get("boss", {}).get("reward_items", {}).has("chunin_vest"), "final match rewards the Chunin Vest")
+	check(final_flag == "chunin_exam_cleared", "bracket final sets chunin_exam_cleared")
+	check(registry.items.has("chunin_vest"), "chunin_vest item exists")
