@@ -1,0 +1,48 @@
+{
+  "id": "forest_snake",
+  "name": "Giant Forest Snake",
+  "growth_curve": "fast",
+  "nature": "fierce",
+  "affinities": [
+    "earth"
+  ],
+  "trait": "substitution_master",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "yang_leaf_hurricane"
+    },
+    {
+      "level": 6,
+      "jutsu": "striking_shadow_snake"
+    },
+    {
+      "level": 14,
+      "jutsu": "poison_mist"
+    },
+    {
+      "level": 24,
+      "jutsu": "earth_headhunter"
+    }
+  ],
+  "promotion": {},
+  "rarity": "common",
+  "catch_rate": 200,
+  "base_exp": 40,
+  "village": "rogue",
+  "threat_level": "D",
+  "bingo_entry": "Forest of Death wildlife. Big enough to swallow a genin whole. Has tried.",
+  "palette": {
+    "primary": "#5a8a3a",
+    "secondary": "#243a14",
+    "accent": "#d8e0a0"
+  },
+  "base_stats": {
+    "hp": 70,
+    "str": 65,
+    "nin": 30,
+    "def": 50,
+    "res": 35,
+    "spd": 60
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "id": "zabuza",
+  "name": "Zabuza Momochi",
+  "growth_curve": "slow",
+  "nature": "fierce",
+  "affinities": [
+    "water"
+  ],
+  "trait": "mist_veil",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "hidden_mist"
+    },
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 6,
+      "jutsu": "water_clone"
+    },
+    {
+      "level": 12,
+      "jutsu": "water_prison"
+    },
+    {
+      "level": 20,
+      "jutsu": "water_shark_bullet"
+    },
+    {
+      "level": 30,
+      "jutsu": "water_dragon"
+    }
+  ],
+  "promotion": {},
+  "rarity": "legendary",
+  "catch_rate": 10,
+  "base_exp": 110,
+  "village": "mist",
+  "threat_level": "A",
+  "bingo_entry": "Demon of the Hidden Mist. Silent killing is not a metaphor.",
+  "palette": {
+    "primary": "#5a6a7a",
+    "secondary": "#1a222a",
+    "accent": "#c0d0e0"
+  },
+  "base_stats": {
+    "hp": 90,
+    "str": 95,
+    "nin": 70,
+    "def": 70,
+    "res": 55,
+    "spd": 65
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "id": "mist_swordsman",
+  "name": "Mist Swordsman",
+  "growth_curve": "medium",
+  "nature": "fierce",
+  "affinities": [
+    "water"
+  ],
+  "trait": "mist_veil",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 5,
+      "jutsu": "hidden_mist"
+    },
+    {
+      "level": 12,
+      "jutsu": "water_clone"
+    },
+    {
+      "level": 18,
+      "jutsu": "water_shark_bullet"
+    },
+    {
+      "level": 28,
+      "jutsu": "water_prison"
+    }
+  ],
+  "promotion": {},
+  "rarity": "uncommon",
+  "catch_rate": 90,
+  "base_exp": 60,
+  "village": "mist",
+  "threat_level": "C",
+  "bingo_entry": "Blade-for-hire from the Bloody Mist. The fog is part of the contract.",
+  "palette": {
+    "primary": "#6a8a9a",
+    "secondary": "#23303a",
+    "accent": "#e0e8f0"
+  },
+  "base_stats": {
+    "hp": 70,
+    "str": 75,
+    "nin": 55,
+    "def": 55,
+    "res": 45,
+    "spd": 55
+  }
+}

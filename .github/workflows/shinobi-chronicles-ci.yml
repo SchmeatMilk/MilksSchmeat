@@ -1,0 +1,76 @@
+name: Shinobi Chronicles CI
+
+on:
+  push:
+    paths:
+      - "naruto-shinobi-chronicles/**"
+      - ".github/workflows/shinobi-chronicles-ci.yml"
+  pull_request:
+    paths:
+      - "naruto-shinobi-chronicles/**"
+
+env:
+  GODOT_VERSION: "4.3"
+
+jobs:
+  data-validation:
+    name: Validate game data (JSON integrity)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate all JSON parses and cross-references
+        run: |
+          python3 - <<'EOF'
+          import json, glob, sys
+          base = "naruto-shinobi-chronicles/data"
+          jutsu = {j["id"] for j in json.load(open(base+"/jutsu/jutsu_master.json"))["jutsu"]}
+          natures = set(json.load(open(base+"/types/type_chart.json"))["natures"])
+          statuses = set(json.load(open(base+"/status/status_defs.json")))
+          traits = set(json.load(open(base+"/status/traits.json")))
+          errors, units = [], {}
+          for f in sorted(glob.glob(base+"/units/*.json")):
+              u = json.load(open(f)); units[u["id"]] = u
+          for uid, u in units.items():
+              errors += [f"{uid}: missing jutsu {e['jutsu']}" for e in u["learnset"] if e["jutsu"] not in jutsu]
+              errors += [f"{uid}: bad affinity {a}" for a in u["affinities"] if a not in natures]
+              if u["trait"] not in traits: errors.append(f"{uid}: bad trait")
+              tgt = u["promotion"].get("target_id", "")
+              if tgt and tgt not in units: errors.append(f"{uid}: bad promotion target {tgt}")
+          for c in json.load(open(base+"/jutsu/combo_list.json"))["combos"]:
+              for k in ("jutsu_a", "jutsu_b"):
+                  if c[k] not in jutsu: errors.append(f"combo {c['id']}: missing {c[k]}")
+              for k in ("unit_a", "unit_b"):
+                  if c[k] not in units: errors.append(f"combo {c['id']}: missing unit {c[k]}")
+          for m in glob.glob(base+"/maps/*.json"):
+              mp = json.load(open(m))
+              for row in mp["encounters"].get("table", []):
+                  if row["unit"] not in units: errors.append(f"map {mp['id']}: missing unit {row['unit']}")
+          for e in errors: print("ERROR:", e)
+          sys.exit(1 if errors else 0)
+          EOF
+
+  engine-tests:
+    name: Headless battle engine tests (Godot ${{ matrix.godot }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        godot: ["4.3-stable"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Godot headless
+        run: |
+          curl -sSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${{ matrix.godot }}/Godot_v${{ matrix.godot }}_linux.x86_64.zip"
+          unzip -q godot.zip
+          sudo mv Godot_v${{ matrix.godot }}_linux.x86_64 /usr/local/bin/godot
+          godot --version
+      - name: Import project (first pass builds .godot cache)
+        working-directory: naruto-shinobi-chronicles
+        run: godot --headless --import || true
+      - name: Run test suite
+        working-directory: naruto-shinobi-chronicles
+        run: godot --headless -s tests/run_tests.gd
+      - name: Run end-to-end smoke test
+        working-directory: naruto-shinobi-chronicles
+        run: |
+          timeout 90 godot --headless res://tests/smoke/SmokeRunner.tscn 2>&1 | tee smoke.log
+          grep -q "SMOKE_OK" smoke.log

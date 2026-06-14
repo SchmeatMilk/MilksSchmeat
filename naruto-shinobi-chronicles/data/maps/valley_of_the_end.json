@@ -1,0 +1,28 @@
+{
+  "id": "valley_of_the_end",
+  "name": "Valley of the End",
+  "music": "battle_boss",
+  "palette": {"floor": "#7c8590", "wall": "#3c4650", "grass": "#4a7a4a", "water": "#2e5a86"},
+  "grid": [
+    "###############",
+    "#~~~~~~~~~~~~~#",
+    "#~~~~~~~~~~~~~#",
+    "#.....###.....#",
+    "#.............#",
+    "#.............#",
+    "#.....###.....#",
+    "#~~~~~~~~~~~~~#",
+    "#.............#",
+    "######.########"
+  ],
+  "on_enter": [
+    {"cutscene": "valley_finale", "unless_flags": ["valley_phase1_done"]},
+    {"cutscene": "valley_duel", "require_flags": ["valley_phase1_done"], "unless_flags": ["game_complete"]},
+    {"cutscene": "valley_ending", "require_flags": ["game_complete"], "unless_flags": ["credits_seen"]}
+  ],
+  "npcs": [],
+  "warps": [
+    {"cell": [6, 9], "to_map": "konoha", "to_cell": [12, 7], "label": "Konoha"}
+  ],
+  "encounters": {"rate": 0.0, "table": []}
+}

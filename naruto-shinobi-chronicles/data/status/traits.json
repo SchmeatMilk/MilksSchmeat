@@ -1,0 +1,17 @@
+{
+  "sharingan":           {"name": "Sharingan",           "description": "30% chance to evade an attack and counter with a copy of it."},
+  "byakugan":            {"name": "Byakugan",            "description": "Attacks never miss, ignore evasion and substitution. Reveals enemy HP/CP."},
+  "jinchuriki":          {"name": "Jinchuriki",          "description": "Below 30% HP: STR/NIN surge to +2 and regenerates 10% HP per turn."},
+  "medical_ninja":       {"name": "Medical Ninja",       "description": "Healing jutsu x1.5. Revives a fallen ally once per battle (50 CP)."},
+  "sensor":              {"name": "Sensor",              "description": "Reveals all enemy units and affinities on switch-in."},
+  "hardened_body":       {"name": "Hardened Body",       "description": "Immune to critical hits."},
+  "substitution_master": {"name": "Substitution Master", "description": "The first hit that would KO leaves 1 HP (once per battle)."},
+  "sand_shield":         {"name": "Sand Shield",         "description": "Automatic sand defense: physical damage taken x0.7."},
+  "mist_veil":           {"name": "Mist Veil",           "description": "Hidden Mist conditioning: special damage taken x0.85."},
+  "chakra_control":      {"name": "Chakra Control",      "description": "Perfect control: all jutsu cost 5 less CP (min 1)."},
+  "shadow_artisan":      {"name": "Shadow Artisan",      "description": "Yin techniques cost 5 less CP and gain +10 accuracy."},
+  "beast_mimicry":       {"name": "Beast Mimicry",       "description": "Multi-hit techniques roll one extra hit."},
+  "puppet_master":       {"name": "Puppet Master",       "description": "Tools never break and deal +20% damage."},
+  "iron_wall":           {"name": "Iron Wall",           "description": "Cannot have DEF or RES lowered by enemies."},
+  "legendary_sannin":    {"name": "Legendary Sannin",    "description": "Immune to Fear and Seal. +10% to all stats in boss battles."}
+}

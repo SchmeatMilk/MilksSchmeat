@@ -1,0 +1,9 @@
+{
+  "comment": "Total exp to BE at level n = coefficient * n^3. Level cap 50; promotions reset to 1.",
+  "coefficients": {
+    "fast": 0.8,
+    "medium": 1.0,
+    "slow": 1.25,
+    "erratic": 0.9
+  }
+}

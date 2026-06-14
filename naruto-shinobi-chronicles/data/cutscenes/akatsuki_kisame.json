@@ -1,0 +1,23 @@
+{
+  "id": "akatsuki_kisame",
+  "title": "The Water Dome",
+  "music": "battle_boss",
+  "steps": [
+    {"speaker": "Kisame", "text": "Heh heh. Itachi's gone soft. Me? I'll just chop you up and let Samehada drink. Don't worry — I'll leave enough to carry the fox."},
+    {"speaker": "", "text": "He slams his bandaged blade down. Water erupts, swallowing the road into a churning dome."},
+    {"speaker": "Naruto", "text": "Under all this water his Water Style hits like a truck — and our fire's useless! Squad, adapt! Believe it!"}
+  ],
+  "on_finish": {
+    "start_battle": {
+      "party": [["kisame", 23]],
+      "music": "battle_boss",
+      "boss_npc_id": "kisame",
+      "boss": {
+        "flag": "akatsuki_repelled",
+        "reward_items": {"soldier_pill": 2, "revival_pill": 1},
+        "reward_ryo": 2000,
+        "victory_text": "Samehada is torn from Kisame's grip. He laughs as the dome collapses. 'Not bad, brat. We'll be seeing you.'"
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "id": "temari",
+  "name": "Temari",
+  "growth_curve": "medium",
+  "nature": "clever",
+  "affinities": [
+    "wind"
+  ],
+  "trait": "iron_wall",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "wind_cutting_whirlwind"
+    },
+    {
+      "level": 8,
+      "jutsu": "wind_scythe"
+    },
+    {
+      "level": 16,
+      "jutsu": "wind_great_breakthrough"
+    },
+    {
+      "level": 26,
+      "jutsu": "wind_pressure_damage"
+    }
+  ],
+  "promotion": {},
+  "rarity": "rare",
+  "catch_rate": 40,
+  "base_exp": 80,
+  "village": "sand",
+  "threat_level": "B",
+  "bingo_entry": "One fan, three moons, no survivors at range.",
+  "palette": {
+    "primary": "#d8c060",
+    "secondary": "#4a3a6a",
+    "accent": "#f0e0e8"
+  },
+  "base_stats": {
+    "hp": 70,
+    "str": 55,
+    "nin": 80,
+    "def": 55,
+    "res": 60,
+    "spd": 70
+  }
+}

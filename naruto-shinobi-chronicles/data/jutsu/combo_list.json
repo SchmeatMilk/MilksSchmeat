@@ -1,0 +1,12 @@
+{
+  "combos": [
+    {"id": "combo_incinerating_flare", "name": "Scorch Release: Incinerating Flare", "unit_a": "naruto", "unit_b": "sasuke", "jutsu_a": "wind_rasenshuriken", "jutsu_b": "fire_dragon_flame", "nature": "fire", "power": 220, "accuracy": 100, "effects": [{"kind": "field", "field": "scorched_earth", "turns": 5}]},
+    {"id": "combo_typhoon_vortex", "name": "Typhoon Water Vortex", "unit_a": "naruto", "unit_b": "sakura", "jutsu_a": "wind_great_breakthrough", "jutsu_b": "medical_palm", "nature": "water", "power": 180, "accuracy": 100, "effects": [{"kind": "trap", "turns": 2}]},
+    {"id": "combo_lightning_kirin", "name": "Lightning Blade: Kirin", "unit_a": "sasuke", "unit_b": "kakashi", "jutsu_a": "lightning_chidori", "jutsu_b": "lightning_purple_electricity", "nature": "lightning", "power": 250, "accuracy": 100, "flags": ["ignores_defense", "never_miss"], "effects": [{"kind": "status", "status": "paralysis", "chance": 50}]},
+    {"id": "combo_sand_waterfall", "name": "Sand Coffin: Waterfall Burial", "unit_a": "gaara", "unit_b": "temari", "jutsu_a": "sand_coffin", "jutsu_b": "wind_scythe", "nature": "earth", "power": 200, "accuracy": 100, "effects": [{"kind": "status", "status": "stun", "chance": 100}, {"kind": "stat_stage", "who": "target", "stat": "spd", "stages": -3}]},
+    {"id": "combo_ino_shika", "name": "Shadow-Mind Lockdown", "unit_a": "shikamaru", "unit_b": "ino", "jutsu_a": "yin_shadow_possession", "jutsu_b": "yin_mind_transfer", "nature": "yin", "power": 120, "accuracy": 100, "effects": [{"kind": "status", "status": "confusion", "chance": 100}, {"kind": "status", "status": "stun", "chance": 100}]},
+    {"id": "combo_double_lotus", "name": "Double Dynamic Lotus", "unit_a": "rock_lee", "unit_b": "neji", "jutsu_a": "yang_primary_lotus", "jutsu_b": "yang_eight_trigrams", "nature": "yang", "power": 210, "accuracy": 95, "effects": [{"kind": "drain_cp", "amount": 20}]},
+    {"id": "combo_beast_boulder", "name": "Fang Boulder Crash", "unit_a": "kiba", "unit_b": "choji", "jutsu_a": "yang_fang_over_fang", "jutsu_b": "human_boulder", "nature": "yang", "power": 190, "accuracy": 95, "effects": [{"kind": "status", "status": "bleed", "chance": 60}]},
+    {"id": "combo_sannin_arts", "name": "Sannin Combination Arts", "unit_a": "tsunade", "unit_b": "jiraiya", "jutsu_a": "healing_burst", "jutsu_b": "summoning_gamabunta", "nature": "none", "power": 240, "accuracy": 100, "effects": [{"kind": "restore_cp", "amount": 30}]}
+  ]
+}

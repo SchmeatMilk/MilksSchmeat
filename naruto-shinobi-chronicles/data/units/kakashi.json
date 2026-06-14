@@ -1,0 +1,60 @@
+{
+  "id": "kakashi",
+  "name": "Kakashi Hatake",
+  "growth_curve": "slow",
+  "nature": "wise",
+  "affinities": [
+    "lightning"
+  ],
+  "trait": "sharingan",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "lightning_thunderbolt"
+    },
+    {
+      "level": 6,
+      "jutsu": "lightning_chidori"
+    },
+    {
+      "level": 12,
+      "jutsu": "earth_headhunter"
+    },
+    {
+      "level": 18,
+      "jutsu": "lightning_purple_electricity"
+    },
+    {
+      "level": 26,
+      "jutsu": "water_dragon"
+    },
+    {
+      "level": 34,
+      "jutsu": "lightning_thundercloud"
+    }
+  ],
+  "promotion": {},
+  "rarity": "legendary",
+  "catch_rate": 0,
+  "base_exp": 140,
+  "village": "leaf",
+  "threat_level": "A",
+  "bingo_entry": "The Copy Ninja. A thousand jutsu behind one tired eye.",
+  "palette": {
+    "primary": "#8a9bb0",
+    "secondary": "#1f2d3d",
+    "accent": "#d23a3a"
+  },
+  "base_stats": {
+    "hp": 80,
+    "str": 75,
+    "nin": 90,
+    "def": 70,
+    "res": 75,
+    "spd": 80
+  }
+}

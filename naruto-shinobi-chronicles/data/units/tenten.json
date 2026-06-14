@@ -1,0 +1,52 @@
+{
+  "id": "tenten",
+  "name": "Tenten",
+  "growth_curve": "medium",
+  "nature": "lucky",
+  "affinities": [
+    "none"
+  ],
+  "trait": "puppet_master",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "shuriken_barrage"
+    },
+    {
+      "level": 7,
+      "jutsu": "demon_wind_shuriken"
+    },
+    {
+      "level": 15,
+      "jutsu": "explosive_tag"
+    },
+    {
+      "level": 24,
+      "jutsu": "puppet_strike"
+    }
+  ],
+  "promotion": {},
+  "rarity": "uncommon",
+  "catch_rate": 60,
+  "base_exp": 65,
+  "village": "leaf",
+  "threat_level": "C",
+  "bingo_entry": "A thousand sealed weapons and perfect aim with all of them.",
+  "palette": {
+    "primary": "#c05a78",
+    "secondary": "#5a1f30",
+    "accent": "#f8e8d8"
+  },
+  "base_stats": {
+    "hp": 65,
+    "str": 70,
+    "nin": 50,
+    "def": 50,
+    "res": 50,
+    "spd": 70
+  }
+}

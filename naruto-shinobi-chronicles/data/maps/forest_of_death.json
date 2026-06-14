@@ -1,0 +1,43 @@
+{
+  "id": "forest_of_death",
+  "name": "Forest of Death — Area 44",
+  "music": "dungeon_theme",
+  "palette": {"floor": "#3a4a30", "wall": "#1a2414", "grass": "#2c5a28", "water": "#2a4a6a"},
+  "grid": [
+    "###############",
+    "#,,,,#....#,,,#",
+    "#,##,#.##.#,#,#",
+    "#,#,,,.#,,,,#,#",
+    "#,#.####.##.#,#",
+    ".,,..,,,,,,..,#",
+    "#,#.#,##,#.#.,#",
+    "#,#,,,#,,,.#,,#",
+    "#,##,#,#.#,##,#",
+    "#,,,,,,#,,,,,B#"
+  ],
+  "on_enter": [
+    {"cutscene": "forest_curse", "require_flags": ["forest_of_death_cleared"], "unless_flags": ["sasuke_cursed"]}
+  ],
+  "npcs": [
+    {"id": "anko", "name": "Anko Mitarashi", "cell": [2, 5], "color": "#9a7a9a",
+     "dialogue": ["Exam rules: reach the far corner of the forest alive.", "Something in here is wearing a face that isn't theirs. Watch your back, Commander."],
+     "action": ""},
+    {"id": "orochimaru_boss", "name": "Disguised Genin", "cell": [13, 9], "color": "#d8d8e8",
+     "hide_if_flags": ["forest_of_death_cleared"],
+     "dialogue": ["A pale genin blocks the way, smiling far too widely..."],
+     "action": "start_cutscene", "cutscene": "forest_shadow"}
+  ],
+  "warps": [
+    {"cell": [0, 5], "to_map": "konoha", "to_cell": [12, 3], "label": "Konoha Gate"}
+  ],
+  "encounters": {
+    "rate": 0.22,
+    "table": [
+      {"unit": "forest_snake", "weight": 35, "min_level": 6, "max_level": 10},
+      {"unit": "giant_centipede", "weight": 30, "min_level": 6, "max_level": 10},
+      {"unit": "sound_genin", "weight": 25, "min_level": 7, "max_level": 11},
+      {"unit": "mist_swordsman", "weight": 8, "min_level": 8, "max_level": 12},
+      {"unit": "haku", "weight": 2, "min_level": 10, "max_level": 12}
+    ]
+  }
+}

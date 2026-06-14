@@ -1,0 +1,61 @@
+{
+  "id": "sasuke_cm2",
+  "name": "Sasuke (Curse Mark 2)",
+  "growth_curve": "fast",
+  "nature": "swift",
+  "affinities": [
+    "fire",
+    "lightning"
+  ],
+  "trait": "sharingan",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "lightning_chidori"
+    },
+    {
+      "level": 1,
+      "jutsu": "fire_dragon_flame"
+    },
+    {
+      "level": 1,
+      "jutsu": "substitution"
+    },
+    {
+      "level": 1,
+      "jutsu": "cursed_seal_form"
+    },
+    {
+      "level": 8,
+      "jutsu": "lightning_thundercloud"
+    },
+    {
+      "level": 15,
+      "jutsu": "lightning_kirin"
+    },
+    {
+      "level": 20,
+      "jutsu": "fire_majestic_destroyer"
+    }
+  ],
+  "promotion": {},
+  "rarity": "mythic",
+  "catch_rate": 0,
+  "base_exp": 160,
+  "village": "leaf",
+  "threat_level": "S",
+  "bingo_entry": "The curse mark fully blossomed. Wings of webbed shadow, heart of vengeance.",
+  "palette": {
+    "primary": "#5a4a7a",
+    "secondary": "#1a1026",
+    "accent": "#c4b0e8"
+  },
+  "base_stats": {
+    "hp": 85,
+    "str": 85,
+    "nin": 105,
+    "def": 65,
+    "res": 70,
+    "spd": 105
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "id": "jiraiya",
+  "name": "Jiraiya",
+  "growth_curve": "slow",
+  "nature": "lucky",
+  "affinities": [
+    "fire",
+    "earth"
+  ],
+  "trait": "legendary_sannin",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "kunai_throw"
+    },
+    {
+      "level": 1,
+      "jutsu": "fire_fireball"
+    },
+    {
+      "level": 8,
+      "jutsu": "earth_swamp"
+    },
+    {
+      "level": 15,
+      "jutsu": "rasengan"
+    },
+    {
+      "level": 24,
+      "jutsu": "summoning_gamabunta"
+    },
+    {
+      "level": 34,
+      "jutsu": "fire_majestic_destroyer"
+    }
+  ],
+  "promotion": {},
+  "rarity": "mythic",
+  "catch_rate": 0,
+  "base_exp": 180,
+  "village": "leaf",
+  "threat_level": "S",
+  "bingo_entry": "Sannin. Toad Sage. Pervert. The order of those titles varies by witness.",
+  "palette": {
+    "primary": "#e8e8e8",
+    "secondary": "#a83232",
+    "accent": "#3a7a3a"
+  },
+  "base_stats": {
+    "hp": 105,
+    "str": 90,
+    "nin": 95,
+    "def": 75,
+    "res": 80,
+    "spd": 60
+  }
+}

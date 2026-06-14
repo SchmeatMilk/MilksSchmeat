@@ -1,0 +1,57 @@
+{
+  "id": "naruto_sage",
+  "name": "Naruto (Sage Mode)",
+  "growth_curve": "erratic",
+  "nature": "brave",
+  "affinities": [
+    "wind",
+    "yang"
+  ],
+  "trait": "sensor",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "rasengan"
+    },
+    {
+      "level": 1,
+      "jutsu": "shadow_clone"
+    },
+    {
+      "level": 1,
+      "jutsu": "substitution"
+    },
+    {
+      "level": 6,
+      "jutsu": "wind_rasenshuriken"
+    },
+    {
+      "level": 12,
+      "jutsu": "summoning_gamabunta"
+    },
+    {
+      "level": 20,
+      "jutsu": "wind_pressure_damage"
+    }
+  ],
+  "promotion": {},
+  "rarity": "mythic",
+  "catch_rate": 0,
+  "base_exp": 160,
+  "village": "leaf",
+  "threat_level": "S",
+  "bingo_entry": "Sage of Mount Myoboku. Nature energy flows through every strike.",
+  "palette": {
+    "primary": "#ff7b1c",
+    "secondary": "#b33a00",
+    "accent": "#ffe680"
+  },
+  "base_stats": {
+    "hp": 110,
+    "str": 95,
+    "nin": 85,
+    "def": 75,
+    "res": 70,
+    "spd": 80
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "akatsuki_aftermath",
+  "title": "A Lead",
+  "music": "route_theme",
+  "steps": [
+    {"speaker": "Kakashi", "text": "They retreated. The Akatsuki won't stop hunting the tailed beasts — but that's a war for another day."},
+    {"speaker": "Kakashi", "text": "Before he vanished, Kisame let something slip. Sasuke is with Orochimaru now — past the Valley of the End."},
+    {"speaker": "Naruto", "text": "Then that's where I'm going. I made a promise. Let's head home, gear up, and finish this."}
+  ],
+  "on_finish": {
+    "goto_map": {"map": "konoha", "cell": [7, 7]}
+  }
+}

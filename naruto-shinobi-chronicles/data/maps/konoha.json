@@ -1,0 +1,65 @@
+{
+  "id": "konoha",
+  "name": "Konohagakure",
+  "music": "town_theme",
+  "palette": {"floor": "#c8b088", "wall": "#7a5230", "grass": "#5a8a4a", "water": "#4a78b0"},
+  "grid": [
+    "###############",
+    "#.....##......#",
+    "#.....##..~~..#",
+    "#.............#",
+    "###..#####..###",
+    "#.............#",
+    "#..,,......,,.#",
+    "#..,,......,,.#",
+    "#.............#",
+    "######.########"
+  ],
+  "on_enter": [
+    {"cutscene": "graduation", "unless_flags": ["seen_graduation"]},
+    {"cutscene": "defection", "require_flags": ["chunin_exam_cleared"], "unless_flags": ["sasuke_defected"]}
+  ],
+  "npcs": [
+    {"id": "hokage", "name": "Third Hokage", "cell": [3, 1], "color": "#e8e0d0",
+     "dialogue": ["Welcome back, Commander.", "Your team has been fully healed."],
+     "action": "heal_party",
+     "states": [
+       {"require_flags": ["seen_graduation"], "unless_flags": ["bell_test_passed"], "action": "heal_party",
+        "dialogue": ["So — Team 7 at last.", "Kakashi is waiting at the Training Grounds. Pass his bell test and your duties begin."]},
+       {"require_flags": ["bell_test_passed"], "unless_flags": ["land_of_waves_cleared"], "action": "heal_party",
+        "dialogue": ["A C-rank request came from the Land of Waves.", "Cross the Great Naruto Bridge — but be ready. Not every shinobi out there is a friend."]},
+       {"require_flags": ["chunin_exam_cleared"], "unless_flags": ["sasuke_defected"], "action": "heal_party",
+        "dialogue": ["You fought well in the exams, Commander.", "But keep an eye on Sasuke. Formidable power can curdle into something darker."]},
+       {"require_flags": ["credits_seen"], "action": "heal_party",
+        "dialogue": ["You brought him to a standstill — and brought yourself back too.", "The Will of Fire burns brightest in you, Commander. One day, that hat may be yours."]}
+     ]},
+    {"id": "shopkeep", "name": "Tool Shop Keeper", "cell": [11, 1], "color": "#d0a060",
+     "dialogue": ["Tags, pills, and steel — everything a Commander needs."],
+     "action": "open_shop"},
+    {"id": "ichiraku", "name": "Ichiraku Teuchi", "cell": [3, 5], "color": "#f0d8b0",
+     "dialogue": ["One bowl of the usual? On the house.", "Your whole squad looks livelier already!"],
+     "action": "heal_party"},
+    {"id": "iruka", "name": "Iruka Sensei", "cell": [11, 5], "color": "#b08868",
+     "dialogue": ["Remember your basics: type advantage wins fights.", "Fire burns Wind. Wind cuts Lightning. Lightning splits Earth. Earth dams Water. Water douses Fire.", "Genjutsu (Yin) breaks Taijutsu (Yang), and Yang shatters Yin."],
+     "action": ""}
+  ],
+  "warps": [
+    {"cell": [6, 9], "to_map": "training_grounds", "to_cell": [7, 1], "label": "Training Grounds"},
+    {"cell": [1, 3], "to_map": "wave_bridge", "to_cell": [1, 4], "label": "Land of Waves",
+     "require_flags": ["bell_test_passed"],
+     "locked_text": "Kakashi: Pass the bell test at the Training Grounds before you take a real mission."},
+    {"cell": [13, 3], "to_map": "forest_of_death", "to_cell": [1, 5], "label": "Forest of Death",
+     "require_flags": ["land_of_waves_cleared"],
+     "locked_text": "The Chunin Exams haven't opened yet. Finish the Land of Waves mission first."},
+    {"cell": [13, 5], "to_map": "chunin_stadium", "to_cell": [6, 8], "label": "Exam Stadium",
+     "require_flags": ["forest_of_death_cleared"],
+     "locked_text": "The Stadium finals open once you've survived the Forest of Death."},
+    {"cell": [1, 5], "to_map": "myoboku", "to_cell": [1, 4], "label": "Mount Myoboku",
+     "require_flags": ["sasuke_defected"],
+     "locked_text": "There's no reason to leave the village... yet."},
+    {"cell": [13, 7], "to_map": "valley_of_the_end", "to_cell": [6, 8], "label": "Valley of the End",
+     "require_flags": ["akatsuki_repelled"],
+     "locked_text": "Sasuke is somewhere past the Valley of the End — but the road there isn't open yet."}
+  ],
+  "encounters": {"rate": 0.0, "table": []}
+}

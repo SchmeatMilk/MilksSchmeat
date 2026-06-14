@@ -1,0 +1,36 @@
+; Engine configuration file.
+; Naruto: Shinobi Chronicles — GBA-style demake (Godot 4.3)
+
+config_version=5
+
+[application]
+
+config/name="Naruto: Shinobi Chronicles"
+config/description="Turn-based tactical RPG / ninja collector. GBA FireRed-style demake."
+run/main_scene="res://scenes/Title.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[autoload]
+
+DataRegistry="*res://src/autoloads/DataRegistry.gd"
+GameState="*res://src/autoloads/GameState.gd"
+SaveManager="*res://src/autoloads/SaveManager.gd"
+SceneRouter="*res://src/autoloads/SceneRouter.gd"
+AudioDirector="*res://src/autoloads/AudioDirector.gd"
+TouchControls="*res://src/autoloads/TouchControls.gd"
+
+[display]
+
+window/size/viewport_width=240
+window/size/viewport_height=160
+window/size/window_width_override=960
+window/size/window_height_override=640
+window/stretch/mode="viewport"
+window/stretch/scale_mode="integer"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=0

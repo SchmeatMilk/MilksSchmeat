@@ -1,0 +1,57 @@
+{
+  "id": "sakura_apprentice",
+  "name": "Sakura (Tsunade's Apprentice)",
+  "growth_curve": "medium",
+  "nature": "calm",
+  "affinities": [
+    "yang",
+    "earth"
+  ],
+  "trait": "medical_ninja",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "medical_palm"
+    },
+    {
+      "level": 1,
+      "jutsu": "yang_chakra_scalpel"
+    },
+    {
+      "level": 1,
+      "jutsu": "substitution"
+    },
+    {
+      "level": 8,
+      "jutsu": "earth_tectonic"
+    },
+    {
+      "level": 14,
+      "jutsu": "healing_burst"
+    },
+    {
+      "level": 20,
+      "jutsu": "yang_twin_lion_fists"
+    }
+  ],
+  "promotion": {},
+  "rarity": "mythic",
+  "catch_rate": 0,
+  "base_exp": 150,
+  "village": "leaf",
+  "threat_level": "A",
+  "bingo_entry": "Trained under the Slug Princess. One finger can split the earth.",
+  "palette": {
+    "primary": "#e87a90",
+    "secondary": "#3a7a3a",
+    "accent": "#ffffff"
+  },
+  "base_stats": {
+    "hp": 100,
+    "str": 90,
+    "nin": 70,
+    "def": 80,
+    "res": 95,
+    "spd": 65
+  }
+}

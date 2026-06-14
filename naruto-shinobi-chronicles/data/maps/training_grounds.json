@@ -1,0 +1,39 @@
+{
+  "id": "training_grounds",
+  "name": "Training Grounds",
+  "music": "route_theme",
+  "palette": {"floor": "#a8c080", "wall": "#587038", "grass": "#48803a", "water": "#4a78b0"},
+  "grid": [
+    "#######.#######",
+    "#,,,,.....,,,,#",
+    "#,,,,.....,,,,#",
+    "#......#......#",
+    "#..~~..#..,,..#",
+    "#..~~..#..,,..#",
+    "#......#......#",
+    "#,,,..........#",
+    "#,,,....,,,,,.#",
+    "###############"
+  ],
+  "on_enter": [
+    {"cutscene": "bell_test", "require_flags": ["seen_graduation"], "unless_flags": ["bell_test_passed"]}
+  ],
+  "npcs": [
+    {"id": "guy", "name": "Might Guy", "cell": [7, 6], "color": "#3a8a3a",
+     "dialogue": ["YOUTH! Train in the tall grass and wild challengers will find you!", "Defeat them for experience — or weaken them and SEAL A CONTRACT!"],
+     "action": ""}
+  ],
+  "warps": [
+    {"cell": [7, 0], "to_map": "konoha", "to_cell": [6, 8], "label": "Konoha"}
+  ],
+  "encounters": {
+    "rate": 0.18,
+    "table": [
+      {"unit": "leaf_genin", "weight": 50, "min_level": 3, "max_level": 6},
+      {"unit": "forest_snake", "weight": 25, "min_level": 3, "max_level": 5},
+      {"unit": "giant_centipede", "weight": 20, "min_level": 3, "max_level": 5},
+      {"unit": "shikamaru", "weight": 3, "min_level": 6, "max_level": 8},
+      {"unit": "kiba", "weight": 2, "min_level": 6, "max_level": 8}
+    ]
+  }
+}

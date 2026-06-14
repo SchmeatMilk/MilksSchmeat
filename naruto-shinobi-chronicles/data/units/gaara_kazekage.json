@@ -1,0 +1,57 @@
+{
+  "id": "gaara_kazekage",
+  "name": "Gaara (Kazekage)",
+  "growth_curve": "slow",
+  "nature": "stoic",
+  "affinities": [
+    "earth",
+    "wind"
+  ],
+  "trait": "sand_shield",
+  "learnset": [
+    {
+      "level": 1,
+      "jutsu": "sand_coffin"
+    },
+    {
+      "level": 1,
+      "jutsu": "sand_burial"
+    },
+    {
+      "level": 1,
+      "jutsu": "earth_mud_wall"
+    },
+    {
+      "level": 10,
+      "jutsu": "earth_tectonic"
+    },
+    {
+      "level": 18,
+      "jutsu": "earth_swamp"
+    },
+    {
+      "level": 25,
+      "jutsu": "wind_pressure_damage"
+    }
+  ],
+  "promotion": {},
+  "rarity": "mythic",
+  "catch_rate": 0,
+  "base_exp": 170,
+  "village": "sand",
+  "threat_level": "S",
+  "bingo_entry": "The desert chose its Kage. The sand no longer kills \u2014 unless he asks it to.",
+  "palette": {
+    "primary": "#c8a878",
+    "secondary": "#2a4a6a",
+    "accent": "#e8d8b0"
+  },
+  "base_stats": {
+    "hp": 100,
+    "str": 60,
+    "nin": 110,
+    "def": 105,
+    "res": 95,
+    "spd": 50
+  }
+}
